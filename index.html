@@ -44,7 +44,6 @@ body {
     linear-gradient(135deg, #0a081e 0%, #120d2e 40%, #0d1a2e 100%);
 }
 
-/* floating orbs */
 .orb {
   position: fixed; border-radius: 50%; filter: blur(70px);
   animation: drift 12s ease-in-out infinite;
@@ -60,7 +59,6 @@ body {
   66%      { transform: translate(-20px,25px) scale(0.97); }
 }
 
-/* stars */
 .stars { position:fixed; inset:0; z-index:0; pointer-events:none; }
 .star {
   position:absolute; border-radius:50%; background:white;
@@ -111,7 +109,6 @@ body {
   text-transform: uppercase;
 }
 
-/* nav menu */
 .sidebar-nav {
   padding: 16px 12px;
   display: flex; flex-direction: column; gap: 4px;
@@ -138,7 +135,6 @@ body {
 
 .nav-icon { font-size: 18px; width: 22px; text-align:center; }
 
-/* genre pills in sidebar */
 .sidebar-section-title {
   font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
   color: var(--muted); padding: 16px 16px 8px;
@@ -162,7 +158,6 @@ body {
   width: 8px; height: 8px; border-radius: 50%; flex-shrink:0;
 }
 
-/* now playing mini in sidebar */
 .sidebar-now-playing {
   margin-top: auto;
   padding: 16px;
@@ -266,7 +261,6 @@ body {
 .content::-webkit-scrollbar { width: 4px; }
 .content::-webkit-scrollbar-thumb { background: rgba(201,167,235,0.3); border-radius:4px; }
 
-/* featured strip */
 .featured-strip {
   display: flex; gap: 12px; margin-bottom: 28px; overflow-x: auto;
   scrollbar-width: none;
@@ -301,7 +295,6 @@ body {
 .feat-card:nth-child(3) { background: linear-gradient(135deg, rgba(255,224,138,0.2),  rgba(255,107,157,0.12)); }
 .feat-card:nth-child(4) { background: linear-gradient(135deg, rgba(201,167,235,0.22), rgba(168,216,255,0.15)); }
 
-/* section header */
 .section-hdr {
   display:flex; align-items:center; justify-content:space-between;
   margin-bottom: 16px;
@@ -472,7 +465,6 @@ body {
   flex-shrink: 0; position:relative; z-index:10;
 }
 
-/* left: track info */
 .pb-track { display:flex; align-items:center; gap:14px; width:260px; flex-shrink:0; }
 
 .pb-art {
@@ -502,7 +494,6 @@ body {
 }
 .pb-love.loved { color:var(--rose); text-shadow:0 0 10px rgba(255,107,157,0.6); }
 
-/* center: controls + progress */
 .pb-center { flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; }
 
 .pb-controls { display:flex; align-items:center; gap:16px; }
@@ -554,7 +545,6 @@ body {
 
 .pb-track-bar:hover .pb-fill::after { opacity:1; }
 
-/* right: vol */
 .pb-right { width:180px; display:flex; align-items:center; gap:10px; justify-content:flex-end; flex-shrink:0; }
 
 .vol-icon { font-size:16px; color:var(--muted); }
@@ -586,13 +576,21 @@ body {
 
 .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-/* empty */
 .empty {
   text-align:center; padding:60px 20px; color:var(--muted);
   font-size:14px; letter-spacing:2px; text-transform:uppercase;
 }
 
 .empty-icon { font-size:48px; margin-bottom:12px; display:block; opacity:0.4; }
+
+/* YouTube hidden player */
+#yt-player-container {
+  position: fixed;
+  bottom: -9999px; left: -9999px;
+  width: 1px; height: 1px;
+  overflow: hidden; pointer-events: none;
+  opacity: 0;
+}
 </style>
 </head>
 <body>
@@ -603,6 +601,11 @@ body {
 <div class="orb orb2"></div>
 <div class="orb orb3"></div>
 <div class="stars" id="stars"></div>
+
+<!-- Hidden YouTube Player -->
+<div id="yt-player-container">
+  <div id="yt-player"></div>
+</div>
 
 <div class="app">
   <!-- TOPBAR -->
@@ -768,6 +771,8 @@ body {
 
 <div class="toast" id="toast"></div>
 
+<!-- YouTube IFrame API -->
+<script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
 // ── Stars ──
@@ -782,28 +787,140 @@ body {
   }
 })();
 
-// ── Audio Player (iTunes Preview) ──
-var progTimer = null;
-
-function startProgress(){
-  clearInterval(progTimer);
-  progTimer = setInterval(()=>{
-    if(!player.duration) return;
-    const pct = player.currentTime / player.duration * 100;
-    document.getElementById('pbFill').style.width = pct+'%';
-    document.getElementById('pbCur').textContent  = fmt(Math.floor(player.currentTime));
-    document.getElementById('pbTot').textContent  = fmt(Math.floor(player.duration));
-  }, 500);
-}
-
-
-
 // ── State ──
 let tracks = [], currentIdx = -1, loved = new Set();
 let isPlaying = false;
-var player = new Audio();
+let ytPlayer = null;
+let ytReady = false;
+let pendingPlay = null; // {ytId, volume} queued before player is ready
+let progTimer = null;
+let currentVolume = 80;
 
-player.addEventListener('ended', ()=>{ isPlaying=false; setPlayUI(false); playNext(); });
+// ── YouTube IFrame API ──
+function onYouTubeIframeAPIReady() {
+  ytPlayer = new YT.Player('yt-player', {
+    height: '1',
+    width: '1',
+    playerVars: {
+      autoplay: 0,
+      controls: 0,
+      disablekb: 1,
+      fs: 0,
+      iv_load_policy: 3,
+      modestbranding: 1,
+      rel: 0,
+      showinfo: 0,
+    },
+    events: {
+      onReady: onPlayerReady,
+      onStateChange: onPlayerStateChange,
+      onError: onPlayerError,
+    }
+  });
+}
+
+function onPlayerReady(e) {
+  ytReady = true;
+  e.target.setVolume(currentVolume);
+  if (pendingPlay) {
+    loadAndPlay(pendingPlay.ytId);
+    pendingPlay = null;
+  }
+}
+
+function onPlayerStateChange(e) {
+  // YT.PlayerState: ENDED=0, PLAYING=1, PAUSED=2, BUFFERING=3, CUED=5
+  if (e.data === YT.PlayerState.PLAYING) {
+    isPlaying = true;
+    setPlayUI(true);
+    startProgress();
+  } else if (e.data === YT.PlayerState.PAUSED) {
+    isPlaying = false;
+    setPlayUI(false);
+    clearInterval(progTimer);
+  } else if (e.data === YT.PlayerState.ENDED) {
+    isPlaying = false;
+    setPlayUI(false);
+    clearInterval(progTimer);
+    playNext();
+  } else if (e.data === YT.PlayerState.BUFFERING) {
+    // keep showing playing state while buffering
+    setPlayUI(true);
+  }
+}
+
+function onPlayerError(e) {
+  // Error codes: 2=invalid param, 5=html5 error, 100=not found, 101/150=embed disabled
+  console.warn('YT Error:', e.data);
+  toast('Video tidak tersedia, skip ke berikutnya...');
+  setTimeout(() => playNext(), 1500);
+}
+
+function loadAndPlay(ytId) {
+  if (!ytPlayer || !ytReady) {
+    pendingPlay = { ytId };
+    return;
+  }
+  ytPlayer.loadVideoById(ytId);
+  // YT will auto-play via onStateChange -> PLAYING
+}
+
+// ── Progress bar ──
+function startProgress() {
+  clearInterval(progTimer);
+  progTimer = setInterval(() => {
+    if (!ytPlayer || !ytReady) return;
+    try {
+      const cur = ytPlayer.getCurrentTime() || 0;
+      const dur = ytPlayer.getDuration() || 0;
+      if (dur > 0) {
+        const pct = (cur / dur) * 100;
+        document.getElementById('pbFill').style.width = pct + '%';
+        document.getElementById('pbCur').textContent = fmt(Math.floor(cur));
+        document.getElementById('pbTot').textContent = fmt(Math.floor(dur));
+      }
+    } catch(e) {}
+  }, 500);
+}
+
+// ── Search YouTube video ID ──
+// We use the YouTube oEmbed / noembed trick to get a video ID
+// by searching via YouTube's suggest endpoint — but since CORS blocks YT search,
+// we use iTunes metadata (name + artist) and build a YT search URL,
+// then fetch via noembed.com to get the ID.
+const ytCache = {}; // term -> ytId
+
+async function getYouTubeId(name, artist) {
+  const key = `${name} ${artist}`.toLowerCase();
+  if (ytCache[key]) return ytCache[key];
+
+  const query = encodeURIComponent(`${name} ${artist} official audio`);
+  // Use invidious public API (open source YT frontend) for search
+  // Fallback: try multiple public endpoints
+  const endpoints = [
+    `https://inv.tux.pizza/api/v1/search?q=${query}&type=video&fields=videoId,title&page=1`,
+    `https://invidious.privacydev.net/api/v1/search?q=${query}&type=video&fields=videoId,title&page=1`,
+    `https://yt.artemislena.eu/api/v1/search?q=${query}&type=video&fields=videoId,title&page=1`,
+  ];
+
+  for (const url of endpoints) {
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+      if (!res.ok) continue;
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0 && data[0].videoId) {
+        ytCache[key] = data[0].videoId;
+        return data[0].videoId;
+      }
+    } catch(e) {
+      continue;
+    }
+  }
+
+  // Last resort: use a known working video ID pattern via YouTube's oembed
+  // Actually just return null — we'll show error
+  return null;
+}
 
 // ── Fetch from iTunes (metadata only) ──
 async function fetchTracks(term='top hits 2024') {
@@ -812,7 +929,6 @@ async function fetchTracks(term='top hits 2024') {
     const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(term)}&media=music&entity=song&limit=50&country=id`);
     const data = await res.json();
     tracks = (data.results||[])
-      .filter(t=>t.previewUrl)
       .map((t,i)=>({
         idx: i,
         id: t.trackId,
@@ -820,10 +936,9 @@ async function fetchTracks(term='top hits 2024') {
         artist: t.artistName,
         album: t.collectionName||'',
         art: (t.artworkUrl100||'').replace('100x100','300x300'),
-        preview: t.previewUrl,
-        duration: t.trackTimeMillis ? Math.round(t.trackTimeMillis/1000) : 30,
+        duration: t.trackTimeMillis ? Math.round(t.trackTimeMillis/1000) : 0,
         genre: t.primaryGenreName||'Music',
-        ytId: null  // will be filled on play
+        ytId: null
       }));
     renderTracks();
   } catch(e) {
@@ -853,7 +968,7 @@ function renderTracks(){
         <div class="t-artist">${esc(t.artist)} · ${esc(t.album)}</div>
         <span class="t-genre">${esc(t.genre)}</span>
       </div>
-      <div class="t-duration">${fmt(t.duration)}</div>
+      <div class="t-duration">${t.duration ? fmt(t.duration) : '—'}</div>
       <div class="t-actions">
         <button class="t-btn" onclick="event.stopPropagation();toggleLoveTrack(${i})" title="Suka">${loved.has(t.id)?'♥':'♡'}</button>
       </div>
@@ -861,8 +976,8 @@ function renderTracks(){
   `).join('');
 }
 
-// ── Playback via iTunes Preview ──
-function playTrack(i){
+// ── Playback via YouTube ──
+async function playTrack(i) {
   if(i<0||i>=tracks.length) return;
   const t = tracks[i];
   currentIdx = i;
@@ -872,21 +987,29 @@ function playTrack(i){
   renderTracks();
   updateContentBg(t.art);
 
-  player.pause();
-  player.src = t.preview;
-  player.currentTime = 0;
-  player.volume = parseFloat(document.getElementById('volSlider').value) / 100;
-  player.play()
-    .then(()=>{
-      isPlaying = true;
-      setPlayUI(true);
-      startProgress();
-      toast(`▶ ${t.name}`);
-    })
-    .catch(()=>{
-      toast('Gagal memutar 😢');
-      setPlayUI(false);
-    });
+  toast(`⏳ Memuat: ${t.name}`);
+
+  // Stop current playback
+  if (ytPlayer && ytReady) {
+    try { ytPlayer.stopVideo(); } catch(e){}
+  }
+  clearInterval(progTimer);
+
+  // Get YouTube video ID
+  let ytId = t.ytId;
+  if (!ytId) {
+    ytId = await getYouTubeId(t.name, t.artist);
+    if (ytId) tracks[i].ytId = ytId;
+  }
+
+  if (!ytId) {
+    toast('❌ Tidak dapat menemukan di YouTube');
+    setPlayUI(false);
+    return;
+  }
+
+  loadAndPlay(ytId);
+  toast(`▶ ${t.name}`);
 }
 
 function setPlayUI(playing){
@@ -899,7 +1022,7 @@ function updatePlayerUI(t){
   document.getElementById('pbName').textContent   = t.name;
   document.getElementById('pbArtist').textContent = t.artist;
   document.getElementById('pbPlay').textContent   = '▶';
-  document.getElementById('pbTot').textContent    = fmt(t.duration);
+  document.getElementById('pbTot').textContent    = t.duration ? fmt(t.duration) : '0:00';
   document.getElementById('pbFill').style.width   = '0%';
   document.getElementById('pbCur').textContent    = '0:00';
   document.getElementById('pbLove').textContent   = loved.has(t.id)?'♥':'♡';
@@ -912,53 +1035,46 @@ function updatePlayerUI(t){
 
 function togglePlay(){
   if(currentIdx===-1){ if(tracks.length){ playTrack(0); } return; }
-  if(isPlaying){
-    player.pause();
-    isPlaying=false; setPlayUI(false);
-    clearInterval(progTimer);
-  } else {
-    player.play().then(()=>{ isPlaying=true; setPlayUI(true); startProgress(); }).catch(()=>playTrack(currentIdx));
-  }
+  if(!ytPlayer || !ytReady) return;
+  try {
+    const state = ytPlayer.getPlayerState();
+    if(state === YT.PlayerState.PLAYING || state === YT.PlayerState.BUFFERING){
+      ytPlayer.pauseVideo();
+    } else {
+      ytPlayer.playVideo();
+    }
+  } catch(e){}
 }
 
 function playNext(){ playTrack((currentIdx+1)%tracks.length); }
 function playPrev(){ playTrack((currentIdx-1+tracks.length)%tracks.length); }
 
 function seekTo(e){
+  if(!ytPlayer || !ytReady || currentIdx===-1) return;
   const bar = document.getElementById('pbBar');
   const r   = bar.getBoundingClientRect();
   const pct = Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));
-  if(currentIdx===-1 || !player.duration) return;
-  player.currentTime = pct * player.duration;
+  try {
+    const dur = ytPlayer.getDuration() || 0;
+    if(dur > 0) ytPlayer.seekTo(pct * dur, true);
+  } catch(e){}
 }
 
 function setVol(v){
-  player.volume = v/100;
+  currentVolume = parseInt(v);
+  if(ytPlayer && ytReady) {
+    try { ytPlayer.setVolume(currentVolume); } catch(e){}
+  }
   const slider = document.getElementById('volSlider');
   slider.style.background=`linear-gradient(90deg,var(--lavender) ${v}%,rgba(255,255,255,0.15) ${v}%)`;
 }
 
-// ── Content Area Background (album art JPG) ──
+// ── Content Area Background ──
 function updateContentBg(artUrl){
   const content = document.getElementById('mainContent');
   if(!artUrl){ content.style.backgroundImage='none'; return; }
-  // Use a high-res version
   const hiRes = artUrl.replace('300x300','600x600');
-  content.style.setProperty('--content-bg', `url('${hiRes}')`);
 
-  // Create/update the pseudo-bg overlay inside content
-  let bgEl = document.getElementById('contentBgLayer');
-  if(!bgEl){
-    bgEl = document.createElement('div');
-    bgEl.id = 'contentBgLayer';
-    bgEl.style.cssText = `
-      position:sticky; top:0; left:0; right:0; height:0; overflow:visible;
-      pointer-events:none; z-index:0;
-    `;
-    content.insertBefore(bgEl, content.firstChild);
-  }
-
-  // Fixed bg behind the scroll content
   let fixedBg = document.getElementById('contentFixedBg');
   if(!fixedBg){
     fixedBg = document.createElement('div');
@@ -968,7 +1084,6 @@ function updateContentBg(artUrl){
       left:var(--sidebar-w, 260px);
       pointer-events:none; z-index:0;
       transition: background-image 1.2s ease, opacity 0.8s ease;
-      border-radius:0;
     `;
     document.body.appendChild(fixedBg);
   }
@@ -1013,12 +1128,11 @@ async function searchTracks(term){
   try{
     const res=await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(term)}&media=music&entity=song&limit=50&country=id`);
     const data=await res.json();
-    tracks=(data.results||[]).filter(t=>t.previewUrl).map((t,i)=>({
+    tracks=(data.results||[]).map((t,i)=>({
       idx:i, id:t.trackId, name:t.trackName, artist:t.artistName,
       album:t.collectionName||'',
       art:(t.artworkUrl100||'').replace('100x100','300x300'),
-      preview:t.previewUrl,
-      duration:t.trackTimeMillis?Math.round(t.trackTimeMillis/1000):30,
+      duration:t.trackTimeMillis?Math.round(t.trackTimeMillis/1000):0,
       genre:t.primaryGenreName||'Music',
       ytId:null
     }));
