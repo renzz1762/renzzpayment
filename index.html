@@ -580,7 +580,7 @@ function renderHero(){
         const slug=m.slug||m.id||'';
         const title=m.title||m.name||'';
         return `<div class="hero-slide">
-          <img src="${img}" alt="" onerror="this.style.display='none'">
+          <img src="${img}" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'">
           <div class="hero-body">
             <div class="hero-tag"><i class="fa fa-fire"></i> #${i+1} Populer</div>
             <div class="hero-ttl">${q(title,40)}</div>
@@ -617,7 +617,7 @@ function acard(m, rank){
   const slug=m.slug||m.id||'';
   return `<div class="acard" onclick="openDetail('${esc(slug)}','${esc(title)}','${esc(img)}')">
     <div class="acard-poster">
-      <img src="${img}" alt="" loading="lazy" onerror="this.style.display='none'">
+      <img src="${img}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'">
       ${rank?`<div class="acard-rank">#${rank}</div>`:''}
       ${ep?`<div class="acard-ep">${ep}</div>`:''}
     </div>
@@ -632,7 +632,7 @@ function gcard(m){
   const slug=m.slug||m.id||'';
   return `<div class="gcard" onclick="openDetail('${esc(slug)}','${esc(title)}','${esc(img)}')">
     <div class="gcard-poster">
-      <img src="${img}" alt="" loading="lazy" onerror="this.style.display='none'">
+      <img src="${img}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'">
       ${ep?`<div class="gcard-ep">${ep}</div>`:''}
     </div>
     <div class="gcard-name">${q(title,28)}</div>
@@ -662,7 +662,7 @@ async function boot(){
     return;
   }
   const pop=data.popular||[], lat=data.latest||[], com=data.completed||[];
-  heroItems=pop.slice(0,5);
+  heroItems=(pop.length ? pop : lat).slice(0,5);
   renderHero();
   document.getElementById('popularRow').innerHTML   = pop.length ? pop.map((m,i)=>acard(m,i+1)).join('') : '<div class="empty"><p>Kosong</p></div>';
   document.getElementById('latestRow').innerHTML    = lat.length ? lat.map(m=>acard(m)).join('') : '<div class="empty"><p>Kosong</p></div>';
@@ -713,10 +713,10 @@ async function openDetail(slug, titleFB, imgFB){
   if(!data){
     _curEps=[];
     document.getElementById('mContent').innerHTML=`
-      <img class="mbanner" src="${imgFB}" alt="" onerror="this.style.display='none'">
+      <img class="mbanner" src="${imgFB}" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'">
       <div class="mbody">
         <div class="mrow">
-          <img class="mcover" src="${imgFB}" alt="">
+          <img class="mcover" src="${imgFB}" alt="" referrerpolicy="no-referrer">
           <div class="minfo"><h2>${titleFB}</h2></div>
         </div>
         <button class="btn-watch" onclick="closeModal();openWatch('${esc(slug)}','${esc(titleFB)}',0)">
@@ -740,10 +740,10 @@ async function openDetail(slug, titleFB, imgFB){
   _curTitle = title;
 
   document.getElementById('mContent').innerHTML=`
-    <img class="mbanner" src="${img}" alt="" onerror="this.style.display='none'">
+    <img class="mbanner" src="${img}" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'">
     <div class="mbody">
       <div class="mrow">
-        <img class="mcover" src="${img}" alt="">
+        <img class="mcover" src="${img}" alt="" referrerpolicy="no-referrer">
         <div class="minfo">
           <h2>${title}</h2>
           <div class="chips" style="margin-top:7px">
@@ -975,7 +975,7 @@ function renderJadwal(idx){
     const ep=item.episode||item.latest_episode||'';
     const slug=item.slug||item.id||'';
     return `<div class="jitem" onclick="openDetail('${esc(slug)}','${esc(title)}','${esc(img)}')">
-      <img class="jthumb" src="${img}" alt="" loading="lazy" onerror="this.style.display='none'">
+      <img class="jthumb" src="${img}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'">
       <div class="jinfo">
         <div class="jtitle">${q(title,38)}</div>
         <div class="jep">${ep?'Episode '+ep:'Update mingguan'}</div>
