@@ -541,6 +541,7 @@ async function orbit(path, method='GET', body=null){
 function q(s='',n=28){ return s.length>n ? s.slice(0,n)+'…':s }
 function esc(s=''){ return s.replace(/'/g,"\\'").replace(/"/g,'&quot;') }
 function fix(u=''){ if(!u) return ''; if(u.startsWith('http')) return u; return 'https://img-coe.wuaze.com'+u }
+function dedup(s=''){ if(!s) return s; const h=s.slice(0,Math.floor(s.length/2)).trim(); return (h&&s.trim()===h+' '+h)?h:s; }
 
 /* ============================
    NAVIGATION
@@ -583,9 +584,9 @@ function renderHero(){
   w.innerHTML = `
     <div class="hero-track" id="heroTrack">
       ${heroItems.map((m,i)=>{
-        const img=fix(m.thumbnail||m.cover||'');
+        const img=fix(m.img||m.thumbnail||m.cover||'');
         const slug=m.slug||m.id||'';
-        const title=m.title||m.name||'';
+        const title=dedup(m.title||m.name||'');
         return `<div class="hero-slide">
           <img src="${img}" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'">
           <div class="hero-body">
@@ -618,8 +619,8 @@ function goHero(idx){
    CARDS
    ============================ */
 function acard(m, rank){
-  const img=fix(m.thumbnail||m.cover||'');
-  const title=m.title||m.name||'';
+  const img=fix(m.img||m.thumbnail||m.cover||'');
+  const title=dedup(m.title||m.name||'');
   const ep=m.episode||m.latest_episode||'';
   const slug=m.slug||m.id||'';
   return `<div class="acard" onclick="openDetail('${esc(slug)}','${esc(title)}','${esc(img)}')">
@@ -633,8 +634,8 @@ function acard(m, rank){
 }
 
 function gcard(m){
-  const img=fix(m.thumbnail||m.cover||'');
-  const title=m.title||m.name||'';
+  const img=fix(m.img||m.thumbnail||m.cover||'');
+  const title=dedup(m.title||m.name||'');
   const ep=m.episode||m.latest_episode||'';
   const slug=m.slug||m.id||'';
   return `<div class="gcard" onclick="openDetail('${esc(slug)}','${esc(title)}','${esc(img)}')">
@@ -888,7 +889,13 @@ async function playEp(idx){
 
   const ep=wEps[idx];
   const num=ep?.number||ep?.episode||(idx+1);
-  const epSlug=ep?.slug||ep?.id||`${wSlug}-episode-${num}-subtitle-indonesia`;
+  // Ambil slug dari ep.slug, atau extract dari ep.link
+  let epSlug=ep?.slug||ep?.id||'';
+  if(!epSlug && ep?.link){
+    const m=ep.link.match(/\/episode\/([^?#]+)/);
+    if(m) epSlug=m[1];
+  }
+  if(!epSlug) epSlug=`${wSlug}-episode-${num}-subtitle-indonesia`;
 
   document.getElementById('wLabel').textContent=`⏳ Memuat Episode ${num}...`;
   document.getElementById('playerWrap').innerHTML=`<div class="player-ph"><i class="fa fa-spinner fa-spin" style="color:var(--a1);font-size:28px"></i><span>Mengambil stream...</span></div>`;
@@ -906,14 +913,10 @@ async function playEp(idx){
     localStorage.setItem('aniplay_history',JSON.stringify(hist.slice(0,50)));
   }catch{}
 
-  // Fetch stream — coba beberapa format endpoint
-  let streams = await orbit(`/episode/${epSlug}`);
-  // Kalau gagal, coba format lain
-  if(!streams) streams = await orbit(`/stream/${epSlug}`);
-  if(!streams) streams = await orbit(`/watch/${epSlug}`);
-
-  const sources=Array.isArray(streams)?streams
-    :(streams?.sources||streams?.stream||streams?.data||streams?.links||[]);
+  // Fetch stream
+  const streams = await orbit(`/episode/${epSlug}`);
+  // API returns data: [{format, url}] langsung sebagai array
+  const sources = Array.isArray(streams) ? streams : [];
 
   if(!sources||!sources.length){
     document.getElementById('wLabel').textContent=`⚠️ Episode ${num} — Stream tidak tersedia`;
