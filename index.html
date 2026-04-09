@@ -484,6 +484,13 @@ a{color:inherit;text-decoration:none}
 const API  = 'https://api.app.orbitcloud.web.id/api/v1'; // handled by proxy
 const AKEY = '2c6320be8b4cde1d22bc9e9e53aeb93769d03cb8ad641fde';
 const CACHE_TTL = 15 * 60 * 1000; // 15 menit dalam ms
+const CACHE_VER = 'v2'; // ganti ini untuk force clear semua cache
+
+// Auto clear cache lama saat versi berubah
+if(localStorage.getItem('oc_ver') !== CACHE_VER){
+  Object.keys(localStorage).filter(k=>k.startsWith('oc_')).forEach(k=>localStorage.removeItem(k));
+  localStorage.setItem('oc_ver', CACHE_VER);
+}
 
 function cacheGet(key){
   try{
@@ -726,7 +733,10 @@ async function openDetail(slug, titleFB, imgFB){
     return;
   }
 
-  const title   = data.title||titleFB;
+  // Ambil title dari API, hindari duplikat (kadang API return "Title Title")
+  let title = data.title||titleFB;
+  const half = title.slice(0, Math.floor(title.length/2)).trim();
+  if(half && title.trim() === half+' '+half) title = half;
   const img     = fix(data.thumbnail||data.cover||imgFB);
   const synopsis= data.synopsis||data.description||'';
   const genres  = data.genres||data.genre||[];
@@ -776,10 +786,12 @@ let wStreamSources=[];
 
 async function openWatch(slug, title, epIdx){
   wBack = curPage==='watch' ? wBack : curPage;
-  wSlug=slug; wTitle=title; wEpIdx=epIdx; wSrcIdx=0;
+  // Fix judul double
+  const half2 = title.slice(0, Math.floor(title.length/2)).trim();
+  const cleanTitle = (half2 && title.trim() === half2+' '+half2) ? half2 : title;
+  wSlug=slug; wTitle=cleanTitle; wEpIdx=epIdx; wSrcIdx=0;
   goWatch();
-
-  document.getElementById('wTitle').textContent=title;
+  document.getElementById('wTitle').textContent=cleanTitle;
   document.getElementById('wLabel').textContent='Memuat daftar episode...';
   document.getElementById('playerWrap').innerHTML=`<div class="player-ph"><i class="fa fa-spinner fa-spin" style="color:var(--a1);font-size:28px"></i><span>Memuat...</span></div>`;
   document.getElementById('srvRow').innerHTML='';
@@ -894,9 +906,14 @@ async function playEp(idx){
     localStorage.setItem('aniplay_history',JSON.stringify(hist.slice(0,50)));
   }catch{}
 
-  // Fetch stream
-  const streams=await orbit(`/episode/${epSlug}`);
-  const sources=Array.isArray(streams)?streams:(streams?.sources||streams?.data||[]);
+  // Fetch stream — coba beberapa format endpoint
+  let streams = await orbit(`/episode/${epSlug}`);
+  // Kalau gagal, coba format lain
+  if(!streams) streams = await orbit(`/stream/${epSlug}`);
+  if(!streams) streams = await orbit(`/watch/${epSlug}`);
+
+  const sources=Array.isArray(streams)?streams
+    :(streams?.sources||streams?.stream||streams?.data||streams?.links||[]);
 
   if(!sources||!sources.length){
     document.getElementById('wLabel').textContent=`⚠️ Episode ${num} — Stream tidak tersedia`;
