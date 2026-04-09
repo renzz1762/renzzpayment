@@ -481,14 +481,21 @@ a{color:inherit;text-decoration:none}
 /* ============================
    ORBIT API
    ============================ */
-const API  = 'https://api.app.orbitcloud.web.id/api/v1';
+const API  = 'https://api.app.orbitcloud.web.id/api/v1'; // handled by proxy
 const AKEY = '2c6320be8b4cde1d22bc9e9e53aeb93769d03cb8ad641fde';
 
 async function orbit(path, method='GET', body=null){
   try{
-    const opt = { method, headers:{'x-api-key':AKEY,'Content-Type':'application/json'} };
+    // Use Vercel proxy to avoid CORS
+    // path format: /home?pages=1  =>  /api/proxy?path=/home&pages=1
+    const [pathname, qs] = path.split('?');
+    const params = new URLSearchParams(qs||'');
+    params.set('path', pathname);
+    const proxyUrl = '/api/proxy?' + params.toString();
+
+    const opt = { method, headers:{'Content-Type':'application/json'} };
     if(body) opt.body = JSON.stringify(body);
-    const r = await fetch(API+path, opt);
+    const r = await fetch(proxyUrl, opt);
     const j = await r.json();
     return j.status==='success' ? j.data : null;
   }catch{ return null; }
