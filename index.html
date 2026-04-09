@@ -483,8 +483,8 @@ a{color:inherit;text-decoration:none}
    ============================ */
 const API  = 'https://api.app.orbitcloud.web.id/api/v1'; // handled by proxy
 const AKEY = '2c6320be8b4cde1d22bc9e9e53aeb93769d03cb8ad641fde';
-const CACHE_TTL = 15 * 60 * 1000; // 15 menit dalam ms
-const CACHE_VER = 'v3'; // ganti ini untuk force clear semua cache
+const CACHE_TTL = 30 * 60 * 1000; // 30 menit // 15 menit dalam ms
+const CACHE_VER = 'v4'; // ganti ini untuk force clear semua cache
 
 // Auto clear cache lama saat versi berubah
 if(localStorage.getItem('oc_ver') !== CACHE_VER){
@@ -516,13 +516,15 @@ async function orbit(path, method='GET', body=null){
     }
 
     // Use Vercel proxy to avoid CORS
-    // path format: /home?pages=1  =>  /api/proxy?path=/home&pages=1
     const [pathname, qs] = path.split('?');
     const params = new URLSearchParams(qs||'');
     params.set('path', pathname);
     const proxyUrl = '/api/proxy?' + params.toString();
 
-    const opt = { method, headers:{'Content-Type':'application/json'} };
+    const opt = {
+      method,
+      headers:{'Content-Type':'application/json'},
+    };
     if(body) opt.body = JSON.stringify(body);
     const r = await fetch(proxyUrl, opt);
     const j = await r.json();
@@ -531,8 +533,10 @@ async function orbit(path, method='GET', body=null){
       if(cacheKey) cacheSet(cacheKey, j.data);
       return j.data;
     }
+    // For scrape endpoint, data may be in different field
+    if(j.data !== undefined) return j.data;
     return null;
-  }catch{ return null; }
+  }catch(e){ console.error('orbit error', e); return null; }
 }
 
 /* ============================
@@ -913,10 +917,23 @@ async function playEp(idx){
     localStorage.setItem('aniplay_history',JSON.stringify(hist.slice(0,50)));
   }catch{}
 
-  // Fetch stream
-  const streams = await orbit(`/episode/${epSlug}`);
-  // API returns data: [{format, url}] langsung sebagai array
-  const sources = Array.isArray(streams) ? streams : [];
+  // Fetch stream via /scrape POST (episode endpoint selalu return kosong)
+  const cacheKey = `ep_${epSlug}`;
+  let sources = cacheGet(cacheKey);
+  if(!sources){
+    const scrapeResult = await orbit('/scrape', 'POST', {
+      action: 'episode',
+      config: { slug: epSlug }
+    });
+    sources = Array.isArray(scrapeResult) ? scrapeResult
+      : (scrapeResult?.sources || scrapeResult?.links || scrapeResult?.data || []);
+    // Fallback: coba GET episode juga
+    if(!sources.length){
+      const fallback = await orbit(`/episode/${epSlug}`);
+      sources = Array.isArray(fallback) ? fallback : (fallback?.sources || fallback?.data || []);
+    }
+    if(sources.length) cacheSet(cacheKey, sources);
+  }
 
   if(!sources||!sources.length){
     document.getElementById('wLabel').textContent=`⚠️ Episode ${num} — Stream tidak tersedia`;
