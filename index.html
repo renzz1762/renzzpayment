@@ -483,9 +483,31 @@ a{color:inherit;text-decoration:none}
    ============================ */
 const API  = 'https://api.app.orbitcloud.web.id/api/v1'; // handled by proxy
 const AKEY = '2c6320be8b4cde1d22bc9e9e53aeb93769d03cb8ad641fde';
+const CACHE_TTL = 15 * 60 * 1000; // 15 menit dalam ms
+
+function cacheGet(key){
+  try{
+    const raw = localStorage.getItem('oc_' + key);
+    if(!raw) return null;
+    const { ts, data } = JSON.parse(raw);
+    if(Date.now() - ts > CACHE_TTL){ localStorage.removeItem('oc_' + key); return null; }
+    return data;
+  }catch{ return null; }
+}
+
+function cacheSet(key, data){
+  try{ localStorage.setItem('oc_' + key, JSON.stringify({ ts: Date.now(), data })); }catch{}
+}
 
 async function orbit(path, method='GET', body=null){
   try{
+    // Hanya cache GET request
+    const cacheKey = method === 'GET' ? path : null;
+    if(cacheKey){
+      const cached = cacheGet(cacheKey);
+      if(cached){ console.log('[Cache HIT]', path); return cached; }
+    }
+
     // Use Vercel proxy to avoid CORS
     // path format: /home?pages=1  =>  /api/proxy?path=/home&pages=1
     const [pathname, qs] = path.split('?');
@@ -497,7 +519,12 @@ async function orbit(path, method='GET', body=null){
     if(body) opt.body = JSON.stringify(body);
     const r = await fetch(proxyUrl, opt);
     const j = await r.json();
-    return j.status==='success' ? j.data : null;
+
+    if(j.status==='success'){
+      if(cacheKey) cacheSet(cacheKey, j.data);
+      return j.data;
+    }
+    return null;
   }catch{ return null; }
 }
 
