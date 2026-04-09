@@ -9,7 +9,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.7/hls.min.js"></script>
 <style>
 :root {
   --bg:      #080010;
@@ -766,91 +765,40 @@ let watchCurrentEp = 1;
 let watchCurrentSource = 0;
 let watchedEps = {};
 
-const SOURCES = [
-  { label: '🟣 Gogo Sub', key: 'gogosub' },
-  { label: '🔵 Gogo Dub', key: 'gogodub' },
-  { label: '🟡 Zoro', key: 'zoro' },
-];
-
-// Consumet public API
+// ===== EMBED SOURCES (iframe-based, no CORS issue) =====
 const CONSUMET = 'https://api.app.orbitcloud.web.id';
 const API_KEY = '2c6320be8b4cde1d22bc9e9e53aeb93769d03cb8ad641fde';
-
-// Cache anime ID lookups (title -> consumet id)
 const _idCache = {};
 
-async function resolveConsumetId(media, provider) {
-  const title = media.title?.english || media.title?.romaji || '';
-  const ckey = `${provider}:${title}`;
-  if (_idCache[ckey]) return _idCache[ckey];
-  try {
-    const res = await fetch(`${CONSUMET}/anime/${provider}/${encodeURIComponent(title)}?apikey=${API_KEY}`);
-    const json = await res.json();
-    const results = json.results || [];
-    if (!results.length) return null;
-    // prefer sub for gogosub, dub for gogodub
-    let found = results[0];
-    if (provider === 'gogoanime') {
-      const sub = results.find(r => !/-dub$/i.test(r.id));
-      if (sub) found = sub;
-    }
-    _idCache[ckey] = found.id;
-    return found.id;
-  } catch { return null; }
+const SOURCES = [
+  { label: '🟣 AllAnime', key: 'allanime' },
+  { label: '🔵 Aniwatch', key: 'aniwatch' },
+  { label: '🟡 AnimePahe', key: 'animepahe' },
+  { label: '🟠 Gogo Sub', key: 'gogosub' },
+];
+
+// Build embed URL based on source + anime title + episode
+function buildEmbedUrl(media, ep, sourceKey) {
+  const title = encodeURIComponent(media.title?.english || media.title?.romaji || '');
+  const malId = media.idMal || '';
+  const alId  = media.id || '';
+  switch(sourceKey) {
+    case 'allanime':
+      return `https://embed.anify.tv/watch?id=${alId}&episode=${ep}&provider=gogoanime&category=sub`;
+    case 'aniwatch':
+      return `https://aniwatch-api-dusky.vercel.app/anime/episode-srcs?id=${title}-${alId}&ep=${ep}`;
+    case 'animepahe':
+      return `https://animepahe.ru/embed/${title}-ep-${ep}`;
+    case 'gogosub':
+      return `https://gogoanime3.co/embed/${title.toLowerCase().replace(/%20/g,'-')}-episode-${ep}`;
+    default:
+      return null;
+  }
 }
 
-async function resolveConsumetIdDub(media) {
-  const title = media.title?.english || media.title?.romaji || '';
-  const ckey = `gogoanime_dub:${title}`;
-  if (_idCache[ckey]) return _idCache[ckey];
-  try {
-    const res = await fetch(`${CONSUMET}/anime/gogoanime/${encodeURIComponent(title + ' dub')}?apikey=${API_KEY}`);
-    const json = await res.json();
-    const results = json.results || [];
-    const dub = results.find(r => /-dub$/i.test(r.id));
-    if (!dub) return null;
-    _idCache[ckey] = dub.id;
-    return dub.id;
-  } catch { return null; }
-}
-
-// Returns a streaming URL or null
+// Embed-based: no CORS, just iframe
 async function fetchStreamUrl(media, ep, sourceKey) {
-  try {
-    if (sourceKey === 'gogosub' || sourceKey === 'gogodub') {
-      const animeId = sourceKey === 'gogodub'
-        ? await resolveConsumetIdDub(media)
-        : await resolveConsumetId(media, 'gogoanime');
-      if (!animeId) return null;
-      // Get episode list
-      const infoRes = await fetch(`${CONSUMET}/anime/gogoanime/info/${encodeURIComponent(animeId)}?apikey=${API_KEY}`);
-      const info = await infoRes.json();
-      const episodes = info.episodes || [];
-      const epObj = episodes.find(e => e.number == ep) || episodes[ep - 1];
-      if (!epObj) return null;
-      // Get stream links
-      const streamRes = await fetch(`${CONSUMET}/anime/gogoanime/watch/${encodeURIComponent(epObj.id)}?apikey=${API_KEY}`);
-      const stream = await streamRes.json();
-      const sources = stream.sources || [];
-      // prefer 1080p or highest quality
-      const best = sources.find(s => s.quality === '1080p') || sources.find(s => s.quality === '720p') || sources[0];
-      return best?.url || null;
-    } else if (sourceKey === 'zoro') {
-      const animeId = await resolveConsumetId(media, 'zoro');
-      if (!animeId) return null;
-      const infoRes = await fetch(`${CONSUMET}/anime/zoro/info?id=${encodeURIComponent(animeId)}&apikey=${API_KEY}`);
-      const info = await infoRes.json();
-      const episodes = info.episodes || [];
-      const epObj = episodes.find(e => e.number == ep) || episodes[ep - 1];
-      if (!epObj) return null;
-      const streamRes = await fetch(`${CONSUMET}/anime/zoro/watch?episodeId=${encodeURIComponent(epObj.id)}&apikey=${API_KEY}`);
-      const stream = await streamRes.json();
-      const sources = stream.sources || [];
-      const best = sources.find(s => s.quality === '1080p') || sources.find(s => s.quality === '720p') || sources[0];
-      return best?.url || null;
-    }
-  } catch { return null; }
-  return null;
+  return buildEmbedUrl(media, ep, sourceKey);
 }
 
 function getTrailerEmbed(media) {
@@ -963,35 +911,21 @@ async function playEpisode(ep) {
 
   const streamUrl = await fetchStreamUrl(media, ep, src.key);
 
+  document.getElementById('watchEpLabel').textContent = `▶ Episode ${ep} — ${src.label}`;
   if (streamUrl) {
-    document.getElementById('watchEpLabel').textContent = `▶ Episode ${ep} — ${src.label}`;
-    // Use a video element for direct HLS/MP4 streams
     document.getElementById('watchPlayerWrap').innerHTML = `
-      <video id="watchVideo" controls autoplay playsinline
-        style="width:100%;height:100%;background:#000;display:block"
-        src="${streamUrl}"
-        onerror="videoError(${ep})">
-        Browser kamu tidak mendukung video HTML5.
-      </video>`;
-    // Try HLS if needed
-    const vid = document.getElementById('watchVideo');
-    if (streamUrl.includes('.m3u8')) {
-      loadHLS(vid, streamUrl, ep);
-    }
+      <iframe src="${streamUrl}"
+        allow="autoplay; fullscreen; encrypted-media"
+        allowfullscreen referrerpolicy="no-referrer"
+        style="width:100%;height:100%;border:none;display:block;background:#000">
+      </iframe>`;
   } else {
-    // Fallback: open on gogoanime directly
-    document.getElementById('watchEpLabel').textContent = `⚠️ Stream tidak tersedia — Episode ${ep}`;
     const title = encodeURIComponent(media.title?.english || media.title?.romaji || '');
+    document.getElementById('watchEpLabel').textContent = `⚠️ Stream tidak tersedia — Episode ${ep}`;
     document.getElementById('watchPlayerWrap').innerHTML = `
       <div class="watch-player-placeholder" style="flex-direction:column;gap:14px;padding:20px;text-align:center">
         <i class="fa fa-triangle-exclamation" style="font-size:32px;color:var(--accent2)"></i>
-        <span style="font-size:12px;color:var(--sub)">Stream tidak bisa dimuat dari server ini.<br>Coba server lain atau buka di tab baru.</span>
-        <button class="btn-ext" onclick="window.open('https://anitaku.pe/search.html?keyword=${title}','_blank')" style="margin:0 auto">
-          <i class="fa fa-external-link-alt"></i> Buka di AniTaku
-        </button>
-        <button class="btn-ext" onclick="window.open('https://zoro.to/search?keyword=${title}','_blank')" style="background:var(--purple);margin:0 auto">
-          <i class="fa fa-external-link-alt"></i> Buka di Zoro.to
-        </button>
+        <span style="font-size:12px;color:var(--sub)">Coba ganti server lain di atas.</span>
       </div>`;
   }
 
@@ -1140,34 +1074,7 @@ function logout() {
   initProfil();
 }
 
-// ===== HLS SUPPORT =====
-function loadHLS(videoEl, url, ep) {
-  if (typeof Hls !== 'undefined' && Hls.isSupported()) {
-    const hls = new Hls();
-    hls.loadSource(url);
-    hls.attachMedia(videoEl);
-    hls.on(Hls.Events.ERROR, (e, data) => {
-      if (data.fatal) videoError(ep);
-    });
-  } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
-    videoEl.src = url;
-  } else {
-    videoError(ep);
-  }
-}
-
-function videoError(ep) {
-  const media = watchCurrentMedia;
-  const title = encodeURIComponent(media?.title?.english || media?.title?.romaji || '');
-  document.getElementById('watchPlayerWrap').innerHTML = `
-    <div class="watch-player-placeholder" style="flex-direction:column;gap:14px;padding:20px;text-align:center">
-      <i class="fa fa-triangle-exclamation" style="font-size:32px;color:var(--accent2)"></i>
-      <span style="font-size:12px;color:var(--sub)">Video gagal diputar. Coba server lain.</span>
-      <button class="btn-ext" onclick="window.open('https://anitaku.pe/search.html?keyword=${title}','_blank')" style="margin:0 auto">
-        <i class="fa fa-external-link-alt"></i> Buka di AniTaku
-      </button>
-    </div>`;
-}
+// ===== PLAYER =====
 
 // ===== SEARCH INPUT ENTER =====
 document.getElementById('searchInput').addEventListener('keypress', e => {
