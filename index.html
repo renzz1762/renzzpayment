@@ -2,1072 +2,739 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>AniPlay V2.1</title>
-<meta name="theme-color" content="#04080F">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KIRA — AI Udah Bener</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#04080F;--surf:#080F1A;--card:#0D1520;--card2:#121C2A;
-  --b1:rgba(255,255,255,.05);--b2:rgba(255,255,255,.09);
-  --a1:#00C2FF;--a2:#7B2FFF;--a3:#FF3D71;--a4:#00E096;--a5:#FFB800;
-  --tx:#EEF2FF;--s1:#8896B3;--s2:#3D4E6B;
-  --font:'Plus Jakarta Sans',sans-serif;--font2:'Space Grotesk',sans-serif;
-  --nh:56px;--bh:60px;
-}
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--tx);font-family:var(--font);font-size:14px;
-  min-height:100vh;overflow-x:hidden;padding-bottom:var(--bh)}
-body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:
-    radial-gradient(ellipse 70% 45% at 0% 0%,rgba(0,194,255,.07) 0%,transparent 60%),
-    radial-gradient(ellipse 55% 40% at 100% 100%,rgba(123,47,255,.09) 0%,transparent 55%)}
-::-webkit-scrollbar{width:3px;height:3px}
-::-webkit-scrollbar-thumb{background:var(--a2);border-radius:3px}
-img{display:block}
-button{font-family:var(--font);cursor:pointer}
-a{color:inherit;text-decoration:none}
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a25;
+    --border: #2a2a3a;
+    --accent: #7c3aed;
+    --accent2: #06b6d4;
+    --text: #e8e8f0;
+    --text-muted: #6b6b8a;
+    --user-bubble: #1e1b4b;
+    --ai-bubble: #0f1a2e;
+    --green: #10b981;
+    --red: #ef4444;
+  }
 
-/* ── TOPBAR ── */
-.topbar{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nh);
-  display:flex;align-items:center;justify-content:space-between;padding:0 16px;
-  background:rgba(4,8,15,.92);backdrop-filter:blur(16px);
-  border-bottom:1px solid rgba(255,255,255,.06)}
-.logo{display:flex;align-items:center;gap:9px;cursor:pointer}
-.logo-mark{width:30px;height:30px;border-radius:8px;
-  background:linear-gradient(135deg,var(--a2),var(--a1));
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;color:#fff;box-shadow:0 0 16px rgba(0,194,255,.35)}
-.logo-name{font-family:var(--font2);font-size:16px;font-weight:700;letter-spacing:.5px;
-  background:linear-gradient(90deg,var(--a1),var(--a2));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.logo-badge{font-size:9px;background:rgba(0,194,255,.15);color:var(--a1);
-  border:1px solid rgba(0,194,255,.3);padding:1px 6px;border-radius:20px;font-weight:700;margin-left:2px}
-.tb-actions{display:flex;gap:8px;align-items:center}
-.tb-btn{width:32px;height:32px;border-radius:50%;background:var(--b1);
-  border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;
-  color:var(--s1);font-size:13px;cursor:pointer;border:none;transition:all .2s}
-.tb-btn:hover{background:rgba(0,194,255,.12);color:var(--a1)}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* ── PAGES ── */
-.page{display:none;position:relative;z-index:1;padding-top:var(--nh)}
-.page.active{display:block}
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
 
-/* ── HERO SLIDER ── */
-.hero{position:relative;width:100%;height:260px;overflow:hidden;background:var(--surf)}
-.hero-track{display:flex;height:100%;transition:transform .55s cubic-bezier(.4,0,.2,1)}
-.hero-slide{min-width:100%;height:100%;position:relative;flex-shrink:0}
-.hero-slide img{width:100%;height:100%;object-fit:cover}
-.hero-slide::after{content:'';position:absolute;inset:0;
-  background:linear-gradient(to top,var(--bg) 0%,rgba(4,8,15,.7) 40%,rgba(4,8,15,.1) 100%)}
-.hero-body{position:absolute;bottom:0;left:0;right:0;padding:16px;z-index:2}
-.hero-tag{display:inline-flex;align-items:center;gap:5px;
-  background:rgba(255,61,113,.85);color:#fff;font-size:10px;font-weight:700;
-  padding:3px 10px;border-radius:20px;margin-bottom:6px;letter-spacing:.3px}
-.hero-ttl{font-family:var(--font2);font-size:18px;font-weight:700;
-  line-height:1.25;margin-bottom:10px;text-shadow:0 2px 12px rgba(0,0,0,.7)}
-.hero-actions{display:flex;gap:8px}
-.hbtn-watch{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;
-  border-radius:22px;background:var(--a1);color:#04080F;
-  font-size:12px;font-weight:800;border:none;
-  box-shadow:0 4px 18px rgba(0,194,255,.4)}
-.hbtn-info{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;
-  border-radius:22px;background:rgba(255,255,255,.1);
-  border:1px solid rgba(255,255,255,.18);color:#fff;
-  font-size:12px;font-weight:600;backdrop-filter:blur(8px)}
-.hero-dots{position:absolute;bottom:12px;right:14px;z-index:3;display:flex;gap:5px;align-items:center}
-.hdot{width:5px;height:5px;border-radius:3px;
-  background:rgba(255,255,255,.3);transition:all .3s;cursor:pointer}
-.hdot.on{width:16px;background:var(--a1)}
+  header {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,10,15,0.8);
+    backdrop-filter: blur(20px);
+  }
 
-/* ── TICKER ── */
-.ticker{margin:10px 14px;padding:8px 12px;
-  background:rgba(0,194,255,.06);border:1px solid rgba(0,194,255,.15);
-  border-radius:10px;display:flex;align-items:center;gap:8px;overflow:hidden}
-.ticker i{color:var(--a1);font-size:11px;flex-shrink:0}
-.ticker span{font-size:11px;color:var(--s1);white-space:nowrap;
-  animation:scroll 22s linear infinite}
-@keyframes scroll{0%{transform:translateX(100vw)}100%{transform:translateX(-100%)}}
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 
-/* ── SECTION ── */
-.sec{margin:20px 0 4px}
-.sec-head{display:flex;align-items:center;justify-content:space-between;padding:0 14px;margin-bottom:10px}
-.sec-title{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700}
-.sec-dot{width:7px;height:7px;border-radius:50%}
-.sd-blue{background:var(--a1);box-shadow:0 0 8px var(--a1)}
-.sd-purple{background:var(--a2);box-shadow:0 0 8px var(--a2)}
-.sd-red{background:var(--a3);box-shadow:0 0 8px var(--a3)}
-.sd-green{background:var(--a4);box-shadow:0 0 8px var(--a4)}
-.sec-more{font-size:11px;font-weight:600;color:var(--s1);
-  display:flex;align-items:center;gap:3px;cursor:pointer;transition:color .2s}
-.sec-more:hover{color:var(--a1)}
+  .logo-icon {
+    width: 34px;
+    height: 34px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
 
-/* ── CARD ROW ── */
-.card-row{display:flex;gap:10px;padding:0 14px;overflow-x:auto;scrollbar-width:none}
-.card-row::-webkit-scrollbar{display:none}
-.acard{flex-shrink:0;width:110px;cursor:pointer}
-.acard-poster{width:100%;aspect-ratio:2/3;border-radius:10px;overflow:hidden;
-  background:var(--card);border:1px solid var(--b2);position:relative}
-.acard:active .acard-poster{opacity:.8}
-.acard-poster img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
-.acard:hover .acard-poster img{transform:scale(1.04)}
-.acard-rank{position:absolute;top:5px;left:5px;
-  background:linear-gradient(135deg,var(--a5),var(--a3));
-  color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px}
-.acard-ep{position:absolute;bottom:0;left:0;right:0;
-  padding:14px 6px 5px;font-size:9px;font-weight:700;color:#fff;
-  background:linear-gradient(to top,rgba(0,0,0,.85) 0%,transparent 100%);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.acard-name{margin-top:6px;font-size:11px;font-weight:600;color:var(--tx);
-  line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;
-  -webkit-box-orient:vertical;overflow:hidden;text-align:center}
+  .logo-text {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: linear-gradient(90deg, #fff 40%, var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 
-/* ── SKELETON ── */
-.sk{background:linear-gradient(90deg,var(--surf) 25%,var(--card2) 50%,var(--surf) 75%);
-  background-size:200% 100%;animation:sk .8s infinite linear;border-radius:8px}
-@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.sk-hero{width:100%;height:260px;border-radius:0}
-.sk-card{width:110px;aspect-ratio:2/3;border-radius:10px;flex-shrink:0}
-.sk-grid{aspect-ratio:2/3;border-radius:10px}
+  .mode-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 4px;
+  }
 
-/* ── GRID (search) ── */
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:12px 14px}
-.gcard{cursor:pointer}
-.gcard-poster{width:100%;aspect-ratio:2/3;border-radius:10px;overflow:hidden;
-  background:var(--card);border:1px solid var(--b2);position:relative}
-.gcard-poster img{width:100%;height:100%;object-fit:cover}
-.gcard-ep{position:absolute;bottom:0;left:0;right:0;
-  padding:12px 5px 4px;font-size:9px;font-weight:700;color:#fff;
-  background:linear-gradient(to top,rgba(0,0,0,.85),transparent);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gcard-name{margin-top:5px;font-size:11px;font-weight:600;line-height:1.3;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .tab {
+    padding: 7px 14px;
+    border-radius: 9px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
 
-/* ── BOTTOM NAV ── */
-.botnav{position:fixed;bottom:0;left:0;right:0;z-index:200;height:var(--bh);
-  background:rgba(4,8,15,.96);border-top:1px solid rgba(255,255,255,.07);
-  backdrop-filter:blur(16px);display:flex;align-items:center}
-.botnav-wrap{display:flex;width:100%;align-items:center}
-.bnav{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;cursor:pointer;padding:8px 0;color:var(--s2);font-size:9px;font-weight:600;
-  transition:color .2s;border:none;background:none;letter-spacing:.3px}
-.bnav i{font-size:18px}
-.bnav.on{color:var(--a1)}
-.bnav.on i{filter:drop-shadow(0 0 6px var(--a1))}
-.bnav-fab{width:44px;height:44px;border-radius:50%;
-  background:linear-gradient(135deg,var(--a2),var(--a1));
-  display:flex;align-items:center;justify-content:center;
-  font-size:17px;color:#fff;border:none;cursor:pointer;
-  box-shadow:0 4px 20px rgba(0,194,255,.45);
-  flex-shrink:0;position:relative;top:-5px}
+  .tab.active {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 0 20px rgba(124,58,237,0.4);
+  }
 
-/* ── MODAL ── */
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:300;
-  display:none;align-items:flex-end;justify-content:center}
-.modal.on{display:flex}
-.mbox{width:100%;max-width:480px;max-height:92vh;overflow-y:auto;
-  background:var(--surf);border-radius:20px 20px 0 0;padding:0 0 32px;
-  position:relative;animation:slideUp .3s cubic-bezier(.22,1,.36,1)}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.mclose{position:absolute;top:14px;right:14px;z-index:2;width:30px;height:30px;
-  border-radius:50%;background:rgba(255,61,113,.15);border:none;
-  color:var(--a3);font-size:13px;display:flex;align-items:center;justify-content:center}
-.mbanner{width:100%;height:150px;object-fit:cover;display:block}
-.mbanner-sk{width:100%;height:150px}
-.mbody{padding:14px 16px 0}
-.mrow{display:flex;gap:12px;margin-bottom:12px}
-.mcover{width:80px;aspect-ratio:2/3;object-fit:cover;border-radius:10px;
-  flex-shrink:0;background:var(--card)}
-.minfo h2{font-size:14px;font-weight:700;margin-bottom:7px;line-height:1.35}
-.chips{display:flex;flex-wrap:wrap;gap:5px}
-.chip{padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;
-  background:rgba(0,194,255,.1);border:1px solid rgba(0,194,255,.2);color:var(--a1)}
-.mdesc{font-size:12px;color:var(--s1);line-height:1.75;margin:10px 0}
-.mgenres{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px}
-.gtag{padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;
-  background:rgba(123,47,255,.1);border:1px solid rgba(123,47,255,.2);color:#b48fff}
-.btn-watch{display:flex;align-items:center;justify-content:center;gap:8px;
-  width:100%;padding:13px;border-radius:14px;
-  background:linear-gradient(135deg,var(--a2),var(--a1));
-  color:#fff;font-size:14px;font-weight:700;border:none;
-  box-shadow:0 6px 20px rgba(0,194,255,.3)}
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse 2s infinite;
+  }
 
-/* ── SEARCH PAGE ── */
-.pg-head{padding:14px 14px 2px;font-family:var(--font2);font-size:13px;font-weight:700;
-  display:flex;align-items:center;gap:8px;color:var(--tx)}
-.pg-head i{color:var(--a2)}
-.sbar{padding:10px 14px 0;display:flex;gap:8px}
-.sinput{flex:1;padding:11px 16px;background:var(--card);
-  border:1px solid var(--b2);border-radius:12px;
-  color:var(--tx);font-family:var(--font);font-size:13px;outline:none;transition:border .2s}
-.sinput:focus{border-color:var(--a1)}
-.sinput::placeholder{color:var(--s2)}
-.sbtn{padding:11px 15px;background:linear-gradient(135deg,var(--a2),var(--a1));
-  border:none;border-radius:12px;color:#fff;font-weight:700}
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
 
-/* ── JADWAL ── */
-.day-row{display:flex;gap:7px;padding:12px 14px;overflow-x:auto;scrollbar-width:none}
-.day-row::-webkit-scrollbar{display:none}
-.day-pill{flex-shrink:0;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;
-  background:var(--b1);border:1px solid var(--b2);color:var(--s1);
-  cursor:pointer;transition:all .2s;white-space:nowrap}
-.day-pill.on{background:linear-gradient(135deg,var(--a2),var(--a1));
-  border-color:transparent;color:#fff}
-.jlist{padding:0 14px}
-.jitem{display:flex;align-items:center;gap:12px;padding:11px 0;
-  border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer}
-.jthumb{width:50px;height:68px;object-fit:cover;border-radius:8px;
-  background:var(--card);flex-shrink:0}
-.jinfo{flex:1;min-width:0}
-.jtitle{font-size:13px;font-weight:600;white-space:nowrap;
-  overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
-.jep{font-size:11px;color:var(--s1)}
-.jbadge{flex-shrink:0;padding:3px 8px;border-radius:6px;font-size:9px;font-weight:700;
-  background:rgba(0,224,150,.1);border:1px solid rgba(0,224,150,.2);color:var(--a4)}
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
 
-/* ── LIBRARY ── */
-.lib-tabs{display:flex;gap:8px;padding:12px 14px;overflow-x:auto;scrollbar-width:none}
-.lib-tabs::-webkit-scrollbar{display:none}
-.ltab{flex-shrink:0;padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;
-  background:var(--b1);border:1px solid var(--b2);color:var(--s1);cursor:pointer;transition:all .2s}
-.ltab.on{background:rgba(0,194,255,.12);border-color:rgba(0,194,255,.3);color:var(--a1)}
-.lib-empty{text-align:center;padding:48px 20px;color:var(--s2)}
-.lib-empty i{font-size:36px;display:block;margin-bottom:10px;opacity:.4}
+  .panel { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+  .panel.active { display: flex; }
 
-/* ── PROFIL ── */
-.phero{background:linear-gradient(135deg,var(--a2),var(--a1));
-  padding:28px 16px 36px;text-align:center;margin-bottom:-20px}
-.pavatar{width:68px;height:68px;border-radius:50%;
-  background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;
-  font-size:26px;color:#fff;margin:0 auto 8px;border:3px solid rgba(255,255,255,.35)}
-.pname{font-size:17px;font-weight:700;color:#fff}
-.pemail{font-size:11px;color:rgba(255,255,255,.65);margin-top:2px}
-.pcard{margin:0 14px;padding:18px;background:var(--card);
-  border-radius:14px;border:1px solid var(--b2)}
-.pstats{display:grid;grid-template-columns:repeat(3,1fr)}
-.pstat-box{text-align:center;padding:10px 6px}
-.pstat-n{font-family:var(--font2);font-size:18px;font-weight:700;
-  background:linear-gradient(135deg,var(--a1),var(--a2));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.pstat-l{font-size:10px;color:var(--s1);margin-top:1px}
-.pmenu{margin:14px}
-.pmitem{display:flex;align-items:center;gap:12px;padding:13px 14px;
-  background:var(--card);border-radius:12px;margin-bottom:7px;
-  border:1px solid var(--b2);cursor:pointer}
-.pmitem i:first-child{width:18px;text-align:center;color:var(--a2);font-size:14px}
-.pmitem span{flex:1;font-size:13px;font-weight:500}
-.pmitem i:last-child{color:var(--s2);font-size:11px}
-.login-box{margin:28px 14px;padding:22px;background:var(--card);
-  border-radius:14px;border:1px solid var(--b2);text-align:center}
-.login-box i{font-size:32px;color:var(--a2);display:block;margin-bottom:10px}
-.login-box p{font-size:12px;color:var(--s1);margin-bottom:14px;line-height:1.6}
-.login-btn{display:block;width:100%;padding:12px;border-radius:12px;
-  background:linear-gradient(135deg,var(--a2),var(--a1));
-  color:#fff;font-weight:700;font-size:13px;border:none}
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
 
-/* ── WATCH PAGE ── */
-#page-watch{height:100vh;overflow-y:auto;background:var(--bg)}
-.wback{display:flex;align-items:center;gap:10px;padding:12px 14px;
-  font-size:13px;font-weight:600;color:var(--s1);cursor:pointer;
-  border-bottom:1px solid rgba(255,255,255,.05)}
-.wback i{color:var(--a3)}
-.player-wrap{width:100%;aspect-ratio:16/9;background:#000;position:relative;overflow:hidden}
-.player-wrap iframe,.player-wrap video{width:100%;height:100%;border:none;display:block}
-.player-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
-  flex-direction:column;gap:10px;background:var(--surf);color:var(--s1);
-  font-size:12px;text-align:center;padding:16px}
-.player-ph i{font-size:30px;color:var(--s2)}
-.winfo{padding:12px 14px}
-.wtitle{font-family:var(--font2);font-size:13px;font-weight:700;
-  color:var(--tx);line-height:1.35;margin-bottom:3px}
-.wlabel{font-size:11px;color:var(--a1);font-weight:600;margin-bottom:10px}
+  .msg {
+    display: flex;
+    gap: 12px;
+    max-width: 820px;
+  }
 
-/* server pills */
-.srv-row{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;margin-bottom:12px}
-.srv-row::-webkit-scrollbar{display:none}
-.srv-pill{flex-shrink:0;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;
-  border:1px solid var(--b2);background:var(--b1);color:var(--s1);cursor:pointer;transition:all .2s}
-.srv-pill.on{background:linear-gradient(135deg,var(--a2),var(--a1));
-  border-color:transparent;color:#fff}
+  .msg.user { flex-direction: row-reverse; align-self: flex-end; }
 
-/* episode list — card style, NOT squares */
-.eps-wrap{padding:0 14px 20px}
-.eps-head{display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:10px}
-.eps-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px}
-.eps-title i{color:var(--a2)}
-.eps-count{font-size:11px;color:var(--s1);
-  background:var(--b1);border:1px solid var(--b2);
-  padding:2px 9px;border-radius:20px}
-.eps-range-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:10px}
-.eps-range-row::-webkit-scrollbar{display:none}
-.range-pill{flex-shrink:0;padding:4px 12px;border-radius:8px;font-size:11px;font-weight:600;
-  border:1px solid var(--b2);background:var(--b1);color:var(--s1);cursor:pointer}
-.range-pill.on{background:rgba(0,194,255,.12);border-color:rgba(0,194,255,.3);color:var(--a1)}
+  .avatar {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
 
-/* episode card list */
-.ep-list{display:flex;flex-direction:column;gap:8px}
-.ep-item{display:flex;align-items:center;gap:12px;padding:10px 12px;
-  background:var(--card);border-radius:12px;border:1px solid var(--b2);
-  cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
-.ep-item::before{content:'';position:absolute;left:0;top:0;bottom:0;
-  width:3px;background:var(--b2);border-radius:3px 0 0 3px;transition:background .2s}
-.ep-item.on{background:rgba(0,194,255,.08);border-color:rgba(0,194,255,.25)}
-.ep-item.on::before{background:var(--a1)}
-.ep-item.seen{opacity:.7}
-.ep-item.seen::before{background:var(--a4)}
-.ep-num{width:34px;height:34px;border-radius:9px;
-  background:var(--b1);border:1px solid var(--b2);
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--font2);font-size:12px;font-weight:700;color:var(--s1);flex-shrink:0}
-.ep-item.on .ep-num{background:rgba(0,194,255,.15);border-color:rgba(0,194,255,.3);color:var(--a1)}
-.ep-item.seen .ep-num{background:rgba(0,224,150,.1);border-color:rgba(0,224,150,.25);color:var(--a4)}
-.ep-details{flex:1;min-width:0}
-.ep-name{font-size:12px;font-weight:600;color:var(--tx);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
-.ep-sub{font-size:10px;color:var(--s1)}
-.ep-play-icon{color:var(--s2);font-size:13px;flex-shrink:0}
-.ep-item.on .ep-play-icon{color:var(--a1)}
+  .msg.ai .avatar { background: linear-gradient(135deg, var(--accent), var(--accent2)); }
+  .msg.user .avatar { background: var(--surface2); border: 1px solid var(--border); }
 
-/* misc */
-.empty{text-align:center;padding:36px 20px;color:var(--s1)}
-.empty i{font-size:28px;display:block;margin-bottom:8px;color:var(--s2)}
-.empty p{font-size:12px}
-.loading{text-align:center;padding:28px;color:var(--s1);font-size:12px}
+  .bubble {
+    padding: 12px 16px;
+    border-radius: 16px;
+    line-height: 1.6;
+    font-size: 14.5px;
+    max-width: calc(100% - 50px);
+    word-break: break-word;
+  }
+
+  .msg.ai .bubble {
+    background: var(--ai-bubble);
+    border: 1px solid var(--border);
+    border-top-left-radius: 4px;
+  }
+
+  .msg.user .bubble {
+    background: var(--user-bubble);
+    border: 1px solid rgba(124,58,237,0.3);
+    border-top-right-radius: 4px;
+  }
+
+  .bubble pre {
+    background: #0d0d14;
+    border-radius: 8px;
+    padding: 12px;
+    overflow-x: auto;
+  }
+
+  .typing-indicator {
+    display: flex;
+    gap: 5px;
+    padding: 14px 16px;
+  }
+
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    animation: bounce 1.2s infinite;
+  }
+  .dot:nth-child(2) { animation-delay: 0.15s; }
+  .dot:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes bounce {
+    0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+    40% { transform: translateY(-6px); opacity: 1; }
+  }
+
+  .quick-prompts {
+    padding: 0 20px 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .qp {
+    padding: 6px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--text-muted);
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .input-area {
+    padding: 12px 20px 16px;
+    border-top: 1px solid var(--border);
+    background: rgba(10,10,15,0.8);
+  }
+
+  .input-box {
+    display: flex;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 10px 12px;
+  }
+
+  #chat-input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    resize: none;
+  }
+
+  .send-btn {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    cursor: pointer;
+  }
+  .send-btn:disabled { opacity: 0.5; }
+
+  /* code panel */
+  .code-panel-inner { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .code-toolbar {
+    display: flex;
+    gap: 8px;
+    padding: 12px 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .code-btn {
+    padding: 7px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+  .code-btn.primary { background: var(--accent); color: #fff; }
+  .code-workspace { flex: 1; display: flex; overflow: hidden; }
+  .code-editor-col { flex: 1; display: flex; flex-direction: column; }
+  #code-editor {
+    flex: 1;
+    background: #080810;
+    border: none;
+    outline: none;
+    color: #a5f3fc;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    padding: 16px;
+    resize: none;
+  }
+  .output-col { width: 45%; display: flex; flex-direction: column; border-left: 1px solid var(--border); }
+  #code-output {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12.5px;
+    white-space: pre-wrap;
+  }
+  .code-ask-row {
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+    border-top: 1px solid var(--border);
+  }
+  #code-ask-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 8px;
+  }
+  .output-error { color: var(--red); }
+  .output-ai { color: var(--accent2); }
+
+  /* game panel sederhana */
+  .game-panel-inner {
+    flex: 1;
+    padding: 20px;
+    text-align: center;
+  }
+  .game-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .game-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    cursor: pointer;
+  }
+  #game-active {
+    max-width: 600px;
+    margin: 0 auto;
+    background: var(--surface);
+    border-radius: 20px;
+    display: none;
+  }
+  #game-active.visible { display: block; }
+  .game-header {
+    padding: 14px 20px;
+    background: var(--surface2);
+    display: flex;
+    justify-content: space-between;
+  }
+  .game-msgs {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 12px;
+    text-align: left;
+  }
+  .game-bubble {
+    padding: 8px 12px;
+    margin: 8px 0;
+    border-radius: 12px;
+  }
+  .game-bubble.ai { background: var(--ai-bubble); }
+  .game-bubble.user { background: var(--user-bubble); text-align: right; }
+  .game-input-row { display: flex; gap: 8px; padding: 12px; }
+  #game-text-input { flex: 1; background: var(--surface2); border: none; border-radius: 8px; color: white; padding: 8px; }
+  .welcome { text-align: center; padding: 40px; }
+  @media (max-width: 600px) {
+    .tab span { display: none; }
+    .code-workspace { flex-direction: column; }
+    .output-col { width: 100%; height: 200px; }
+  }
 </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
-<header class="topbar">
-  <div class="logo" onclick="go('home')">
-    <div class="logo-mark"><i class="fa fa-play"></i></div>
-    <div class="logo-name">AniPlay</div>
-    <div class="logo-badge">V2.1</div>
+<header>
+  <div class="logo">
+    <div class="logo-icon">🤖</div>
+    <div class="logo-text">KIRA</div>
   </div>
-  <div class="tb-actions">
-    <button class="tb-btn" onclick="go('search')"><i class="fa fa-search"></i></button>
+  <div class="mode-tabs">
+    <button class="tab active" onclick="switchTab('chat')">💬 <span>Chat</span></button>
+    <button class="tab" onclick="switchTab('code')">⌨️ <span>Koding</span></button>
+    <button class="tab" onclick="switchTab('game')">🎮 <span>Main</span></button>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <div class="status-dot"></div>
+    <span>Online</span>
   </div>
 </header>
 
-<!-- HOME -->
-<div class="page active" id="page-home">
-  <div class="hero" id="heroWrap"><div class="sk sk-hero"></div></div>
-  <div class="ticker">
-    <i class="fa fa-satellite-dish"></i>
-    <span>Anime & Donghua subtitle Indonesia — update setiap hari di AniPlay V2.1</span>
-  </div>
-  <div class="sec">
-    <div class="sec-head">
-      <div class="sec-title"><span class="sec-dot sd-blue"></span>Terbaru</div>
-      <div class="sec-more" onclick="go('search')">Lihat semua <i class="fa fa-angle-right"></i></div>
+<div class="main">
+  <!-- CHAT PANEL -->
+  <div class="panel active" id="panel-chat">
+    <div class="messages" id="messages">
+      <div class="welcome">
+        <div style="font-size:48px;">✨</div>
+        <h2>KIRA siap membantu!</h2>
+        <p>Coba tanya apa aja, dari coding sampai curhat.</p>
+      </div>
     </div>
-    <div class="card-row" id="latestRow">
-      <div class="sk sk-card"></div><div class="sk sk-card"></div><div class="sk sk-card"></div><div class="sk sk-card"></div>
+    <div class="quick-prompts">
+      <button class="qp" onclick="sendQuick('Jelaskan neural network dengan santai')">🧠 Neural Network</button>
+      <button class="qp" onclick="sendQuick('Buat fungsi bubble sort di Python')">🐍 Bubble Sort</button>
+      <button class="qp" onclick="sendQuick('Tips jadi frontend developer handal')">💻 Frontend Tips</button>
     </div>
-  </div>
-  <div class="sec">
-    <div class="sec-head">
-      <div class="sec-title"><span class="sec-dot sd-purple"></span>Populer</div>
-      <div class="sec-more" onclick="go('search')">Lihat semua <i class="fa fa-angle-right"></i></div>
-    </div>
-    <div class="card-row" id="popularRow">
-      <div class="sk sk-card"></div><div class="sk sk-card"></div><div class="sk sk-card"></div><div class="sk sk-card"></div>
+    <div class="input-area">
+      <div class="input-box">
+        <textarea id="chat-input" rows="1" placeholder="Tanya ke KIRA..."></textarea>
+        <button class="send-btn" onclick="sendChat()">➤</button>
+      </div>
     </div>
   </div>
-  <div class="sec">
-    <div class="sec-head">
-      <div class="sec-title"><span class="sec-dot sd-green"></span>Tamat</div>
-      <div class="sec-more" onclick="go('search')">Lihat semua <i class="fa fa-angle-right"></i></div>
+
+  <!-- CODE PANEL -->
+  <div class="panel" id="panel-code">
+    <div class="code-panel-inner">
+      <div class="code-toolbar">
+        <button class="code-btn primary" onclick="analyzeCode()">🤖 Analisa Code</button>
+        <button class="code-btn" onclick="fixCode()">🔧 Fix Bug</button>
+        <button class="code-btn" onclick="explainCode()">📖 Jelaskan</button>
+      </div>
+      <div class="code-workspace">
+        <div class="code-editor-col">
+          <textarea id="code-editor" placeholder="Tulis code kamu di sini..."></textarea>
+        </div>
+        <div class="output-col">
+          <div id="code-output">Hasil AI akan muncul di sini...</div>
+          <div class="code-ask-row">
+            <input type="text" id="code-ask-input" placeholder="Tanya tentang code..." onkeydown="if(event.key==='Enter') askCode()">
+            <button class="code-btn primary" onclick="askCode()">Kirim</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="card-row" id="completedRow">
-      <div class="sk sk-card"></div><div class="sk sk-card"></div><div class="sk sk-card"></div><div class="sk sk-card"></div>
+  </div>
+
+  <!-- GAME PANEL -->
+  <div class="panel" id="panel-game">
+    <div class="game-panel-inner">
+      <div id="game-selector">
+        <h2>🎮 Pilih Game</h2>
+        <div class="game-grid">
+          <div class="game-card" onclick="startGame('tebak-kata')">🎯 Tebak Kata</div>
+          <div class="game-card" onclick="startGame('trivia')">🧠 Trivia</div>
+          <div class="game-card" onclick="startGame('cerita')">📖 Cerita Bareng</div>
+          <div class="game-card" onclick="startGame('roast')">🔥 Roast Me</div>
+        </div>
+      </div>
+      <div id="game-active">
+        <div class="game-header">
+          <span id="game-title-display">Game</span>
+          <button onclick="exitGame()">← Kembali</button>
+        </div>
+        <div id="game-content">
+          <div class="game-msgs" id="game-msgs"></div>
+          <div class="game-input-row">
+            <input type="text" id="game-text-input" placeholder="Ketik jawaban...">
+            <button onclick="sendGameMsg()">Kirim</button>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-
-<!-- SEARCH -->
-<div class="page" id="page-search">
-  <div class="pg-head"><i class="fa fa-magnifying-glass"></i> Cari Anime</div>
-  <div class="sbar">
-    <input class="sinput" id="searchInput" placeholder="Ketik judul anime..." type="text">
-    <button class="sbtn" onclick="doSearch()"><i class="fa fa-search"></i></button>
-  </div>
-  <div class="grid" id="searchGrid">
-    <div class="sk sk-grid"></div><div class="sk sk-grid"></div><div class="sk sk-grid"></div>
-    <div class="sk sk-grid"></div><div class="sk sk-grid"></div><div class="sk sk-grid"></div>
-  </div>
-</div>
-
-<!-- JADWAL -->
-<div class="page" id="page-jadwal">
-  <div class="pg-head"><i class="fa fa-calendar-days"></i> Jadwal Tayang</div>
-  <div class="day-row" id="dayRow"></div>
-  <div class="jlist" id="jadwalList"><div class="loading"><i class="fa fa-spinner fa-spin"></i> Memuat...</div></div>
-</div>
-
-<!-- LIBRARY -->
-<div class="page" id="page-library">
-  <div class="pg-head"><i class="fa fa-folder-open"></i> Library</div>
-  <div class="lib-tabs">
-    <div class="ltab on" onclick="selLib(this,'history')">🕐 Riwayat</div>
-    <div class="ltab" onclick="selLib(this,'bookmark')">🔖 Tersimpan</div>
-  </div>
-  <div id="libContent"></div>
-</div>
-
-<!-- PROFIL -->
-<div class="page" id="page-profil">
-  <div id="profilContent"></div>
-</div>
-
-<!-- WATCH -->
-<div class="page" id="page-watch">
-  <div class="wback" onclick="go(wBack||'home')">
-    <i class="fa fa-arrow-left"></i> Kembali
-  </div>
-  <div class="player-wrap" id="playerWrap">
-    <div class="player-ph"><i class="fa fa-play-circle"></i><span>Pilih episode untuk mulai nonton</span></div>
-  </div>
-  <div class="winfo">
-    <div class="wtitle" id="wTitle"></div>
-    <div class="wlabel" id="wLabel">—</div>
-    <div class="srv-row" id="srvRow"></div>
-  </div>
-  <div class="eps-wrap">
-    <div class="eps-head">
-      <div class="eps-title"><i class="fa fa-list-ul"></i> Daftar Episode</div>
-      <div class="eps-count" id="epsCount"></div>
-    </div>
-    <div class="eps-range-row" id="rangeRow"></div>
-    <div class="ep-list" id="epList"></div>
-  </div>
-</div>
-
-<!-- BOTTOM NAV -->
-<nav class="botnav">
-  <div class="botnav-wrap">
-    <button class="bnav on" id="bnav-home" onclick="go('home')">
-      <i class="fa fa-house"></i><span>Home</span>
-    </button>
-    <button class="bnav" id="bnav-jadwal" onclick="go('jadwal')">
-      <i class="fa fa-calendar-days"></i><span>Jadwal</span>
-    </button>
-    <button class="bnav-fab" onclick="go('search')">
-      <i class="fa fa-magnifying-glass"></i>
-    </button>
-    <button class="bnav" id="bnav-library" onclick="go('library')">
-      <i class="fa fa-folder-open"></i><span>Library</span>
-    </button>
-    <button class="bnav" id="bnav-profil" onclick="go('profil')">
-      <i class="fa fa-circle-user"></i><span>Profil</span>
-    </button>
-  </div>
-</nav>
-
-<!-- MODAL -->
-<div class="modal" id="modal" onclick="closeModal(event)">
-  <div class="mbox">
-    <button class="mclose" onclick="closeModal()"><i class="fa fa-xmark"></i></button>
-    <div id="mContent"><div class="loading"><i class="fa fa-spinner fa-spin"></i></div></div>
   </div>
 </div>
 
 <script>
-/* ============================
-   ORBIT API
-   ============================ */
-const API  = 'https://api.app.orbitcloud.web.id/api/v1'; // handled by proxy
-const AKEY = '0fb021e0e8889edf914200a3f6d1d142e74eb57f14eda903';
-const CACHE_TTL = 15 * 60 * 1000; // 15 menit dalam ms
+  // ===================== 🔴 GANTI API KEY DI SINI 🔴 =====================
+  const API_KEY = 'AIzaSyDSKxedohZDAUg6H-QcA8SwwoRcLXkFPjM';   // <-- GANTI DENGAN API KEY ASLI
+  // ======================================================================
 
-function cacheGet(key){
-  try{
-    const raw = localStorage.getItem('oc_' + key);
-    if(!raw) return null;
-    const { ts, data } = JSON.parse(raw);
-    if(Date.now() - ts > CACHE_TTL){ localStorage.removeItem('oc_' + key); return null; }
-    return data;
-  }catch{ return null; }
-}
+  const MODEL = 'gemini-1.5-flash';  // atau 'gemini-2.0-flash-exp'
+  
+  let chatHistory = []; // simpan percakapan
+  let currentGame = null;
+  let gameHistory = [];
 
-function cacheSet(key, data){
-  try{ localStorage.setItem('oc_' + key, JSON.stringify({ ts: Date.now(), data })); }catch{}
-}
-
-async function orbit(path, method='GET', body=null){
-  try{
-    // Hanya cache GET request
-    const cacheKey = method === 'GET' ? path : null;
-    if(cacheKey){
-      const cached = cacheGet(cacheKey);
-      if(cached){ console.log('[Cache HIT]', path); return cached; }
-    }
-
-    // Use Vercel proxy to avoid CORS
-    // path format: /home?pages=1  =>  /api/proxy?path=/home&pages=1
-    const [pathname, qs] = path.split('?');
-    const params = new URLSearchParams(qs||'');
-    params.set('path', pathname);
-    const proxyUrl = '/api/proxy?' + params.toString();
-
-    const opt = { method, headers:{'Content-Type':'application/json'} };
-    if(body) opt.body = JSON.stringify(body);
-    const r = await fetch(proxyUrl, opt);
-    const j = await r.json();
-
-    if(j.status==='success'){
-      if(cacheKey) cacheSet(cacheKey, j.data);
-      return j.data;
-    }
-    return null;
-  }catch{ return null; }
-}
-
-/* ============================
-   HELPERS
-   ============================ */
-function q(s='',n=28){ return s.length>n ? s.slice(0,n)+'…':s }
-function esc(s=''){ return s.replace(/'/g,"\\'").replace(/"/g,'&quot;') }
-function fix(u=''){ if(!u) return ''; if(u.startsWith('http')) return u; return 'https://img-coe.wuaze.com'+u }
-
-/* ============================
-   NAVIGATION
-   ============================ */
-let curPage='home', wBack='home';
-let jadwalLoaded=false, searchLoaded=false;
-
-function go(page){
-  if(page==='watch') return; // only via openWatch
-  wBack = curPage;
-  curPage = page;
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.bnav').forEach(b=>b.classList.remove('on'));
-  document.getElementById('page-'+page).classList.add('active');
-  const nb = document.getElementById('bnav-'+page);
-  if(nb) nb.classList.add('on');
-  window.scrollTo(0,0);
-  if(page==='jadwal' && !jadwalLoaded) initJadwal();
-  if(page==='library') initLib();
-  if(page==='profil') initProfil();
-  if(page==='search' && !searchLoaded){ searchLoaded=true; fillSearchDefault(); }
-}
-
-function goWatch(){
-  curPage='watch';
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.bnav').forEach(b=>b.classList.remove('on'));
-  document.getElementById('page-watch').classList.add('active');
-  document.getElementById('page-watch').scrollTop=0;
-}
-
-/* ============================
-   HERO SLIDER
-   ============================ */
-let heroItems=[], hi=0, ht=null;
-
-function renderHero(){
-  const w = document.getElementById('heroWrap');
-  if(!heroItems.length){ w.innerHTML='<div class="sk sk-hero"></div>'; return; }
-  w.innerHTML = `
-    <div class="hero-track" id="heroTrack">
-      ${heroItems.map((m,i)=>{
-        const img=fix(m.thumbnail||m.cover||'');
-        const slug=m.slug||m.id||'';
-        const title=m.title||m.name||'';
-        return `<div class="hero-slide">
-          <img src="${img}" alt="" onerror="this.style.display='none'">
-          <div class="hero-body">
-            <div class="hero-tag"><i class="fa fa-fire"></i> #${i+1} Populer</div>
-            <div class="hero-ttl">${q(title,40)}</div>
-            <div class="hero-actions">
-              <button class="hbtn-watch" onclick="openDetail('${esc(slug)}','${esc(title)}','${esc(img)}')">
-                <i class="fa fa-play"></i> Tonton
-              </button>
-              <button class="hbtn-info" onclick="openDetail('${esc(slug)}','${esc(title)}','${esc(img)}')">
-                <i class="fa fa-circle-info"></i> Detail
-              </button>
-            </div>
-          </div>
-        </div>`}).join('')}
-    </div>
-    <div class="hero-dots">${heroItems.map((_,i)=>`<div class="hdot${i===0?' on':''}" onclick="goHero(${i})"></div>`).join('')}</div>`;
-  clearInterval(ht);
-  ht = setInterval(()=>goHero((hi+1)%heroItems.length), 4500);
-}
-
-function goHero(idx){
-  hi=idx;
-  const t=document.getElementById('heroTrack');
-  if(t) t.style.transform=`translateX(-${idx*100}%)`;
-  document.querySelectorAll('.hdot').forEach((d,i)=>d.classList.toggle('on',i===idx));
-}
-
-/* ============================
-   CARDS
-   ============================ */
-function acard(m, rank){
-  const img=fix(m.thumbnail||m.cover||'');
-  const title=m.title||m.name||'';
-  const ep=m.episode||m.latest_episode||'';
-  const slug=m.slug||m.id||'';
-  return `<div class="acard" onclick="openDetail('${esc(slug)}','${esc(title)}','${esc(img)}')">
-    <div class="acard-poster">
-      <img src="${img}" alt="" loading="lazy" onerror="this.style.display='none'">
-      ${rank?`<div class="acard-rank">#${rank}</div>`:''}
-      ${ep?`<div class="acard-ep">${ep}</div>`:''}
-    </div>
-    <div class="acard-name">${q(title,22)}</div>
-  </div>`;
-}
-
-function gcard(m){
-  const img=fix(m.thumbnail||m.cover||'');
-  const title=m.title||m.name||'';
-  const ep=m.episode||m.latest_episode||'';
-  const slug=m.slug||m.id||'';
-  return `<div class="gcard" onclick="openDetail('${esc(slug)}','${esc(title)}','${esc(img)}')">
-    <div class="gcard-poster">
-      <img src="${img}" alt="" loading="lazy" onerror="this.style.display='none'">
-      ${ep?`<div class="gcard-ep">${ep}</div>`:''}
-    </div>
-    <div class="gcard-name">${q(title,28)}</div>
-  </div>`;
-}
-
-/* ============================
-   HOME BOOT
-   ============================ */
-let _homeCache=null;
-
-async function boot(){
-  const data = await orbit('/home?pages=1');
-  _homeCache = data;
-  if(!data){
-    document.getElementById('heroWrap').innerHTML=`
-      <div style="height:260px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;padding:20px">
-        <i class="fa fa-triangle-exclamation" style="font-size:32px;color:var(--a5)"></i>
-        <p style="color:var(--s1);font-size:12px">Gagal konek ke server.<br>Pastikan internet aktif.</p>
-        <button onclick="boot()" style="padding:8px 20px;border-radius:20px;background:var(--a2);color:#fff;border:none;font-size:12px">
-          <i class="fa fa-rotate-right"></i> Coba Lagi
-        </button>
-      </div>`;
-    ['latestRow','popularRow','completedRow'].forEach(id=>{
-      document.getElementById(id).innerHTML='<div class="empty"><i class="fa fa-circle-exclamation"></i><p>Gagal memuat</p></div>';
+  // Helper format teks
+  function formatText(text) {
+    return text
+      .replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => `<pre><code>${escapeHtml(code.trim())}</code></pre>`)
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n/g, '<br>');
+  }
+  function escapeHtml(str) {
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
     });
-    return;
-  }
-  const pop=data.popular||[], lat=data.latest||[], com=data.completed||[];
-  heroItems=pop.slice(0,5);
-  renderHero();
-  document.getElementById('popularRow').innerHTML   = pop.length ? pop.map((m,i)=>acard(m,i+1)).join('') : '<div class="empty"><p>Kosong</p></div>';
-  document.getElementById('latestRow').innerHTML    = lat.length ? lat.map(m=>acard(m)).join('') : '<div class="empty"><p>Kosong</p></div>';
-  document.getElementById('completedRow').innerHTML = com.length ? com.map(m=>acard(m)).join('') : '<div class="empty"><p>Kosong</p></div>';
-}
-
-/* ============================
-   SEARCH
-   ============================ */
-async function fillSearchDefault(){
-  const grid=document.getElementById('searchGrid');
-  if(_homeCache){
-    const list=[...(_homeCache.latest||[]),...(_homeCache.popular||[])];
-    grid.innerHTML=list.length?list.map(m=>gcard(m)).join(''):'';
-    return;
-  }
-  grid.innerHTML=`<div class="sk sk-grid"></div><div class="sk sk-grid"></div><div class="sk sk-grid"></div><div class="sk sk-grid"></div><div class="sk sk-grid"></div><div class="sk sk-grid"></div>`;
-  const data=await orbit('/home?pages=1');
-  if(data) _homeCache=data;
-  const list=[...(data?.latest||[]),(data?.popular||[])];
-  grid.innerHTML=list.length?list.map(m=>gcard(m)).join(''):'<div class="empty" style="grid-column:1/-1"><i class="fa fa-exclamation-circle"></i><p>Gagal</p></div>';
-}
-
-async function doSearch(){
-  const val=document.getElementById('searchInput').value.trim();
-  if(!val) return;
-  const grid=document.getElementById('searchGrid');
-  grid.innerHTML=`<div class="sk sk-grid"></div><div class="sk sk-grid"></div><div class="sk sk-grid"></div><div class="sk sk-grid"></div><div class="sk sk-grid"></div><div class="sk sk-grid"></div>`;
-  const data=await orbit(`/search?q=${encodeURIComponent(val)}&pages=2`);
-  const list=data?.results||[];
-  grid.innerHTML=list.length
-    ?list.map(m=>gcard(m)).join('')
-    :`<div class="empty" style="grid-column:1/-1"><i class="fa fa-search"></i><p>Tidak ditemukan: "${val}"</p></div>`;
-}
-
-/* ============================
-   MODAL DETAIL
-   ============================ */
-let _curSlug='', _curTitle='', _curEps=[];
-
-async function openDetail(slug, titleFB, imgFB){
-  _curSlug=slug; _curTitle=titleFB;
-  document.getElementById('modal').classList.add('on');
-  document.getElementById('mContent').innerHTML='<div class="loading"><i class="fa fa-spinner fa-spin"></i> Memuat detail...</div>';
-
-  const data=await orbit(`/detail/${slug}`);
-
-  if(!data){
-    _curEps=[];
-    document.getElementById('mContent').innerHTML=`
-      <img class="mbanner" src="${imgFB}" alt="" onerror="this.style.display='none'">
-      <div class="mbody">
-        <div class="mrow">
-          <img class="mcover" src="${imgFB}" alt="">
-          <div class="minfo"><h2>${titleFB}</h2></div>
-        </div>
-        <button class="btn-watch" onclick="closeModal();openWatch('${esc(slug)}','${esc(titleFB)}',0)">
-          <i class="fa fa-play"></i> Tonton Sekarang
-        </button>
-      </div>`;
-    return;
   }
 
-  const title   = data.title||titleFB;
-  const img     = fix(data.thumbnail||data.cover||imgFB);
-  const synopsis= data.synopsis||data.description||'';
-  const genres  = data.genres||data.genre||[];
-  const status  = data.status||'';
-  const type    = data.type||'';
-  const score   = data.score||data.rating||'';
-  const eps     = data.episodes||[];
-  const totalEp = eps.length||data.total_episode||'?';
+  // =============== PANGGIL GEMINI API (VERSI PALING SIMPEL) ===============
+  async function callGemini(userMessage, systemPrompt = '', history = []) {
+    // Build contents array sesuai format Gemini
+    let contents = [];
+    
+    // Tambahkan system prompt sebagai pesan pertama jika ada
+    if (systemPrompt) {
+      contents.push({
+        role: "user",
+        parts: [{ text: `System: ${systemPrompt}` }]
+      });
+      contents.push({
+        role: "model",
+        parts: [{ text: "OK, saya akan mengikuti instruksi tersebut." }]
+      });
+    }
+    
+    // Tambahkan history (sudah dalam format {role, parts})
+    for (let msg of history) {
+      contents.push({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.content }]
+      });
+    }
+    
+    // Tambahkan pesan user terbaru
+    contents.push({
+      role: "user",
+      parts: [{ text: userMessage }]
+    });
 
-  _curEps = eps;
-  _curTitle = title;
-
-  document.getElementById('mContent').innerHTML=`
-    <img class="mbanner" src="${img}" alt="" onerror="this.style.display='none'">
-    <div class="mbody">
-      <div class="mrow">
-        <img class="mcover" src="${img}" alt="">
-        <div class="minfo">
-          <h2>${title}</h2>
-          <div class="chips" style="margin-top:7px">
-            ${score?`<div class="chip">⭐ ${score}</div>`:''}
-            ${totalEp!=='?'?`<div class="chip">🎬 ${totalEp} eps</div>`:''}
-            ${type?`<div class="chip">${type}</div>`:''}
-            ${status?`<div class="chip">${status}</div>`:''}
-          </div>
-        </div>
-      </div>
-      ${synopsis?`<div class="mdesc">${q(synopsis,280)}</div>`:''}
-      ${genres.length?`<div class="mgenres">${genres.map(g=>`<span class="gtag">${g}</span>`).join('')}</div>`:''}
-      <button class="btn-watch" onclick="closeModal();openWatch('${esc(slug)}','${esc(title)}',0)">
-        <i class="fa fa-play"></i> Tonton Sekarang
-      </button>
-    </div>`;
-}
-
-function closeModal(e){
-  if(!e||e.target===document.getElementById('modal')){
-    document.getElementById('modal').classList.remove('on');
-  }
-}
-
-/* ============================
-   WATCH PAGE
-   ============================ */
-let wSlug='', wTitle='', wEps=[], wEpIdx=0, wSrcIdx=0, wSeen={};
-let wStreamSources=[];
-
-async function openWatch(slug, title, epIdx){
-  wBack = curPage==='watch' ? wBack : curPage;
-  wSlug=slug; wTitle=title; wEpIdx=epIdx; wSrcIdx=0;
-  goWatch();
-
-  document.getElementById('wTitle').textContent=title;
-  document.getElementById('wLabel').textContent='Memuat daftar episode...';
-  document.getElementById('playerWrap').innerHTML=`<div class="player-ph"><i class="fa fa-spinner fa-spin" style="color:var(--a1);font-size:28px"></i><span>Memuat...</span></div>`;
-  document.getElementById('srvRow').innerHTML='';
-  document.getElementById('epList').innerHTML='<div class="loading"><i class="fa fa-spinner fa-spin"></i> Memuat episode...</div>';
-  document.getElementById('epsCount').textContent='';
-
-  // Reuse cached episodes if same slug
-  if(_curSlug===slug && _curEps.length){
-    wEps=_curEps;
-  } else {
-    const data=await orbit(`/detail/${slug}`);
-    wEps=data?.episodes||[];
-    _curEps=wEps; _curSlug=slug;
-  }
-
-  document.getElementById('epsCount').textContent=wEps.length ? `${wEps.length} episode` : '';
-  renderEpList();
-  buildSrvRow([]);
-
-  // Start playing
-  if(wEps.length) playEp(epIdx);
-}
-
-/* episode list — card style */
-function renderEpList(){
-  const total=wEps.length;
-  if(!total){
-    document.getElementById('epList').innerHTML='<div class="empty"><i class="fa fa-circle-exclamation"></i><p>Daftar episode tidak tersedia</p></div>';
-    return;
-  }
-  const CHUNK=50;
-  const chunks=Math.ceil(total/CHUNK);
-  const rr=document.getElementById('rangeRow');
-  rr.innerHTML='';
-  if(chunks>1){
-    for(let i=0;i<chunks;i++){
-      const s=i*CHUNK, e=Math.min((i+1)*CHUNK,total)-1;
-      rr.innerHTML+=`<div class="range-pill${i===0?' on':''}" onclick="renderChunk(${i})">${s+1}–${e+1}</div>`;
+    const payload = { contents: contents };
+    
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${API_KEY}`;
+    
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        let errorMsg = `HTTP ${response.status}`;
+        if (errorData.error && errorData.error.message) errorMsg = errorData.error.message;
+        throw new Error(errorMsg);
+      }
+      
+      const data = await response.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!text) throw new Error("Tidak ada respons dari AI");
+      return text;
+    } catch (err) {
+      console.error("API Error:", err);
+      throw err;
     }
   }
-  renderChunk(0);
-}
 
-function renderChunk(ci){
-  document.querySelectorAll('.range-pill').forEach((b,i)=>b.classList.toggle('on',i===ci));
-  const CHUNK=50;
-  const s=ci*CHUNK, e=Math.min((ci+1)*CHUNK,wEps.length);
-  let html='';
-  for(let i=s;i<e;i++){
-    const ep=wEps[i];
-    const num=ep.number||ep.episode||(i+1);
-    const epTitle=ep.title||ep.name||`Episode ${num}`;
-    const isOn=i===wEpIdx;
-    const isSeen=wSeen[`${wSlug}_${i}`];
-    html+=`
-      <div class="ep-item${isOn?' on':isSeen?' seen':''}" onclick="playEp(${i})">
-        <div class="ep-num">${num}</div>
-        <div class="ep-details">
-          <div class="ep-name">${q(epTitle,36)}</div>
-          <div class="ep-sub">${ep.date||ep.aired||'Sub Indonesia'}</div>
-        </div>
-        <i class="fa fa-${isOn?'pause':'play'} ep-play-icon"></i>
-      </div>`;
+  // =============== CHAT ===============
+  function addMessage(role, text, container = 'messages') {
+    const containerDiv = document.getElementById(container);
+    const welcomeDiv = containerDiv.querySelector('.welcome');
+    if (welcomeDiv) welcomeDiv.remove();
+    
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'msg ' + role;
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar';
+    avatar.innerText = role === 'ai' ? '🤖' : '👤';
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.innerHTML = formatText(text);
+    msgDiv.appendChild(avatar);
+    msgDiv.appendChild(bubble);
+    containerDiv.appendChild(msgDiv);
+    containerDiv.scrollTop = containerDiv.scrollHeight;
   }
-  document.getElementById('epList').innerHTML=html;
-}
-
-function buildSrvRow(sources){
-  wStreamSources=sources;
-  const labels=sources.length
-    ? sources.map((s,i)=>`<div class="srv-pill${i===wSrcIdx?' on':''}" onclick="playSrc(${i})">${s.format||s.quality||'Server '+(i+1)}</div>`).join('')
-    : ['🔵 Server 1','🟣 Server 2','🟡 Server 3'].map((l,i)=>`<div class="srv-pill${i===0?' on':''}" onclick="switchSrv(${i})">${l}</div>`).join('');
-  document.getElementById('srvRow').innerHTML=labels;
-}
-
-function playSrc(idx){
-  wSrcIdx=idx;
-  if(!wStreamSources.length) return;
-  document.querySelectorAll('.srv-pill').forEach((p,i)=>p.classList.toggle('on',i===idx));
-  const src=wStreamSources[Math.min(idx,wStreamSources.length-1)];
-  const url=src?.url||src?.link||src?.file||'';
-  if(url) loadPlayer(url);
-}
-
-function switchSrv(idx){
-  wSrcIdx=idx;
-  document.querySelectorAll('.srv-pill').forEach((p,i)=>p.classList.toggle('on',i===idx));
-  playEp(wEpIdx);
-}
-
-async function playEp(idx){
-  wEpIdx=idx;
-  wSeen[`${wSlug}_${idx}`]=true;
-
-  const ep=wEps[idx];
-  const num=ep?.number||ep?.episode||(idx+1);
-  const epSlug=ep?.slug||ep?.id||`${wSlug}-episode-${num}-subtitle-indonesia`;
-
-  document.getElementById('wLabel').textContent=`⏳ Memuat Episode ${num}...`;
-  document.getElementById('playerWrap').innerHTML=`<div class="player-ph"><i class="fa fa-spinner fa-spin" style="color:var(--a1);font-size:28px"></i><span>Mengambil stream...</span></div>`;
-
-  // Update episode list highlight
-  const CHUNK=50;
-  renderChunk(Math.floor(idx/CHUNK));
-
-  // Save history
-  try{
-    const hist=JSON.parse(localStorage.getItem('aniplay_history')||'[]');
-    const xi=hist.findIndex(h=>h.slug===wSlug);
-    if(xi>-1) hist.splice(xi,1);
-    hist.unshift({slug:wSlug,title:wTitle,lastEp:num,lastIdx:idx,ts:Date.now()});
-    localStorage.setItem('aniplay_history',JSON.stringify(hist.slice(0,50)));
-  }catch{}
-
-  // Fetch stream
-  const streams=await orbit(`/episode/${epSlug}`);
-  const sources=Array.isArray(streams)?streams:(streams?.sources||streams?.data||[]);
-
-  if(!sources||!sources.length){
-    document.getElementById('wLabel').textContent=`⚠️ Episode ${num} — Stream tidak tersedia`;
-    document.getElementById('playerWrap').innerHTML=`
-      <div class="player-ph">
-        <i class="fa fa-triangle-exclamation" style="color:var(--a5)"></i>
-        <span>Stream belum tersedia.<br>Coba server lain atau episode lain.</span>
-      </div>`;
-    buildSrvRow([]);
-    return;
+  
+  function showTyping() {
+    const container = document.getElementById('messages');
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'msg ai';
+    typingDiv.id = 'typing-indicator';
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar';
+    avatar.innerText = '🤖';
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble typing-indicator';
+    bubble.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+    typingDiv.appendChild(avatar);
+    typingDiv.appendChild(bubble);
+    container.appendChild(typingDiv);
+    container.scrollTop = container.scrollHeight;
   }
-
-  buildSrvRow(sources);
-  wSrcIdx=0;
-  document.querySelectorAll('.srv-pill').forEach((p,i)=>p.classList.toggle('on',i===0));
-
-  const best=sources.find(s=>s.format==='720p'||s.quality==='720p')
-    ||sources.find(s=>s.format==='480p'||s.quality==='480p')
-    ||sources[0];
-  const url=best?.url||best?.link||best?.file||'';
-
-  document.getElementById('wLabel').textContent=`▶ Episode ${num} — ${best?.format||best?.quality||'Auto'}`;
-
-  if(!url){
-    document.getElementById('playerWrap').innerHTML=`<div class="player-ph"><i class="fa fa-exclamation-circle"></i><span>URL tidak tersedia</span></div>`;
-    return;
+  
+  function hideTyping() {
+    const el = document.getElementById('typing-indicator');
+    if (el) el.remove();
   }
-  loadPlayer(url);
-}
-
-function loadPlayer(url){
-  const needIframe=url.includes('drive.google')||url.includes('ok.ru')||url.includes('embed')
-    ||url.includes('mp4upload')||url.includes('streamtape')||url.includes('doodstream')
-    ||url.includes('mixdrop')||url.includes('filemoon')||url.includes('vtube');
-  document.getElementById('playerWrap').innerHTML = needIframe
-    ? `<iframe src="${url}" allow="autoplay;fullscreen;encrypted-media" allowfullscreen referrerpolicy="no-referrer"></iframe>`
-    : `<video controls autoplay playsinline src="${url}" style="width:100%;height:100%;background:#000"></video>`;
-}
-
-/* ============================
-   JADWAL
-   ============================ */
-const DAYS_ID=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-const DAYS_EN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-let jadwalData={}, activeDay=new Date().getDay();
-
-async function initJadwal(){
-  jadwalLoaded=true;
-  document.getElementById('dayRow').innerHTML=DAYS_ID.map((d,i)=>
-    `<div class="day-pill${i===activeDay?' on':''}" onclick="selDay(this,${i})">${d}</div>`
-  ).join('');
-  document.getElementById('jadwalList').innerHTML='<div class="loading"><i class="fa fa-spinner fa-spin"></i> Memuat jadwal...</div>';
-  const data=await orbit('/schedule');
-  jadwalData=data||{};
-  renderJadwal(activeDay);
-}
-
-function selDay(el,idx){
-  activeDay=idx;
-  document.querySelectorAll('.day-pill').forEach(d=>d.classList.remove('on'));
-  el.classList.add('on');
-  renderJadwal(idx);
-}
-
-function renderJadwal(idx){
-  const key=DAYS_EN[idx];
-  const list=jadwalData[key]||jadwalData[key.toLowerCase()]||[];
-  const el=document.getElementById('jadwalList');
-  if(!list.length){
-    el.innerHTML=`<div class="empty"><i class="fa fa-calendar-xmark"></i><p>Tidak ada jadwal hari ${DAYS_ID[idx]}</p></div>`;
-    return;
+  
+  async function sendChat() {
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    addMessage('user', text);
+    chatHistory.push({ role: 'user', content: text });
+    
+    showTyping();
+    try {
+      const systemPrompt = "Kamu adalah KIRA, asisten AI yang ramah, lucu, dan suka bantu. Jawab dalam bahasa yang sama dengan user. Gunakan markdown sederhana jika perlu.";
+      // Kirim dengan history (tanpa system prompt berulang)
+      const reply = await callGemini(text, systemPrompt, chatHistory.slice(0, -1));
+      hideTyping();
+      addMessage('ai', reply);
+      chatHistory.push({ role: 'assistant', content: reply });
+    } catch (err) {
+      hideTyping();
+      addMessage('ai', `❌ Error: ${err.message}\n\nCoba periksa API key atau koneksi internet.`);
+    }
   }
-  el.innerHTML=list.map(item=>{
-    const img=fix(item.thumbnail||item.cover||'');
-    const title=item.title||item.name||'';
-    const ep=item.episode||item.latest_episode||'';
-    const slug=item.slug||item.id||'';
-    return `<div class="jitem" onclick="openDetail('${esc(slug)}','${esc(title)}','${esc(img)}')">
-      <img class="jthumb" src="${img}" alt="" loading="lazy" onerror="this.style.display='none'">
-      <div class="jinfo">
-        <div class="jtitle">${q(title,38)}</div>
-        <div class="jep">${ep?'Episode '+ep:'Update mingguan'}</div>
-      </div>
-      <div class="jbadge">BARU</div>
-    </div>`;
-  }).join('');
-}
-
-/* ============================
-   LIBRARY
-   ============================ */
-function initLib(){ renderLib('history'); }
-function selLib(el,type){
-  document.querySelectorAll('.ltab').forEach(t=>t.classList.remove('on'));
-  el.classList.add('on'); renderLib(type);
-}
-function renderLib(type){
-  const el=document.getElementById('libContent');
-  const saved=JSON.parse(localStorage.getItem('aniplay_'+type)||'[]');
-  if(!saved.length){
-    el.innerHTML=`<div class="lib-empty"><i class="fa fa-${type==='history'?'clock':'bookmark'}"></i><p>${type==='history'?'Belum ada riwayat':'Belum ada tersimpan'}</p></div>`;
-    return;
+  
+  function sendQuick(msg) {
+    document.getElementById('chat-input').value = msg;
+    sendChat();
   }
-  el.innerHTML=`<div style="padding:0 14px 16px;display:flex;flex-direction:column;gap:8px">
-    ${saved.map(m=>`
-      <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--card);border-radius:12px;border:1px solid var(--b2);cursor:pointer"
-        onclick="openDetail('${esc(m.slug||'')}','${esc(m.title||'')}','')">
-        <div style="width:38px;height:52px;border-radius:7px;background:var(--card2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <i class="fa fa-film" style="color:var(--s2)"></i>
-        </div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${q(m.title||'',32)}</div>
-          ${type==='history'?`<div style="font-size:10px;color:var(--a1);margin-top:3px">Terakhir: Ep ${m.lastEp||1}</div>`:''}
-        </div>
-        <i class="fa fa-chevron-right" style="color:var(--s2);font-size:11px"></i>
-      </div>`).join('')}
-  </div>`;
-}
-
-/* ============================
-   PROFIL
-   ============================ */
-function initProfil(){
-  const el=document.getElementById('profilContent');
-  const user=JSON.parse(localStorage.getItem('aniplay_user')||'null');
-  const hc=JSON.parse(localStorage.getItem('aniplay_history')||'[]').length;
-  const bc=JSON.parse(localStorage.getItem('aniplay_bookmark')||'[]').length;
-  if(!user){
-    el.innerHTML=`
-      <div style="height:100px;background:linear-gradient(135deg,var(--a2),var(--a1))"></div>
-      <div class="login-box">
-        <i class="fa fa-circle-user"></i>
-        <p>Masuk untuk menyimpan riwayat nonton dan bookmark anime kamu</p>
-        <button class="login-btn" onclick="window.location.href='/auth/login'">Masuk / Daftar</button>
-      </div>
-      <div class="pmenu">
-        <div class="pmitem"><i class="fa fa-circle-info"></i><span>Tentang AniPlay V2.1</span><i class="fa fa-chevron-right"></i></div>
-      </div>`;
-    return;
+  
+  document.getElementById('chat-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendChat();
+    }
+  });
+  
+  // =============== CODE ===============
+  function setCodeOutput(text, isError = false) {
+    const out = document.getElementById('code-output');
+    out.innerHTML = `<div class="${isError ? 'output-error' : 'output-ai'}">${escapeHtml(text)}</div>`;
   }
-  el.innerHTML=`
-    <div class="phero">
-      <div class="pavatar"><i class="fa fa-user"></i></div>
-      <div class="pname">${user.name||'User'}</div>
-      <div class="pemail">${user.email||'AniPlay Member'}</div>
-    </div>
-    <div class="pcard">
-      <div class="pstats">
-        <div class="pstat-box"><div class="pstat-n">${hc}</div><div class="pstat-l">Ditonton</div></div>
-        <div class="pstat-box"><div class="pstat-n">${bc}</div><div class="pstat-l">Tersimpan</div></div>
-        <div class="pstat-box"><div class="pstat-n">V2.1</div><div class="pstat-l">Versi</div></div>
-      </div>
-    </div>
-    <div class="pmenu">
-      <div class="pmitem" onclick="go('library')"><i class="fa fa-clock"></i><span>Riwayat Nonton</span><i class="fa fa-chevron-right"></i></div>
-      <div class="pmitem" onclick="go('library')"><i class="fa fa-bookmark"></i><span>Tersimpan</span><i class="fa fa-chevron-right"></i></div>
-      <div class="pmitem" style="color:var(--a3)" onclick="localStorage.removeItem('aniplay_user');initProfil()">
-        <i class="fa fa-right-from-bracket" style="color:var(--a3)"></i><span style="color:var(--a3)">Keluar</span><i class="fa fa-chevron-right"></i>
-      </div>
-    </div>`;
-}
-
-/* ============================
-   EVENTS
-   ============================ */
-document.getElementById('searchInput').addEventListener('keypress',e=>{ if(e.key==='Enter') doSearch(); });
-
-/* ============================
-   BOOT
-   ============================ */
-boot();
+  
+  async function runCodeAction(action, extra = '') {
+    const code = document.getElementById('code-editor').value;
+    if (!code && !extra) {
+      setCodeOutput('Tulis code dulu!', true);
+      return;
+    }
+    setCodeOutput('⏳ Memproses...');
+    let prompt = extra;
+    if (code) {
+      prompt = `Code:\n\`\`\`\n${code}\n\`\`\`\n\n${action}`;
+    }
+    try {
+      const reply = await callGemini(prompt, "Kamu adalah expert programmer. Jawab dengan jelas dan berikan contoh code jika perlu.");
+      setCodeOutput(reply);
+    } catch (err) {
+      setCodeOutput(`Error: ${err.message}`, true);
+    }
+  }
+  
+  function analyzeCode() { runCodeAction('Analisa code ini: jelaskan fungsinya, beri saran perbaikan.'); }
+  function fixCode() { runCodeAction('Perbaiki bug di code ini. Tampilkan code yang sudah diperbaiki.'); }
+  function explainCode() { runCodeAction('Jelaskan code ini baris per baris dengan bahasa sederhana.'); }
+  async function askCode() {
+    const ask = document.getElementById('code-ask-input').value;
+    if (!ask) return;
+    document.getElementById('code-ask-input').value = '';
+    const code = document.getElementById('code-editor').value;
+    let prompt = ask;
+    if (code) prompt += `\n\nCode yang sedang dikerjakan:\n\`\`\`\n${code}\n\`\`\``;
+    setCodeOutput('⏳ Memproses...');
+    try {
+      const reply = await callGemini(prompt, "Kamu adalah asisten coding yang membantu.");
+      setCodeOutput(reply);
+    } catch (err) {
+      setCodeOutput(`Error: ${err.message}`, true);
+    }
+  }
+  
+  // =============== GAMES ===============
+  const gameConfigs = {
+    'tebak-kata': { title: 'Tebak Kata', system: 'Kamu adalah game master tebak kata. Beri clue, user menebak. Jangan kasih jawaban langsung.' },
+    'trivia': { title: 'Trivia', system: 'Kamu adalah quiz master. Beri pertanyaan pilihan ganda atau benar/salah.' },
+    'cerita': { title: 'Cerita Bareng', system: 'Kamu adalah co-writer. Lanjutkan cerita dengan 2-3 kalimat.' },
+    'roast': { title: 'Roast Me', system: 'Kamu adalah roast master yang lucu. Roast user dengan ringan dan kreatif.' }
+  };
+  
+  async function startGame(gameId) {
+    currentGame = gameId;
+    gameHistory = [];
+    document.getElementById('game-selector').style.display = 'none';
+    const gameDiv = document.getElementById('game-active');
+    gameDiv.classList.add('visible');
+    document.getElementById('game-title-display').innerText = gameConfigs[gameId].title;
+    document.getElementById('game-msgs').innerHTML = '';
+    // Panggil AI untuk memulai game
+    const startMsg = `Mulai game ${gameId}. Ikuti aturan: ${gameConfigs[gameId].system}. Berikan sambutan dan instruksi pertama.`;
+    try {
+      const reply = await callGemini(startMsg, "Kamu adalah game master yang seru.");
+      addGameMsg('ai', reply);
+      gameHistory.push({ role: 'assistant', content: reply });
+    } catch (err) {
+      addGameMsg('ai', `Error: ${err.message}`);
+    }
+  }
+  
+  function exitGame() {
+    currentGame = null;
+    document.getElementById('game-selector').style.display = 'block';
+    document.getElementById('game-active').classList.remove('visible');
+  }
+  
+  function addGameMsg(role, text) {
+    const container = document.getElementById('game-msgs');
+    const div = document.createElement('div');
+    div.className = 'game-bubble ' + role;
+    div.innerHTML = formatText(text);
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+  }
+  
+  async function sendGameMsg() {
+    const input = document.getElementById('game-text-input');
+    const text = input.value.trim();
+    if (!text || !currentGame) return;
+    input.value = '';
+    addGameMsg('user', text);
+    gameHistory.push({ role: 'user', content: text });
+    // Panggil AI dengan konteks game
+    const context = gameHistory.map(m => `${m.role === 'user' ? 'User' : 'AI'}: ${m.content}`).join('\n');
+    const prompt = `Lanjutkan permainan ${currentGame}. Aturan: ${gameConfigs[currentGame].system}. \n\nPercakapan sebelumnya:\n${context}\n\nSekarang giliran AI merespon user: "${text}". Berikan respon yang sesuai sebagai game master.`;
+    try {
+      const reply = await callGemini(prompt, "Kamu adalah game master.");
+      addGameMsg('ai', reply);
+      gameHistory.push({ role: 'assistant', content: reply });
+    } catch (err) {
+      addGameMsg('ai', `Error: ${err.message}`);
+    }
+  }
+  
+  function switchTab(tab) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(`panel-${tab}`).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
 </script>
 </body>
 </html>
