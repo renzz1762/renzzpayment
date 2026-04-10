@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   }
 
   const API_BASE = 'https://api.app.orbitcloud.web.id/api/v1';
-  const API_KEY  = '2c6320be8b4cde1d22bc9e9e53aeb93769d03cb8ad641fde';
+  const API_KEY  = '0fb021e0e8889edf914200a3f6d1d142e74eb57f14eda903';
 
   // path comes as query param: /api/proxy?path=/home&pages=1
   const { path, ...rest } = req.query;
