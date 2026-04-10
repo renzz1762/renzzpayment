@@ -2,1023 +2,1072 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DONGHUAVERSE — Nonton Donghua Online</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Noto+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AniPlay V2.1</title>
+<meta name="theme-color" content="#04080F">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-  :root {
-    --bg: #06060e;
-    --bg2: #0d0d1f;
-    --card: #111127;
-    --card2: #16162e;
-    --accent: #e8a020;
-    --accent2: #ff6b35;
-    --red: #e83535;
-    --text: #f0ede6;
-    --muted: #8585a8;
-    --border: rgba(232,160,32,0.15);
-    --glow: rgba(232,160,32,0.08);
-  }
-
-  * { margin:0; padding:0; box-sizing:border-box; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Noto Sans', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
-
-  /* BACKGROUND TEXTURE */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: 
-      radial-gradient(ellipse 80% 40% at 20% 0%, rgba(232,160,32,0.06) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 40% at 80% 100%, rgba(255,107,53,0.05) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* HEADER */
-  header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: rgba(6,6,14,0.92);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    height: 60px;
-  }
-
-  .logo {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    flex-shrink: 0;
-  }
-
-  .logo span {
-    font-family: 'Noto Serif SC', serif;
-    font-size: 14px;
-    -webkit-text-fill-color: var(--muted);
-    letter-spacing: 1px;
-  }
-
-  .search-wrap {
-    flex: 1;
-    max-width: 400px;
-    margin-left: auto;
-    position: relative;
-  }
-
-  #search-input {
-    width: 100%;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 40px 8px 14px;
-    color: var(--text);
-    font-family: 'Noto Sans', sans-serif;
-    font-size: 13px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  #search-input:focus { border-color: var(--accent); }
-  #search-input::placeholder { color: var(--muted); }
-
-  .search-btn {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: var(--accent);
-    cursor: pointer;
-    font-size: 16px;
-    padding: 0;
-  }
-
-  /* NAV TABS */
-  .nav-tabs {
-    display: flex;
-    gap: 0;
-    padding: 0 24px;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg2);
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .nav-tabs::-webkit-scrollbar { display: none; }
-
-  .nav-tab {
-    padding: 12px 20px;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    color: var(--muted);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s;
-    white-space: nowrap;
-    text-transform: uppercase;
-    background: none;
-    border-left: none;
-    border-right: none;
-    border-top: none;
-  }
-
-  .nav-tab:hover { color: var(--text); }
-  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-
-  /* MAIN */
-  main {
-    position: relative;
-    z-index: 1;
-    padding: 24px;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  /* SECTION HEADER */
-  .sec-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-
-  .sec-title {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text);
-  }
-
-  .sec-title::before {
-    content: '';
-    display: inline-block;
-    width: 3px;
-    height: 18px;
-    background: linear-gradient(to bottom, var(--accent), var(--accent2));
-    border-radius: 2px;
-    margin-right: 10px;
-    vertical-align: middle;
-  }
-
-  .sec-badge {
-    background: rgba(232,160,32,0.12);
-    color: var(--accent);
-    font-size: 10px;
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 700;
-    letter-spacing: 1px;
-    padding: 2px 8px;
-    border-radius: 4px;
-    border: 1px solid rgba(232,160,32,0.2);
-  }
-
-  /* CARDS GRID */
-  .cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 16px;
-    margin-bottom: 36px;
-  }
-
-  .card {
-    background: var(--card);
-    border-radius: 10px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    border: 1px solid rgba(255,255,255,0.04);
-    position: relative;
-  }
-
-  .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 0 0 1px var(--border);
-  }
-
-  .card-thumb {
-    width: 100%;
-    aspect-ratio: 3/4;
-    background: var(--card2);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .card-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.3s;
-  }
-
-  .card:hover .card-thumb img { transform: scale(1.05); }
-
-  .card-thumb-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Noto Serif SC', serif;
-    font-size: 32px;
-    color: var(--border);
-    background: linear-gradient(135deg, var(--card2), var(--card));
-  }
-
-  .card-badge {
-    position: absolute;
-    top: 6px;
-    left: 6px;
-    background: var(--red);
-    color: #fff;
-    font-size: 9px;
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 700;
-    letter-spacing: 1px;
-    padding: 2px 6px;
-    border-radius: 3px;
-  }
-
-  .card-eps {
-    position: absolute;
-    bottom: 6px;
-    right: 6px;
-    background: rgba(0,0,0,0.75);
-    color: var(--accent);
-    font-size: 9px;
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 3px;
-    backdrop-filter: blur(4px);
-  }
-
-  .card-info {
-    padding: 10px;
-  }
-
-  .card-title {
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 1.4;
-    color: var(--text);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    margin-bottom: 4px;
-  }
-
-  .card-genre {
-    font-size: 10px;
-    color: var(--muted);
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  /* SCHEDULE SECTION */
-  .schedule-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
-    margin-bottom: 36px;
-  }
-
-  .sched-day {
-    background: var(--card);
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.04);
-  }
-
-  .sched-day-header {
-    background: linear-gradient(135deg, rgba(232,160,32,0.15), rgba(255,107,53,0.1));
-    padding: 6px 8px;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    color: var(--accent);
-    text-align: center;
-    text-transform: uppercase;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .sched-items { padding: 6px; }
-
-  .sched-item {
-    font-size: 10px;
-    color: var(--text);
-    padding: 4px 6px;
-    border-radius: 4px;
-    margin-bottom: 4px;
-    background: rgba(255,255,255,0.03);
-    cursor: pointer;
-    transition: background 0.15s;
-    line-height: 1.3;
-  }
-
-  .sched-item:hover { background: rgba(232,160,32,0.1); color: var(--accent); }
-
-  /* DETAIL MODAL */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.85);
-    z-index: 200;
-    backdrop-filter: blur(8px);
-    align-items: flex-end;
-    justify-content: center;
-  }
-
-  .modal-overlay.open { display: flex; }
-
-  .modal {
-    background: var(--bg2);
-    border-radius: 20px 20px 0 0;
-    width: 100%;
-    max-width: 600px;
-    max-height: 92vh;
-    overflow-y: auto;
-    border: 1px solid var(--border);
-    border-bottom: none;
-    animation: slideUp 0.3s ease;
-  }
-
-  @keyframes slideUp {
-    from { transform: translateY(100%); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-
-  .modal-header {
-    display: flex;
-    gap: 16px;
-    padding: 20px;
-    border-bottom: 1px solid var(--border);
-    position: relative;
-  }
-
-  .modal-close {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    background: rgba(255,255,255,0.08);
-    border: none;
-    color: var(--text);
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .modal-poster {
-    width: 90px;
-    flex-shrink: 0;
-    border-radius: 8px;
-    overflow: hidden;
-    aspect-ratio: 3/4;
-    background: var(--card);
-  }
-
-  .modal-poster img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .modal-meta { flex: 1; }
-
-  .modal-title {
-    font-family: 'Noto Serif SC', serif;
-    font-size: 18px;
-    font-weight: 700;
-    line-height: 1.3;
-    margin-bottom: 6px;
-  }
-
-  .modal-genres {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    margin-bottom: 8px;
-  }
-
-  .genre-chip {
-    background: rgba(232,160,32,0.1);
-    color: var(--accent);
-    font-size: 10px;
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 12px;
-    border: 1px solid rgba(232,160,32,0.2);
-    letter-spacing: 0.5px;
-  }
-
-  .modal-stats {
-    display: flex;
-    gap: 12px;
-    font-size: 11px;
-    color: var(--muted);
-  }
-
-  .modal-stats span { display: flex; align-items: center; gap: 4px; }
-
-  .modal-body { padding: 16px 20px; }
-
-  .modal-synopsis {
-    font-size: 13px;
-    line-height: 1.7;
-    color: #b8b8cc;
-    margin-bottom: 20px;
-  }
-
-  .ep-section-title {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-
-  .ep-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
-    gap: 6px;
-    max-height: 240px;
-    overflow-y: auto;
-  }
-
-  .ep-btn {
-    background: var(--card);
-    border: 1px solid rgba(255,255,255,0.06);
-    color: var(--text);
-    border-radius: 6px;
-    padding: 8px 4px;
-    font-size: 12px;
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-    text-align: center;
-  }
-
-  .ep-btn:hover {
-    background: var(--accent);
-    color: var(--bg);
-    border-color: var(--accent);
-  }
-
-  /* VIDEO PLAYER MODAL */
-  .player-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: #000;
-    z-index: 300;
-    flex-direction: column;
-  }
-
-  .player-overlay.open { display: flex; }
-
-  .player-topbar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    background: rgba(0,0,0,0.8);
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    flex-shrink: 0;
-  }
-
-  .player-back {
-    background: none;
-    border: none;
-    color: var(--text);
-    font-size: 20px;
-    cursor: pointer;
-    padding: 4px;
-  }
-
-  .player-title {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--text);
-    flex: 1;
-  }
-
-  .player-ep-info {
-    font-size: 12px;
-    color: var(--accent);
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 600;
-  }
-
-  .player-frame {
-    flex: 1;
-    background: #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
-
-  .player-frame iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-  }
-
-  .player-loading {
-    color: var(--muted);
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 14px;
-    letter-spacing: 2px;
-    text-align: center;
-  }
-
-  .player-loading::after {
-    content: '';
-    display: block;
-    width: 40px;
-    height: 2px;
-    background: var(--accent);
-    margin: 12px auto 0;
-    animation: loadbar 1.2s ease-in-out infinite;
-  }
-
-  @keyframes loadbar {
-    0%,100% { transform: scaleX(0.3); opacity: 0.4; }
-    50% { transform: scaleX(1); opacity: 1; }
-  }
-
-  /* LOADING / STATES */
-  .loading-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 16px;
-    margin-bottom: 36px;
-  }
-
-  .skeleton-card {
-    background: var(--card);
-    border-radius: 10px;
-    overflow: hidden;
-    animation: pulse 1.5s ease-in-out infinite;
-  }
-
-  .skeleton-thumb {
-    aspect-ratio: 3/4;
-    background: var(--card2);
-  }
-
-  .skeleton-info { padding: 10px; }
-  .skeleton-line { height: 10px; background: var(--card2); border-radius: 4px; margin-bottom: 6px; }
-  .skeleton-line.short { width: 60%; }
-
-  @keyframes pulse {
-    0%,100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
-
-  .error-msg {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--muted);
-    font-size: 13px;
-  }
-
-  .error-msg .icon { font-size: 36px; margin-bottom: 8px; }
-
-  /* SEARCH RESULTS */
-  #search-results-section { display: none; }
-
-  /* TOAST */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--card2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-size: 13px;
-    padding: 10px 20px;
-    border-radius: 8px;
-    opacity: 0;
-    transition: all 0.3s;
-    z-index: 500;
-    white-space: nowrap;
-  }
-
-  .toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-
-  /* RESPONSIVE */
-  @media (max-width: 500px) {
-    .schedule-grid { grid-template-columns: repeat(4, 1fr); }
-    .sched-day:nth-child(n+5) { display: none; }
-    .cards-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
-  }
+:root{
+  --bg:#04080F;--surf:#080F1A;--card:#0D1520;--card2:#121C2A;
+  --b1:rgba(255,255,255,.05);--b2:rgba(255,255,255,.09);
+  --a1:#00C2FF;--a2:#7B2FFF;--a3:#FF3D71;--a4:#00E096;--a5:#FFB800;
+  --tx:#EEF2FF;--s1:#8896B3;--s2:#3D4E6B;
+  --font:'Plus Jakarta Sans',sans-serif;--font2:'Space Grotesk',sans-serif;
+  --nh:56px;--bh:60px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font-family:var(--font);font-size:14px;
+  min-height:100vh;overflow-x:hidden;padding-bottom:var(--bh)}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 45% at 0% 0%,rgba(0,194,255,.07) 0%,transparent 60%),
+    radial-gradient(ellipse 55% 40% at 100% 100%,rgba(123,47,255,.09) 0%,transparent 55%)}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-thumb{background:var(--a2);border-radius:3px}
+img{display:block}
+button{font-family:var(--font);cursor:pointer}
+a{color:inherit;text-decoration:none}
+
+/* ── TOPBAR ── */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nh);
+  display:flex;align-items:center;justify-content:space-between;padding:0 16px;
+  background:rgba(4,8,15,.92);backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(255,255,255,.06)}
+.logo{display:flex;align-items:center;gap:9px;cursor:pointer}
+.logo-mark{width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,var(--a2),var(--a1));
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;color:#fff;box-shadow:0 0 16px rgba(0,194,255,.35)}
+.logo-name{font-family:var(--font2);font-size:16px;font-weight:700;letter-spacing:.5px;
+  background:linear-gradient(90deg,var(--a1),var(--a2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.logo-badge{font-size:9px;background:rgba(0,194,255,.15);color:var(--a1);
+  border:1px solid rgba(0,194,255,.3);padding:1px 6px;border-radius:20px;font-weight:700;margin-left:2px}
+.tb-actions{display:flex;gap:8px;align-items:center}
+.tb-btn{width:32px;height:32px;border-radius:50%;background:var(--b1);
+  border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;
+  color:var(--s1);font-size:13px;cursor:pointer;border:none;transition:all .2s}
+.tb-btn:hover{background:rgba(0,194,255,.12);color:var(--a1)}
+
+/* ── PAGES ── */
+.page{display:none;position:relative;z-index:1;padding-top:var(--nh)}
+.page.active{display:block}
+
+/* ── HERO SLIDER ── */
+.hero{position:relative;width:100%;height:260px;overflow:hidden;background:var(--surf)}
+.hero-track{display:flex;height:100%;transition:transform .55s cubic-bezier(.4,0,.2,1)}
+.hero-slide{min-width:100%;height:100%;position:relative;flex-shrink:0}
+.hero-slide img{width:100%;height:100%;object-fit:cover}
+.hero-slide::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(to top,var(--bg) 0%,rgba(4,8,15,.7) 40%,rgba(4,8,15,.1) 100%)}
+.hero-body{position:absolute;bottom:0;left:0;right:0;padding:16px;z-index:2}
+.hero-tag{display:inline-flex;align-items:center;gap:5px;
+  background:rgba(255,61,113,.85);color:#fff;font-size:10px;font-weight:700;
+  padding:3px 10px;border-radius:20px;margin-bottom:6px;letter-spacing:.3px}
+.hero-ttl{font-family:var(--font2);font-size:18px;font-weight:700;
+  line-height:1.25;margin-bottom:10px;text-shadow:0 2px 12px rgba(0,0,0,.7)}
+.hero-actions{display:flex;gap:8px}
+.hbtn-watch{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;
+  border-radius:22px;background:var(--a1);color:#04080F;
+  font-size:12px;font-weight:800;border:none;
+  box-shadow:0 4px 18px rgba(0,194,255,.4)}
+.hbtn-info{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;
+  border-radius:22px;background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.18);color:#fff;
+  font-size:12px;font-weight:600;backdrop-filter:blur(8px)}
+.hero-dots{position:absolute;bottom:12px;right:14px;z-index:3;display:flex;gap:5px;align-items:center}
+.hdot{width:5px;height:5px;border-radius:3px;
+  background:rgba(255,255,255,.3);transition:all .3s;cursor:pointer}
+.hdot.on{width:16px;background:var(--a1)}
+
+/* ── TICKER ── */
+.ticker{margin:10px 14px;padding:8px 12px;
+  background:rgba(0,194,255,.06);border:1px solid rgba(0,194,255,.15);
+  border-radius:10px;display:flex;align-items:center;gap:8px;overflow:hidden}
+.ticker i{color:var(--a1);font-size:11px;flex-shrink:0}
+.ticker span{font-size:11px;color:var(--s1);white-space:nowrap;
+  animation:scroll 22s linear infinite}
+@keyframes scroll{0%{transform:translateX(100vw)}100%{transform:translateX(-100%)}}
+
+/* ── SECTION ── */
+.sec{margin:20px 0 4px}
+.sec-head{display:flex;align-items:center;justify-content:space-between;padding:0 14px;margin-bottom:10px}
+.sec-title{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700}
+.sec-dot{width:7px;height:7px;border-radius:50%}
+.sd-blue{background:var(--a1);box-shadow:0 0 8px var(--a1)}
+.sd-purple{background:var(--a2);box-shadow:0 0 8px var(--a2)}
+.sd-red{background:var(--a3);box-shadow:0 0 8px var(--a3)}
+.sd-green{background:var(--a4);box-shadow:0 0 8px var(--a4)}
+.sec-more{font-size:11px;font-weight:600;color:var(--s1);
+  display:flex;align-items:center;gap:3px;cursor:pointer;transition:color .2s}
+.sec-more:hover{color:var(--a1)}
+
+/* ── CARD ROW ── */
+.card-row{display:flex;gap:10px;padding:0 14px;overflow-x:auto;scrollbar-width:none}
+.card-row::-webkit-scrollbar{display:none}
+.acard{flex-shrink:0;width:110px;cursor:pointer}
+.acard-poster{width:100%;aspect-ratio:2/3;border-radius:10px;overflow:hidden;
+  background:var(--card);border:1px solid var(--b2);position:relative}
+.acard:active .acard-poster{opacity:.8}
+.acard-poster img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.acard:hover .acard-poster img{transform:scale(1.04)}
+.acard-rank{position:absolute;top:5px;left:5px;
+  background:linear-gradient(135deg,var(--a5),var(--a3));
+  color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px}
+.acard-ep{position:absolute;bottom:0;left:0;right:0;
+  padding:14px 6px 5px;font-size:9px;font-weight:700;color:#fff;
+  background:linear-gradient(to top,rgba(0,0,0,.85) 0%,transparent 100%);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acard-name{margin-top:6px;font-size:11px;font-weight:600;color:var(--tx);
+  line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;
+  -webkit-box-orient:vertical;overflow:hidden;text-align:center}
+
+/* ── SKELETON ── */
+.sk{background:linear-gradient(90deg,var(--surf) 25%,var(--card2) 50%,var(--surf) 75%);
+  background-size:200% 100%;animation:sk .8s infinite linear;border-radius:8px}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.sk-hero{width:100%;height:260px;border-radius:0}
+.sk-card{width:110px;aspect-ratio:2/3;border-radius:10px;flex-shrink:0}
+.sk-grid{aspect-ratio:2/3;border-radius:10px}
+
+/* ── GRID (search) ── */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:12px 14px}
+.gcard{cursor:pointer}
+.gcard-poster{width:100%;aspect-ratio:2/3;border-radius:10px;overflow:hidden;
+  background:var(--card);border:1px solid var(--b2);position:relative}
+.gcard-poster img{width:100%;height:100%;object-fit:cover}
+.gcard-ep{position:absolute;bottom:0;left:0;right:0;
+  padding:12px 5px 4px;font-size:9px;font-weight:700;color:#fff;
+  background:linear-gradient(to top,rgba(0,0,0,.85),transparent);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gcard-name{margin-top:5px;font-size:11px;font-weight:600;line-height:1.3;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* ── BOTTOM NAV ── */
+.botnav{position:fixed;bottom:0;left:0;right:0;z-index:200;height:var(--bh);
+  background:rgba(4,8,15,.96);border-top:1px solid rgba(255,255,255,.07);
+  backdrop-filter:blur(16px);display:flex;align-items:center}
+.botnav-wrap{display:flex;width:100%;align-items:center}
+.bnav{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;cursor:pointer;padding:8px 0;color:var(--s2);font-size:9px;font-weight:600;
+  transition:color .2s;border:none;background:none;letter-spacing:.3px}
+.bnav i{font-size:18px}
+.bnav.on{color:var(--a1)}
+.bnav.on i{filter:drop-shadow(0 0 6px var(--a1))}
+.bnav-fab{width:44px;height:44px;border-radius:50%;
+  background:linear-gradient(135deg,var(--a2),var(--a1));
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;color:#fff;border:none;cursor:pointer;
+  box-shadow:0 4px 20px rgba(0,194,255,.45);
+  flex-shrink:0;position:relative;top:-5px}
+
+/* ── MODAL ── */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:300;
+  display:none;align-items:flex-end;justify-content:center}
+.modal.on{display:flex}
+.mbox{width:100%;max-width:480px;max-height:92vh;overflow-y:auto;
+  background:var(--surf);border-radius:20px 20px 0 0;padding:0 0 32px;
+  position:relative;animation:slideUp .3s cubic-bezier(.22,1,.36,1)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mclose{position:absolute;top:14px;right:14px;z-index:2;width:30px;height:30px;
+  border-radius:50%;background:rgba(255,61,113,.15);border:none;
+  color:var(--a3);font-size:13px;display:flex;align-items:center;justify-content:center}
+.mbanner{width:100%;height:150px;object-fit:cover;display:block}
+.mbanner-sk{width:100%;height:150px}
+.mbody{padding:14px 16px 0}
+.mrow{display:flex;gap:12px;margin-bottom:12px}
+.mcover{width:80px;aspect-ratio:2/3;object-fit:cover;border-radius:10px;
+  flex-shrink:0;background:var(--card)}
+.minfo h2{font-size:14px;font-weight:700;margin-bottom:7px;line-height:1.35}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;
+  background:rgba(0,194,255,.1);border:1px solid rgba(0,194,255,.2);color:var(--a1)}
+.mdesc{font-size:12px;color:var(--s1);line-height:1.75;margin:10px 0}
+.mgenres{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px}
+.gtag{padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;
+  background:rgba(123,47,255,.1);border:1px solid rgba(123,47,255,.2);color:#b48fff}
+.btn-watch{display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;padding:13px;border-radius:14px;
+  background:linear-gradient(135deg,var(--a2),var(--a1));
+  color:#fff;font-size:14px;font-weight:700;border:none;
+  box-shadow:0 6px 20px rgba(0,194,255,.3)}
+
+/* ── SEARCH PAGE ── */
+.pg-head{padding:14px 14px 2px;font-family:var(--font2);font-size:13px;font-weight:700;
+  display:flex;align-items:center;gap:8px;color:var(--tx)}
+.pg-head i{color:var(--a2)}
+.sbar{padding:10px 14px 0;display:flex;gap:8px}
+.sinput{flex:1;padding:11px 16px;background:var(--card);
+  border:1px solid var(--b2);border-radius:12px;
+  color:var(--tx);font-family:var(--font);font-size:13px;outline:none;transition:border .2s}
+.sinput:focus{border-color:var(--a1)}
+.sinput::placeholder{color:var(--s2)}
+.sbtn{padding:11px 15px;background:linear-gradient(135deg,var(--a2),var(--a1));
+  border:none;border-radius:12px;color:#fff;font-weight:700}
+
+/* ── JADWAL ── */
+.day-row{display:flex;gap:7px;padding:12px 14px;overflow-x:auto;scrollbar-width:none}
+.day-row::-webkit-scrollbar{display:none}
+.day-pill{flex-shrink:0;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;
+  background:var(--b1);border:1px solid var(--b2);color:var(--s1);
+  cursor:pointer;transition:all .2s;white-space:nowrap}
+.day-pill.on{background:linear-gradient(135deg,var(--a2),var(--a1));
+  border-color:transparent;color:#fff}
+.jlist{padding:0 14px}
+.jitem{display:flex;align-items:center;gap:12px;padding:11px 0;
+  border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer}
+.jthumb{width:50px;height:68px;object-fit:cover;border-radius:8px;
+  background:var(--card);flex-shrink:0}
+.jinfo{flex:1;min-width:0}
+.jtitle{font-size:13px;font-weight:600;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+.jep{font-size:11px;color:var(--s1)}
+.jbadge{flex-shrink:0;padding:3px 8px;border-radius:6px;font-size:9px;font-weight:700;
+  background:rgba(0,224,150,.1);border:1px solid rgba(0,224,150,.2);color:var(--a4)}
+
+/* ── LIBRARY ── */
+.lib-tabs{display:flex;gap:8px;padding:12px 14px;overflow-x:auto;scrollbar-width:none}
+.lib-tabs::-webkit-scrollbar{display:none}
+.ltab{flex-shrink:0;padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;
+  background:var(--b1);border:1px solid var(--b2);color:var(--s1);cursor:pointer;transition:all .2s}
+.ltab.on{background:rgba(0,194,255,.12);border-color:rgba(0,194,255,.3);color:var(--a1)}
+.lib-empty{text-align:center;padding:48px 20px;color:var(--s2)}
+.lib-empty i{font-size:36px;display:block;margin-bottom:10px;opacity:.4}
+
+/* ── PROFIL ── */
+.phero{background:linear-gradient(135deg,var(--a2),var(--a1));
+  padding:28px 16px 36px;text-align:center;margin-bottom:-20px}
+.pavatar{width:68px;height:68px;border-radius:50%;
+  background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;
+  font-size:26px;color:#fff;margin:0 auto 8px;border:3px solid rgba(255,255,255,.35)}
+.pname{font-size:17px;font-weight:700;color:#fff}
+.pemail{font-size:11px;color:rgba(255,255,255,.65);margin-top:2px}
+.pcard{margin:0 14px;padding:18px;background:var(--card);
+  border-radius:14px;border:1px solid var(--b2)}
+.pstats{display:grid;grid-template-columns:repeat(3,1fr)}
+.pstat-box{text-align:center;padding:10px 6px}
+.pstat-n{font-family:var(--font2);font-size:18px;font-weight:700;
+  background:linear-gradient(135deg,var(--a1),var(--a2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.pstat-l{font-size:10px;color:var(--s1);margin-top:1px}
+.pmenu{margin:14px}
+.pmitem{display:flex;align-items:center;gap:12px;padding:13px 14px;
+  background:var(--card);border-radius:12px;margin-bottom:7px;
+  border:1px solid var(--b2);cursor:pointer}
+.pmitem i:first-child{width:18px;text-align:center;color:var(--a2);font-size:14px}
+.pmitem span{flex:1;font-size:13px;font-weight:500}
+.pmitem i:last-child{color:var(--s2);font-size:11px}
+.login-box{margin:28px 14px;padding:22px;background:var(--card);
+  border-radius:14px;border:1px solid var(--b2);text-align:center}
+.login-box i{font-size:32px;color:var(--a2);display:block;margin-bottom:10px}
+.login-box p{font-size:12px;color:var(--s1);margin-bottom:14px;line-height:1.6}
+.login-btn{display:block;width:100%;padding:12px;border-radius:12px;
+  background:linear-gradient(135deg,var(--a2),var(--a1));
+  color:#fff;font-weight:700;font-size:13px;border:none}
+
+/* ── WATCH PAGE ── */
+#page-watch{height:100vh;overflow-y:auto;background:var(--bg)}
+.wback{display:flex;align-items:center;gap:10px;padding:12px 14px;
+  font-size:13px;font-weight:600;color:var(--s1);cursor:pointer;
+  border-bottom:1px solid rgba(255,255,255,.05)}
+.wback i{color:var(--a3)}
+.player-wrap{width:100%;aspect-ratio:16/9;background:#000;position:relative;overflow:hidden}
+.player-wrap iframe,.player-wrap video{width:100%;height:100%;border:none;display:block}
+.player-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:10px;background:var(--surf);color:var(--s1);
+  font-size:12px;text-align:center;padding:16px}
+.player-ph i{font-size:30px;color:var(--s2)}
+.winfo{padding:12px 14px}
+.wtitle{font-family:var(--font2);font-size:13px;font-weight:700;
+  color:var(--tx);line-height:1.35;margin-bottom:3px}
+.wlabel{font-size:11px;color:var(--a1);font-weight:600;margin-bottom:10px}
+
+/* server pills */
+.srv-row{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;margin-bottom:12px}
+.srv-row::-webkit-scrollbar{display:none}
+.srv-pill{flex-shrink:0;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;
+  border:1px solid var(--b2);background:var(--b1);color:var(--s1);cursor:pointer;transition:all .2s}
+.srv-pill.on{background:linear-gradient(135deg,var(--a2),var(--a1));
+  border-color:transparent;color:#fff}
+
+/* episode list — card style, NOT squares */
+.eps-wrap{padding:0 14px 20px}
+.eps-head{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px}
+.eps-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px}
+.eps-title i{color:var(--a2)}
+.eps-count{font-size:11px;color:var(--s1);
+  background:var(--b1);border:1px solid var(--b2);
+  padding:2px 9px;border-radius:20px}
+.eps-range-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:10px}
+.eps-range-row::-webkit-scrollbar{display:none}
+.range-pill{flex-shrink:0;padding:4px 12px;border-radius:8px;font-size:11px;font-weight:600;
+  border:1px solid var(--b2);background:var(--b1);color:var(--s1);cursor:pointer}
+.range-pill.on{background:rgba(0,194,255,.12);border-color:rgba(0,194,255,.3);color:var(--a1)}
+
+/* episode card list */
+.ep-list{display:flex;flex-direction:column;gap:8px}
+.ep-item{display:flex;align-items:center;gap:12px;padding:10px 12px;
+  background:var(--card);border-radius:12px;border:1px solid var(--b2);
+  cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.ep-item::before{content:'';position:absolute;left:0;top:0;bottom:0;
+  width:3px;background:var(--b2);border-radius:3px 0 0 3px;transition:background .2s}
+.ep-item.on{background:rgba(0,194,255,.08);border-color:rgba(0,194,255,.25)}
+.ep-item.on::before{background:var(--a1)}
+.ep-item.seen{opacity:.7}
+.ep-item.seen::before{background:var(--a4)}
+.ep-num{width:34px;height:34px;border-radius:9px;
+  background:var(--b1);border:1px solid var(--b2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font2);font-size:12px;font-weight:700;color:var(--s1);flex-shrink:0}
+.ep-item.on .ep-num{background:rgba(0,194,255,.15);border-color:rgba(0,194,255,.3);color:var(--a1)}
+.ep-item.seen .ep-num{background:rgba(0,224,150,.1);border-color:rgba(0,224,150,.25);color:var(--a4)}
+.ep-details{flex:1;min-width:0}
+.ep-name{font-size:12px;font-weight:600;color:var(--tx);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.ep-sub{font-size:10px;color:var(--s1)}
+.ep-play-icon{color:var(--s2);font-size:13px;flex-shrink:0}
+.ep-item.on .ep-play-icon{color:var(--a1)}
+
+/* misc */
+.empty{text-align:center;padding:36px 20px;color:var(--s1)}
+.empty i{font-size:28px;display:block;margin-bottom:8px;color:var(--s2)}
+.empty p{font-size:12px}
+.loading{text-align:center;padding:28px;color:var(--s1);font-size:12px}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">
-    DONGHUA<span>界</span>
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo" onclick="go('home')">
+    <div class="logo-mark"><i class="fa fa-play"></i></div>
+    <div class="logo-name">AniPlay</div>
+    <div class="logo-badge">V2.1</div>
   </div>
-  <div class="search-wrap">
-    <input type="text" id="search-input" placeholder="Cari donghua...">
-    <button class="search-btn" onclick="doSearch()">⌕</button>
+  <div class="tb-actions">
+    <button class="tb-btn" onclick="go('search')"><i class="fa fa-search"></i></button>
   </div>
 </header>
 
-<nav class="nav-tabs">
-  <button class="nav-tab active" onclick="switchTab('home', this)">Home</button>
-  <button class="nav-tab" onclick="switchTab('schedule', this)">Jadwal</button>
-  <button class="nav-tab" onclick="switchTab('search', this)">Cari</button>
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="hero" id="heroWrap"><div class="sk sk-hero"></div></div>
+  <div class="ticker">
+    <i class="fa fa-satellite-dish"></i>
+    <span>Anime & Donghua subtitle Indonesia — update setiap hari di AniPlay V2.1</span>
+  </div>
+  <div class="sec">
+    <div class="sec-head">
+      <div class="sec-title"><span class="sec-dot sd-blue"></span>Terbaru</div>
+      <div class="sec-more" onclick="go('search')">Lihat semua <i class="fa fa-angle-right"></i></div>
+    </div>
+    <div class="card-row" id="latestRow">
+      <div class="sk sk-card"></div><div class="sk sk-card"></div><div class="sk sk-card"></div><div class="sk sk-card"></div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-head">
+      <div class="sec-title"><span class="sec-dot sd-purple"></span>Populer</div>
+      <div class="sec-more" onclick="go('search')">Lihat semua <i class="fa fa-angle-right"></i></div>
+    </div>
+    <div class="card-row" id="popularRow">
+      <div class="sk sk-card"></div><div class="sk sk-card"></div><div class="sk sk-card"></div><div class="sk sk-card"></div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-head">
+      <div class="sec-title"><span class="sec-dot sd-green"></span>Tamat</div>
+      <div class="sec-more" onclick="go('search')">Lihat semua <i class="fa fa-angle-right"></i></div>
+    </div>
+    <div class="card-row" id="completedRow">
+      <div class="sk sk-card"></div><div class="sk sk-card"></div><div class="sk sk-card"></div><div class="sk sk-card"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SEARCH -->
+<div class="page" id="page-search">
+  <div class="pg-head"><i class="fa fa-magnifying-glass"></i> Cari Anime</div>
+  <div class="sbar">
+    <input class="sinput" id="searchInput" placeholder="Ketik judul anime..." type="text">
+    <button class="sbtn" onclick="doSearch()"><i class="fa fa-search"></i></button>
+  </div>
+  <div class="grid" id="searchGrid">
+    <div class="sk sk-grid"></div><div class="sk sk-grid"></div><div class="sk sk-grid"></div>
+    <div class="sk sk-grid"></div><div class="sk sk-grid"></div><div class="sk sk-grid"></div>
+  </div>
+</div>
+
+<!-- JADWAL -->
+<div class="page" id="page-jadwal">
+  <div class="pg-head"><i class="fa fa-calendar-days"></i> Jadwal Tayang</div>
+  <div class="day-row" id="dayRow"></div>
+  <div class="jlist" id="jadwalList"><div class="loading"><i class="fa fa-spinner fa-spin"></i> Memuat...</div></div>
+</div>
+
+<!-- LIBRARY -->
+<div class="page" id="page-library">
+  <div class="pg-head"><i class="fa fa-folder-open"></i> Library</div>
+  <div class="lib-tabs">
+    <div class="ltab on" onclick="selLib(this,'history')">🕐 Riwayat</div>
+    <div class="ltab" onclick="selLib(this,'bookmark')">🔖 Tersimpan</div>
+  </div>
+  <div id="libContent"></div>
+</div>
+
+<!-- PROFIL -->
+<div class="page" id="page-profil">
+  <div id="profilContent"></div>
+</div>
+
+<!-- WATCH -->
+<div class="page" id="page-watch">
+  <div class="wback" onclick="go(wBack||'home')">
+    <i class="fa fa-arrow-left"></i> Kembali
+  </div>
+  <div class="player-wrap" id="playerWrap">
+    <div class="player-ph"><i class="fa fa-play-circle"></i><span>Pilih episode untuk mulai nonton</span></div>
+  </div>
+  <div class="winfo">
+    <div class="wtitle" id="wTitle"></div>
+    <div class="wlabel" id="wLabel">—</div>
+    <div class="srv-row" id="srvRow"></div>
+  </div>
+  <div class="eps-wrap">
+    <div class="eps-head">
+      <div class="eps-title"><i class="fa fa-list-ul"></i> Daftar Episode</div>
+      <div class="eps-count" id="epsCount"></div>
+    </div>
+    <div class="eps-range-row" id="rangeRow"></div>
+    <div class="ep-list" id="epList"></div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="botnav">
+  <div class="botnav-wrap">
+    <button class="bnav on" id="bnav-home" onclick="go('home')">
+      <i class="fa fa-house"></i><span>Home</span>
+    </button>
+    <button class="bnav" id="bnav-jadwal" onclick="go('jadwal')">
+      <i class="fa fa-calendar-days"></i><span>Jadwal</span>
+    </button>
+    <button class="bnav-fab" onclick="go('search')">
+      <i class="fa fa-magnifying-glass"></i>
+    </button>
+    <button class="bnav" id="bnav-library" onclick="go('library')">
+      <i class="fa fa-folder-open"></i><span>Library</span>
+    </button>
+    <button class="bnav" id="bnav-profil" onclick="go('profil')">
+      <i class="fa fa-circle-user"></i><span>Profil</span>
+    </button>
+  </div>
 </nav>
 
-<main>
-  <!-- HOME TAB -->
-  <div id="tab-home">
-    <div class="sec-header">
-      <div class="sec-title">🔥 Popular</div>
-      <span class="sec-badge">SLIDER</span>
-    </div>
-    <div id="popular-grid" class="cards-grid"></div>
-
-    <div class="sec-header">
-      <div class="sec-title">⚡ Terbaru</div>
-      <span class="sec-badge">UPDATE</span>
-    </div>
-    <div id="latest-grid" class="cards-grid"></div>
-
-    <div class="sec-header">
-      <div class="sec-title">✅ Tamat</div>
-      <span class="sec-badge">COMPLETED</span>
-    </div>
-    <div id="completed-grid" class="cards-grid"></div>
-  </div>
-
-  <!-- SCHEDULE TAB -->
-  <div id="tab-schedule" style="display:none">
-    <div class="sec-header">
-      <div class="sec-title">📅 Jadwal Rilis Mingguan</div>
-    </div>
-    <div id="schedule-grid" class="schedule-grid"></div>
-  </div>
-
-  <!-- SEARCH TAB -->
-  <div id="tab-search" style="display:none">
-    <div class="sec-header">
-      <div class="sec-title">🔍 Hasil Pencarian</div>
-    </div>
-    <div id="search-grid" class="cards-grid">
-      <div class="error-msg"><div class="icon">🔍</div>Ketik sesuatu untuk mencari</div>
-    </div>
-  </div>
-</main>
-
-<!-- DETAIL MODAL -->
-<div class="modal-overlay" id="detail-modal">
-  <div class="modal" id="modal-content">
-    <div class="modal-header">
-      <div class="modal-poster" id="modal-poster"></div>
-      <div class="modal-meta">
-        <div class="modal-title" id="modal-title">Loading...</div>
-        <div class="modal-genres" id="modal-genres"></div>
-        <div class="modal-stats" id="modal-stats"></div>
-      </div>
-      <button class="modal-close" onclick="closeDetail()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="modal-synopsis" id="modal-synopsis"></div>
-      <div class="ep-section-title">EPISODE LIST</div>
-      <div class="ep-grid" id="ep-grid"></div>
-    </div>
+<!-- MODAL -->
+<div class="modal" id="modal" onclick="closeModal(event)">
+  <div class="mbox">
+    <button class="mclose" onclick="closeModal()"><i class="fa fa-xmark"></i></button>
+    <div id="mContent"><div class="loading"><i class="fa fa-spinner fa-spin"></i></div></div>
   </div>
 </div>
-
-<!-- PLAYER MODAL -->
-<div class="player-overlay" id="player-modal">
-  <div class="player-topbar">
-    <button class="player-back" onclick="closePlayer()">←</button>
-    <div class="player-title" id="player-title">Loading...</div>
-    <div class="player-ep-info" id="player-ep-info"></div>
-  </div>
-  <div class="player-frame" id="player-frame">
-    <div class="player-loading">MEMUAT VIDEO</div>
-  </div>
-</div>
-
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
 
 <script>
-const API = 'https://api.app.orbitcloud.web.id/api/v1';
-const KEY = '0fb021e0e8889edf914200a3f6d1d142e74eb57f14eda903';
-const H = { 'x-api-key': KEY, 'Content-Type': 'application/json' };
+/* ============================
+   ORBIT API
+   ============================ */
+const API  = 'https://api.app.orbitcloud.web.id/api/v1'; // handled by proxy
+const AKEY = '0fb021e0e8889edf914200a3f6d1d142e74eb57f14eda903';
+const CACHE_TTL = 15 * 60 * 1000; // 15 menit dalam ms
 
-let currentSlug = '';
-let currentTitle = '';
-
-// ======= FETCH HELPERS =======
-async function apiFetch(url, opts = {}) {
-  const res = await fetch(url, { headers: H, ...opts });
-  if (!res.ok) throw new Error('API Error ' + res.status);
-  return res.json();
+function cacheGet(key){
+  try{
+    const raw = localStorage.getItem('oc_' + key);
+    if(!raw) return null;
+    const { ts, data } = JSON.parse(raw);
+    if(Date.now() - ts > CACHE_TTL){ localStorage.removeItem('oc_' + key); return null; }
+    return data;
+  }catch{ return null; }
 }
 
-// ======= SKELETON =======
-function makeSkeleton(n = 6) {
-  return Array(n).fill(0).map(() => `
-    <div class="skeleton-card">
-      <div class="skeleton-thumb"></div>
-      <div class="skeleton-info">
-        <div class="skeleton-line"></div>
-        <div class="skeleton-line short"></div>
-      </div>
-    </div>`).join('');
+function cacheSet(key, data){
+  try{ localStorage.setItem('oc_' + key, JSON.stringify({ ts: Date.now(), data })); }catch{}
 }
 
-// ======= CARD =======
-function makeCard(item, badgeLabel = '') {
-  const thumb = item.thumb || item.thumbnail || item.cover || item.image || '';
-  const title = item.title || item.name || 'Tanpa Judul';
-  const genre = Array.isArray(item.genre) ? item.genre.slice(0,2).join(', ') : (item.genre || '');
-  const eps = item.episode_count || item.total_episode || item.episodes || '';
-  const slug = item.slug || item.id || '';
+async function orbit(path, method='GET', body=null){
+  try{
+    // Hanya cache GET request
+    const cacheKey = method === 'GET' ? path : null;
+    if(cacheKey){
+      const cached = cacheGet(cacheKey);
+      if(cached){ console.log('[Cache HIT]', path); return cached; }
+    }
 
-  return `
-    <div class="card" onclick="openDetail('${slug}', '${escHtml(title)}')">
-      <div class="card-thumb">
-        ${thumb ? `<img src="${thumb}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-thumb-placeholder>界</div>'">` : '<div class="card-thumb-placeholder">界</div>'}
-        ${badgeLabel ? `<div class="card-badge">${badgeLabel}</div>` : ''}
-        ${eps ? `<div class="card-eps">EP ${eps}</div>` : ''}
+    // Use Vercel proxy to avoid CORS
+    // path format: /home?pages=1  =>  /api/proxy?path=/home&pages=1
+    const [pathname, qs] = path.split('?');
+    const params = new URLSearchParams(qs||'');
+    params.set('path', pathname);
+    const proxyUrl = '/api/proxy?' + params.toString();
+
+    const opt = { method, headers:{'Content-Type':'application/json'} };
+    if(body) opt.body = JSON.stringify(body);
+    const r = await fetch(proxyUrl, opt);
+    const j = await r.json();
+
+    if(j.status==='success'){
+      if(cacheKey) cacheSet(cacheKey, j.data);
+      return j.data;
+    }
+    return null;
+  }catch{ return null; }
+}
+
+/* ============================
+   HELPERS
+   ============================ */
+function q(s='',n=28){ return s.length>n ? s.slice(0,n)+'…':s }
+function esc(s=''){ return s.replace(/'/g,"\\'").replace(/"/g,'&quot;') }
+function fix(u=''){ if(!u) return ''; if(u.startsWith('http')) return u; return 'https://img-coe.wuaze.com'+u }
+
+/* ============================
+   NAVIGATION
+   ============================ */
+let curPage='home', wBack='home';
+let jadwalLoaded=false, searchLoaded=false;
+
+function go(page){
+  if(page==='watch') return; // only via openWatch
+  wBack = curPage;
+  curPage = page;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.bnav').forEach(b=>b.classList.remove('on'));
+  document.getElementById('page-'+page).classList.add('active');
+  const nb = document.getElementById('bnav-'+page);
+  if(nb) nb.classList.add('on');
+  window.scrollTo(0,0);
+  if(page==='jadwal' && !jadwalLoaded) initJadwal();
+  if(page==='library') initLib();
+  if(page==='profil') initProfil();
+  if(page==='search' && !searchLoaded){ searchLoaded=true; fillSearchDefault(); }
+}
+
+function goWatch(){
+  curPage='watch';
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.bnav').forEach(b=>b.classList.remove('on'));
+  document.getElementById('page-watch').classList.add('active');
+  document.getElementById('page-watch').scrollTop=0;
+}
+
+/* ============================
+   HERO SLIDER
+   ============================ */
+let heroItems=[], hi=0, ht=null;
+
+function renderHero(){
+  const w = document.getElementById('heroWrap');
+  if(!heroItems.length){ w.innerHTML='<div class="sk sk-hero"></div>'; return; }
+  w.innerHTML = `
+    <div class="hero-track" id="heroTrack">
+      ${heroItems.map((m,i)=>{
+        const img=fix(m.thumbnail||m.cover||'');
+        const slug=m.slug||m.id||'';
+        const title=m.title||m.name||'';
+        return `<div class="hero-slide">
+          <img src="${img}" alt="" onerror="this.style.display='none'">
+          <div class="hero-body">
+            <div class="hero-tag"><i class="fa fa-fire"></i> #${i+1} Populer</div>
+            <div class="hero-ttl">${q(title,40)}</div>
+            <div class="hero-actions">
+              <button class="hbtn-watch" onclick="openDetail('${esc(slug)}','${esc(title)}','${esc(img)}')">
+                <i class="fa fa-play"></i> Tonton
+              </button>
+              <button class="hbtn-info" onclick="openDetail('${esc(slug)}','${esc(title)}','${esc(img)}')">
+                <i class="fa fa-circle-info"></i> Detail
+              </button>
+            </div>
+          </div>
+        </div>`}).join('')}
+    </div>
+    <div class="hero-dots">${heroItems.map((_,i)=>`<div class="hdot${i===0?' on':''}" onclick="goHero(${i})"></div>`).join('')}</div>`;
+  clearInterval(ht);
+  ht = setInterval(()=>goHero((hi+1)%heroItems.length), 4500);
+}
+
+function goHero(idx){
+  hi=idx;
+  const t=document.getElementById('heroTrack');
+  if(t) t.style.transform=`translateX(-${idx*100}%)`;
+  document.querySelectorAll('.hdot').forEach((d,i)=>d.classList.toggle('on',i===idx));
+}
+
+/* ============================
+   CARDS
+   ============================ */
+function acard(m, rank){
+  const img=fix(m.thumbnail||m.cover||'');
+  const title=m.title||m.name||'';
+  const ep=m.episode||m.latest_episode||'';
+  const slug=m.slug||m.id||'';
+  return `<div class="acard" onclick="openDetail('${esc(slug)}','${esc(title)}','${esc(img)}')">
+    <div class="acard-poster">
+      <img src="${img}" alt="" loading="lazy" onerror="this.style.display='none'">
+      ${rank?`<div class="acard-rank">#${rank}</div>`:''}
+      ${ep?`<div class="acard-ep">${ep}</div>`:''}
+    </div>
+    <div class="acard-name">${q(title,22)}</div>
+  </div>`;
+}
+
+function gcard(m){
+  const img=fix(m.thumbnail||m.cover||'');
+  const title=m.title||m.name||'';
+  const ep=m.episode||m.latest_episode||'';
+  const slug=m.slug||m.id||'';
+  return `<div class="gcard" onclick="openDetail('${esc(slug)}','${esc(title)}','${esc(img)}')">
+    <div class="gcard-poster">
+      <img src="${img}" alt="" loading="lazy" onerror="this.style.display='none'">
+      ${ep?`<div class="gcard-ep">${ep}</div>`:''}
+    </div>
+    <div class="gcard-name">${q(title,28)}</div>
+  </div>`;
+}
+
+/* ============================
+   HOME BOOT
+   ============================ */
+let _homeCache=null;
+
+async function boot(){
+  const data = await orbit('/home?pages=1');
+  _homeCache = data;
+  if(!data){
+    document.getElementById('heroWrap').innerHTML=`
+      <div style="height:260px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;padding:20px">
+        <i class="fa fa-triangle-exclamation" style="font-size:32px;color:var(--a5)"></i>
+        <p style="color:var(--s1);font-size:12px">Gagal konek ke server.<br>Pastikan internet aktif.</p>
+        <button onclick="boot()" style="padding:8px 20px;border-radius:20px;background:var(--a2);color:#fff;border:none;font-size:12px">
+          <i class="fa fa-rotate-right"></i> Coba Lagi
+        </button>
+      </div>`;
+    ['latestRow','popularRow','completedRow'].forEach(id=>{
+      document.getElementById(id).innerHTML='<div class="empty"><i class="fa fa-circle-exclamation"></i><p>Gagal memuat</p></div>';
+    });
+    return;
+  }
+  const pop=data.popular||[], lat=data.latest||[], com=data.completed||[];
+  heroItems=pop.slice(0,5);
+  renderHero();
+  document.getElementById('popularRow').innerHTML   = pop.length ? pop.map((m,i)=>acard(m,i+1)).join('') : '<div class="empty"><p>Kosong</p></div>';
+  document.getElementById('latestRow').innerHTML    = lat.length ? lat.map(m=>acard(m)).join('') : '<div class="empty"><p>Kosong</p></div>';
+  document.getElementById('completedRow').innerHTML = com.length ? com.map(m=>acard(m)).join('') : '<div class="empty"><p>Kosong</p></div>';
+}
+
+/* ============================
+   SEARCH
+   ============================ */
+async function fillSearchDefault(){
+  const grid=document.getElementById('searchGrid');
+  if(_homeCache){
+    const list=[...(_homeCache.latest||[]),...(_homeCache.popular||[])];
+    grid.innerHTML=list.length?list.map(m=>gcard(m)).join(''):'';
+    return;
+  }
+  grid.innerHTML=`<div class="sk sk-grid"></div><div class="sk sk-grid"></div><div class="sk sk-grid"></div><div class="sk sk-grid"></div><div class="sk sk-grid"></div><div class="sk sk-grid"></div>`;
+  const data=await orbit('/home?pages=1');
+  if(data) _homeCache=data;
+  const list=[...(data?.latest||[]),(data?.popular||[])];
+  grid.innerHTML=list.length?list.map(m=>gcard(m)).join(''):'<div class="empty" style="grid-column:1/-1"><i class="fa fa-exclamation-circle"></i><p>Gagal</p></div>';
+}
+
+async function doSearch(){
+  const val=document.getElementById('searchInput').value.trim();
+  if(!val) return;
+  const grid=document.getElementById('searchGrid');
+  grid.innerHTML=`<div class="sk sk-grid"></div><div class="sk sk-grid"></div><div class="sk sk-grid"></div><div class="sk sk-grid"></div><div class="sk sk-grid"></div><div class="sk sk-grid"></div>`;
+  const data=await orbit(`/search?q=${encodeURIComponent(val)}&pages=2`);
+  const list=data?.results||[];
+  grid.innerHTML=list.length
+    ?list.map(m=>gcard(m)).join('')
+    :`<div class="empty" style="grid-column:1/-1"><i class="fa fa-search"></i><p>Tidak ditemukan: "${val}"</p></div>`;
+}
+
+/* ============================
+   MODAL DETAIL
+   ============================ */
+let _curSlug='', _curTitle='', _curEps=[];
+
+async function openDetail(slug, titleFB, imgFB){
+  _curSlug=slug; _curTitle=titleFB;
+  document.getElementById('modal').classList.add('on');
+  document.getElementById('mContent').innerHTML='<div class="loading"><i class="fa fa-spinner fa-spin"></i> Memuat detail...</div>';
+
+  const data=await orbit(`/detail/${slug}`);
+
+  if(!data){
+    _curEps=[];
+    document.getElementById('mContent').innerHTML=`
+      <img class="mbanner" src="${imgFB}" alt="" onerror="this.style.display='none'">
+      <div class="mbody">
+        <div class="mrow">
+          <img class="mcover" src="${imgFB}" alt="">
+          <div class="minfo"><h2>${titleFB}</h2></div>
+        </div>
+        <button class="btn-watch" onclick="closeModal();openWatch('${esc(slug)}','${esc(titleFB)}',0)">
+          <i class="fa fa-play"></i> Tonton Sekarang
+        </button>
+      </div>`;
+    return;
+  }
+
+  const title   = data.title||titleFB;
+  const img     = fix(data.thumbnail||data.cover||imgFB);
+  const synopsis= data.synopsis||data.description||'';
+  const genres  = data.genres||data.genre||[];
+  const status  = data.status||'';
+  const type    = data.type||'';
+  const score   = data.score||data.rating||'';
+  const eps     = data.episodes||[];
+  const totalEp = eps.length||data.total_episode||'?';
+
+  _curEps = eps;
+  _curTitle = title;
+
+  document.getElementById('mContent').innerHTML=`
+    <img class="mbanner" src="${img}" alt="" onerror="this.style.display='none'">
+    <div class="mbody">
+      <div class="mrow">
+        <img class="mcover" src="${img}" alt="">
+        <div class="minfo">
+          <h2>${title}</h2>
+          <div class="chips" style="margin-top:7px">
+            ${score?`<div class="chip">⭐ ${score}</div>`:''}
+            ${totalEp!=='?'?`<div class="chip">🎬 ${totalEp} eps</div>`:''}
+            ${type?`<div class="chip">${type}</div>`:''}
+            ${status?`<div class="chip">${status}</div>`:''}
+          </div>
+        </div>
       </div>
-      <div class="card-info">
-        <div class="card-title">${escHtml(title)}</div>
-        ${genre ? `<div class="card-genre">${escHtml(genre)}</div>` : ''}
+      ${synopsis?`<div class="mdesc">${q(synopsis,280)}</div>`:''}
+      ${genres.length?`<div class="mgenres">${genres.map(g=>`<span class="gtag">${g}</span>`).join('')}</div>`:''}
+      <button class="btn-watch" onclick="closeModal();openWatch('${esc(slug)}','${esc(title)}',0)">
+        <i class="fa fa-play"></i> Tonton Sekarang
+      </button>
+    </div>`;
+}
+
+function closeModal(e){
+  if(!e||e.target===document.getElementById('modal')){
+    document.getElementById('modal').classList.remove('on');
+  }
+}
+
+/* ============================
+   WATCH PAGE
+   ============================ */
+let wSlug='', wTitle='', wEps=[], wEpIdx=0, wSrcIdx=0, wSeen={};
+let wStreamSources=[];
+
+async function openWatch(slug, title, epIdx){
+  wBack = curPage==='watch' ? wBack : curPage;
+  wSlug=slug; wTitle=title; wEpIdx=epIdx; wSrcIdx=0;
+  goWatch();
+
+  document.getElementById('wTitle').textContent=title;
+  document.getElementById('wLabel').textContent='Memuat daftar episode...';
+  document.getElementById('playerWrap').innerHTML=`<div class="player-ph"><i class="fa fa-spinner fa-spin" style="color:var(--a1);font-size:28px"></i><span>Memuat...</span></div>`;
+  document.getElementById('srvRow').innerHTML='';
+  document.getElementById('epList').innerHTML='<div class="loading"><i class="fa fa-spinner fa-spin"></i> Memuat episode...</div>';
+  document.getElementById('epsCount').textContent='';
+
+  // Reuse cached episodes if same slug
+  if(_curSlug===slug && _curEps.length){
+    wEps=_curEps;
+  } else {
+    const data=await orbit(`/detail/${slug}`);
+    wEps=data?.episodes||[];
+    _curEps=wEps; _curSlug=slug;
+  }
+
+  document.getElementById('epsCount').textContent=wEps.length ? `${wEps.length} episode` : '';
+  renderEpList();
+  buildSrvRow([]);
+
+  // Start playing
+  if(wEps.length) playEp(epIdx);
+}
+
+/* episode list — card style */
+function renderEpList(){
+  const total=wEps.length;
+  if(!total){
+    document.getElementById('epList').innerHTML='<div class="empty"><i class="fa fa-circle-exclamation"></i><p>Daftar episode tidak tersedia</p></div>';
+    return;
+  }
+  const CHUNK=50;
+  const chunks=Math.ceil(total/CHUNK);
+  const rr=document.getElementById('rangeRow');
+  rr.innerHTML='';
+  if(chunks>1){
+    for(let i=0;i<chunks;i++){
+      const s=i*CHUNK, e=Math.min((i+1)*CHUNK,total)-1;
+      rr.innerHTML+=`<div class="range-pill${i===0?' on':''}" onclick="renderChunk(${i})">${s+1}–${e+1}</div>`;
+    }
+  }
+  renderChunk(0);
+}
+
+function renderChunk(ci){
+  document.querySelectorAll('.range-pill').forEach((b,i)=>b.classList.toggle('on',i===ci));
+  const CHUNK=50;
+  const s=ci*CHUNK, e=Math.min((ci+1)*CHUNK,wEps.length);
+  let html='';
+  for(let i=s;i<e;i++){
+    const ep=wEps[i];
+    const num=ep.number||ep.episode||(i+1);
+    const epTitle=ep.title||ep.name||`Episode ${num}`;
+    const isOn=i===wEpIdx;
+    const isSeen=wSeen[`${wSlug}_${i}`];
+    html+=`
+      <div class="ep-item${isOn?' on':isSeen?' seen':''}" onclick="playEp(${i})">
+        <div class="ep-num">${num}</div>
+        <div class="ep-details">
+          <div class="ep-name">${q(epTitle,36)}</div>
+          <div class="ep-sub">${ep.date||ep.aired||'Sub Indonesia'}</div>
+        </div>
+        <i class="fa fa-${isOn?'pause':'play'} ep-play-icon"></i>
+      </div>`;
+  }
+  document.getElementById('epList').innerHTML=html;
+}
+
+function buildSrvRow(sources){
+  wStreamSources=sources;
+  const labels=sources.length
+    ? sources.map((s,i)=>`<div class="srv-pill${i===wSrcIdx?' on':''}" onclick="playSrc(${i})">${s.format||s.quality||'Server '+(i+1)}</div>`).join('')
+    : ['🔵 Server 1','🟣 Server 2','🟡 Server 3'].map((l,i)=>`<div class="srv-pill${i===0?' on':''}" onclick="switchSrv(${i})">${l}</div>`).join('');
+  document.getElementById('srvRow').innerHTML=labels;
+}
+
+function playSrc(idx){
+  wSrcIdx=idx;
+  if(!wStreamSources.length) return;
+  document.querySelectorAll('.srv-pill').forEach((p,i)=>p.classList.toggle('on',i===idx));
+  const src=wStreamSources[Math.min(idx,wStreamSources.length-1)];
+  const url=src?.url||src?.link||src?.file||'';
+  if(url) loadPlayer(url);
+}
+
+function switchSrv(idx){
+  wSrcIdx=idx;
+  document.querySelectorAll('.srv-pill').forEach((p,i)=>p.classList.toggle('on',i===idx));
+  playEp(wEpIdx);
+}
+
+async function playEp(idx){
+  wEpIdx=idx;
+  wSeen[`${wSlug}_${idx}`]=true;
+
+  const ep=wEps[idx];
+  const num=ep?.number||ep?.episode||(idx+1);
+  const epSlug=ep?.slug||ep?.id||`${wSlug}-episode-${num}-subtitle-indonesia`;
+
+  document.getElementById('wLabel').textContent=`⏳ Memuat Episode ${num}...`;
+  document.getElementById('playerWrap').innerHTML=`<div class="player-ph"><i class="fa fa-spinner fa-spin" style="color:var(--a1);font-size:28px"></i><span>Mengambil stream...</span></div>`;
+
+  // Update episode list highlight
+  const CHUNK=50;
+  renderChunk(Math.floor(idx/CHUNK));
+
+  // Save history
+  try{
+    const hist=JSON.parse(localStorage.getItem('aniplay_history')||'[]');
+    const xi=hist.findIndex(h=>h.slug===wSlug);
+    if(xi>-1) hist.splice(xi,1);
+    hist.unshift({slug:wSlug,title:wTitle,lastEp:num,lastIdx:idx,ts:Date.now()});
+    localStorage.setItem('aniplay_history',JSON.stringify(hist.slice(0,50)));
+  }catch{}
+
+  // Fetch stream
+  const streams=await orbit(`/episode/${epSlug}`);
+  const sources=Array.isArray(streams)?streams:(streams?.sources||streams?.data||[]);
+
+  if(!sources||!sources.length){
+    document.getElementById('wLabel').textContent=`⚠️ Episode ${num} — Stream tidak tersedia`;
+    document.getElementById('playerWrap').innerHTML=`
+      <div class="player-ph">
+        <i class="fa fa-triangle-exclamation" style="color:var(--a5)"></i>
+        <span>Stream belum tersedia.<br>Coba server lain atau episode lain.</span>
+      </div>`;
+    buildSrvRow([]);
+    return;
+  }
+
+  buildSrvRow(sources);
+  wSrcIdx=0;
+  document.querySelectorAll('.srv-pill').forEach((p,i)=>p.classList.toggle('on',i===0));
+
+  const best=sources.find(s=>s.format==='720p'||s.quality==='720p')
+    ||sources.find(s=>s.format==='480p'||s.quality==='480p')
+    ||sources[0];
+  const url=best?.url||best?.link||best?.file||'';
+
+  document.getElementById('wLabel').textContent=`▶ Episode ${num} — ${best?.format||best?.quality||'Auto'}`;
+
+  if(!url){
+    document.getElementById('playerWrap').innerHTML=`<div class="player-ph"><i class="fa fa-exclamation-circle"></i><span>URL tidak tersedia</span></div>`;
+    return;
+  }
+  loadPlayer(url);
+}
+
+function loadPlayer(url){
+  const needIframe=url.includes('drive.google')||url.includes('ok.ru')||url.includes('embed')
+    ||url.includes('mp4upload')||url.includes('streamtape')||url.includes('doodstream')
+    ||url.includes('mixdrop')||url.includes('filemoon')||url.includes('vtube');
+  document.getElementById('playerWrap').innerHTML = needIframe
+    ? `<iframe src="${url}" allow="autoplay;fullscreen;encrypted-media" allowfullscreen referrerpolicy="no-referrer"></iframe>`
+    : `<video controls autoplay playsinline src="${url}" style="width:100%;height:100%;background:#000"></video>`;
+}
+
+/* ============================
+   JADWAL
+   ============================ */
+const DAYS_ID=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+const DAYS_EN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+let jadwalData={}, activeDay=new Date().getDay();
+
+async function initJadwal(){
+  jadwalLoaded=true;
+  document.getElementById('dayRow').innerHTML=DAYS_ID.map((d,i)=>
+    `<div class="day-pill${i===activeDay?' on':''}" onclick="selDay(this,${i})">${d}</div>`
+  ).join('');
+  document.getElementById('jadwalList').innerHTML='<div class="loading"><i class="fa fa-spinner fa-spin"></i> Memuat jadwal...</div>';
+  const data=await orbit('/schedule');
+  jadwalData=data||{};
+  renderJadwal(activeDay);
+}
+
+function selDay(el,idx){
+  activeDay=idx;
+  document.querySelectorAll('.day-pill').forEach(d=>d.classList.remove('on'));
+  el.classList.add('on');
+  renderJadwal(idx);
+}
+
+function renderJadwal(idx){
+  const key=DAYS_EN[idx];
+  const list=jadwalData[key]||jadwalData[key.toLowerCase()]||[];
+  const el=document.getElementById('jadwalList');
+  if(!list.length){
+    el.innerHTML=`<div class="empty"><i class="fa fa-calendar-xmark"></i><p>Tidak ada jadwal hari ${DAYS_ID[idx]}</p></div>`;
+    return;
+  }
+  el.innerHTML=list.map(item=>{
+    const img=fix(item.thumbnail||item.cover||'');
+    const title=item.title||item.name||'';
+    const ep=item.episode||item.latest_episode||'';
+    const slug=item.slug||item.id||'';
+    return `<div class="jitem" onclick="openDetail('${esc(slug)}','${esc(title)}','${esc(img)}')">
+      <img class="jthumb" src="${img}" alt="" loading="lazy" onerror="this.style.display='none'">
+      <div class="jinfo">
+        <div class="jtitle">${q(title,38)}</div>
+        <div class="jep">${ep?'Episode '+ep:'Update mingguan'}</div>
+      </div>
+      <div class="jbadge">BARU</div>
+    </div>`;
+  }).join('');
+}
+
+/* ============================
+   LIBRARY
+   ============================ */
+function initLib(){ renderLib('history'); }
+function selLib(el,type){
+  document.querySelectorAll('.ltab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on'); renderLib(type);
+}
+function renderLib(type){
+  const el=document.getElementById('libContent');
+  const saved=JSON.parse(localStorage.getItem('aniplay_'+type)||'[]');
+  if(!saved.length){
+    el.innerHTML=`<div class="lib-empty"><i class="fa fa-${type==='history'?'clock':'bookmark'}"></i><p>${type==='history'?'Belum ada riwayat':'Belum ada tersimpan'}</p></div>`;
+    return;
+  }
+  el.innerHTML=`<div style="padding:0 14px 16px;display:flex;flex-direction:column;gap:8px">
+    ${saved.map(m=>`
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--card);border-radius:12px;border:1px solid var(--b2);cursor:pointer"
+        onclick="openDetail('${esc(m.slug||'')}','${esc(m.title||'')}','')">
+        <div style="width:38px;height:52px;border-radius:7px;background:var(--card2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <i class="fa fa-film" style="color:var(--s2)"></i>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${q(m.title||'',32)}</div>
+          ${type==='history'?`<div style="font-size:10px;color:var(--a1);margin-top:3px">Terakhir: Ep ${m.lastEp||1}</div>`:''}
+        </div>
+        <i class="fa fa-chevron-right" style="color:var(--s2);font-size:11px"></i>
+      </div>`).join('')}
+  </div>`;
+}
+
+/* ============================
+   PROFIL
+   ============================ */
+function initProfil(){
+  const el=document.getElementById('profilContent');
+  const user=JSON.parse(localStorage.getItem('aniplay_user')||'null');
+  const hc=JSON.parse(localStorage.getItem('aniplay_history')||'[]').length;
+  const bc=JSON.parse(localStorage.getItem('aniplay_bookmark')||'[]').length;
+  if(!user){
+    el.innerHTML=`
+      <div style="height:100px;background:linear-gradient(135deg,var(--a2),var(--a1))"></div>
+      <div class="login-box">
+        <i class="fa fa-circle-user"></i>
+        <p>Masuk untuk menyimpan riwayat nonton dan bookmark anime kamu</p>
+        <button class="login-btn" onclick="window.location.href='/auth/login'">Masuk / Daftar</button>
+      </div>
+      <div class="pmenu">
+        <div class="pmitem"><i class="fa fa-circle-info"></i><span>Tentang AniPlay V2.1</span><i class="fa fa-chevron-right"></i></div>
+      </div>`;
+    return;
+  }
+  el.innerHTML=`
+    <div class="phero">
+      <div class="pavatar"><i class="fa fa-user"></i></div>
+      <div class="pname">${user.name||'User'}</div>
+      <div class="pemail">${user.email||'AniPlay Member'}</div>
+    </div>
+    <div class="pcard">
+      <div class="pstats">
+        <div class="pstat-box"><div class="pstat-n">${hc}</div><div class="pstat-l">Ditonton</div></div>
+        <div class="pstat-box"><div class="pstat-n">${bc}</div><div class="pstat-l">Tersimpan</div></div>
+        <div class="pstat-box"><div class="pstat-n">V2.1</div><div class="pstat-l">Versi</div></div>
+      </div>
+    </div>
+    <div class="pmenu">
+      <div class="pmitem" onclick="go('library')"><i class="fa fa-clock"></i><span>Riwayat Nonton</span><i class="fa fa-chevron-right"></i></div>
+      <div class="pmitem" onclick="go('library')"><i class="fa fa-bookmark"></i><span>Tersimpan</span><i class="fa fa-chevron-right"></i></div>
+      <div class="pmitem" style="color:var(--a3)" onclick="localStorage.removeItem('aniplay_user');initProfil()">
+        <i class="fa fa-right-from-bracket" style="color:var(--a3)"></i><span style="color:var(--a3)">Keluar</span><i class="fa fa-chevron-right"></i>
       </div>
     </div>`;
 }
 
-function escHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
+/* ============================
+   EVENTS
+   ============================ */
+document.getElementById('searchInput').addEventListener('keypress',e=>{ if(e.key==='Enter') doSearch(); });
 
-// ======= HOME =======
-async function loadHome() {
-  const grids = ['popular-grid','latest-grid','completed-grid'];
-  grids.forEach(id => { document.getElementById(id).innerHTML = makeSkeleton(6); });
-
-  try {
-    const data = await apiFetch(`${API}/home?pages=2`);
-    const popular = data.popular || data.slider || [];
-    const latest = data.latest || data.terbaru || [];
-    const completed = data.completed || data.tamat || [];
-
-    document.getElementById('popular-grid').innerHTML = 
-      popular.length ? popular.map(i => makeCard(i, 'HOT')).join('') : '<div class="error-msg"><div class="icon">📭</div>Tidak ada data</div>';
-    document.getElementById('latest-grid').innerHTML = 
-      latest.length ? latest.map(i => makeCard(i, 'NEW')).join('') : '<div class="error-msg"><div class="icon">📭</div>Tidak ada data</div>';
-    document.getElementById('completed-grid').innerHTML = 
-      completed.length ? completed.map(i => makeCard(i)).join('') : '<div class="error-msg"><div class="icon">📭</div>Tidak ada data</div>';
-  } catch(e) {
-    grids.forEach(id => {
-      document.getElementById(id).innerHTML = '<div class="error-msg"><div class="icon">⚠️</div>Gagal memuat data. Coba refresh.</div>';
-    });
-  }
-}
-
-// ======= SCHEDULE =======
-async function loadSchedule() {
-  const container = document.getElementById('schedule-grid');
-  container.innerHTML = '<div style="grid-column:1/-1;color:var(--muted);font-size:13px;text-align:center;padding:24px">Memuat jadwal...</div>';
-
-  try {
-    const data = await apiFetch(`${API}/schedule`);
-    const days = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'];
-    const keys = Object.keys(data);
-
-    if (!keys.length) throw new Error('empty');
-
-    container.innerHTML = keys.map(day => {
-      const items = Array.isArray(data[day]) ? data[day] : [];
-      return `
-        <div class="sched-day">
-          <div class="sched-day-header">${day}</div>
-          <div class="sched-items">
-            ${items.length ? items.map(i => {
-              const slug = i.slug || i.id || '';
-              const title = i.title || i.name || 'Tanpa Judul';
-              return `<div class="sched-item" onclick="openDetail('${escHtml(slug)}','${escHtml(title)}')">${escHtml(title)}</div>`;
-            }).join('') : '<div class="sched-item" style="color:var(--muted)">-</div>'}
-          </div>
-        </div>`;
-    }).join('');
-  } catch(e) {
-    container.innerHTML = '<div class="error-msg" style="grid-column:1/-1"><div class="icon">⚠️</div>Gagal memuat jadwal</div>';
-  }
-}
-
-// ======= DETAIL =======
-async function openDetail(slug, title) {
-  if (!slug) return;
-  currentSlug = slug;
-  currentTitle = title;
-
-  document.getElementById('modal-title').textContent = title;
-  document.getElementById('modal-poster').innerHTML = '<div style="width:100%;height:100%;background:var(--card2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--border)">界</div>';
-  document.getElementById('modal-genres').innerHTML = '';
-  document.getElementById('modal-stats').innerHTML = '<span>⏳ Memuat info...</span>';
-  document.getElementById('modal-synopsis').textContent = '';
-  document.getElementById('ep-grid').innerHTML = '<div style="color:var(--muted);font-size:12px;text-align:center;padding:16px;grid-column:1/-1">Memuat episode...</div>';
-  document.getElementById('detail-modal').classList.add('open');
-
-  try {
-    const data = await apiFetch(`${API}/detail/${slug}`);
-
-    const thumb = data.thumb || data.thumbnail || data.cover || data.image || '';
-    const genres = Array.isArray(data.genre) ? data.genre : (data.genre ? [data.genre] : []);
-    const eps = data.episodes || data.episode_list || data.ep_list || [];
-    const synopsis = data.synopsis || data.description || data.sinopsis || 'Tidak ada sinopsis tersedia.';
-    const status = data.status || '';
-    const total = data.total_episode || data.episode_count || eps.length || '';
-
-    if (thumb) {
-      document.getElementById('modal-poster').innerHTML = `<img src="${thumb}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='<div style=width:100%;height:100%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--border)>界</div>'">`;
-    }
-
-    document.getElementById('modal-title').textContent = data.title || title;
-    document.getElementById('modal-genres').innerHTML = genres.map(g => `<span class="genre-chip">${escHtml(g)}</span>`).join('');
-    document.getElementById('modal-stats').innerHTML = `
-      ${total ? `<span>🎬 ${total} Eps</span>` : ''}
-      ${status ? `<span>📌 ${escHtml(status)}</span>` : ''}
-    `;
-    document.getElementById('modal-synopsis').textContent = synopsis;
-
-    if (eps.length) {
-      document.getElementById('ep-grid').innerHTML = eps.map(ep => {
-        const epSlug = ep.slug || ep.id || ep.ep_slug || '';
-        const epNum = ep.episode || ep.ep || ep.number || ep.title || '';
-        return `<button class="ep-btn" onclick="playEp('${escHtml(epSlug)}', '${escHtml(String(epNum))}')">EP ${escHtml(String(epNum))}</button>`;
-      }).join('');
-    } else {
-      document.getElementById('ep-grid').innerHTML = '<div style="color:var(--muted);font-size:12px;text-align:center;padding:16px;grid-column:1/-1">Belum ada episode</div>';
-    }
-  } catch(e) {
-    showToast('Gagal memuat detail: ' + e.message);
-    document.getElementById('modal-stats').innerHTML = '<span style="color:var(--red)">Gagal memuat</span>';
-  }
-}
-
-function closeDetail() {
-  document.getElementById('detail-modal').classList.remove('open');
-}
-
-// ======= PLAYER =======
-async function playEp(epSlug, epNum) {
-  if (!epSlug) { showToast('Episode tidak tersedia'); return; }
-
-  document.getElementById('player-title').textContent = currentTitle;
-  document.getElementById('player-ep-info').textContent = 'EP ' + epNum;
-  document.getElementById('player-frame').innerHTML = '<div class="player-loading">MEMUAT VIDEO</div>';
-  document.getElementById('player-modal').classList.add('open');
-
-  try {
-    const data = await apiFetch(`${API}/episode/${epSlug}`);
-    const url = data.url || data.stream_url || data.link || data.iframe || data.embed || data.source || '';
-    
-    if (!url) throw new Error('URL tidak ditemukan');
-
-    // Try iframe embed
-    document.getElementById('player-frame').innerHTML = 
-      `<iframe src="${escHtml(url)}" allowfullscreen allow="autoplay; fullscreen" style="width:100%;height:100%;border:none"></iframe>`;
-  } catch(e) {
-    document.getElementById('player-frame').innerHTML = `
-      <div class="player-loading" style="padding:20px">
-        <div>⚠️ Gagal memuat video</div>
-        <div style="font-size:11px;margin-top:8px;color:var(--muted)">${e.message}</div>
-      </div>`;
-  }
-}
-
-function closePlayer() {
-  document.getElementById('player-modal').classList.remove('open');
-  document.getElementById('player-frame').innerHTML = '<div class="player-loading">MEMUAT VIDEO</div>';
-}
-
-// ======= SEARCH =======
-let searchTimer;
-document.getElementById('search-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') doSearch();
-});
-document.getElementById('search-input').addEventListener('input', () => {
-  clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => {
-    const q = document.getElementById('search-input').value.trim();
-    if (q.length >= 2) {
-      switchTab('search', document.querySelectorAll('.nav-tab')[2]);
-      doSearch();
-    }
-  }, 600);
-});
-
-async function doSearch() {
-  const q = document.getElementById('search-input').value.trim();
-  if (!q) return;
-
-  switchTab('search', document.querySelectorAll('.nav-tab')[2]);
-  const grid = document.getElementById('search-grid');
-  grid.innerHTML = makeSkeleton(6);
-
-  try {
-    const data = await apiFetch(`${API}/search?q=${encodeURIComponent(q)}&pages=3`);
-    const results = data.results || data.data || data.items || (Array.isArray(data) ? data : []);
-    
-    if (!results.length) {
-      grid.innerHTML = '<div class="error-msg"><div class="icon">🔍</div>Tidak ada hasil untuk "' + escHtml(q) + '"</div>';
-      return;
-    }
-
-    grid.innerHTML = results.map(i => makeCard(i)).join('');
-  } catch(e) {
-    grid.innerHTML = '<div class="error-msg"><div class="icon">⚠️</div>Gagal mencari: ' + escHtml(e.message) + '</div>';
-  }
-}
-
-// ======= TABS =======
-let schedLoaded = false;
-
-function switchTab(tab, el) {
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  if (el) el.classList.add('active');
-  document.getElementById('tab-home').style.display = tab === 'home' ? '' : 'none';
-  document.getElementById('tab-schedule').style.display = tab === 'schedule' ? '' : 'none';
-  document.getElementById('tab-search').style.display = tab === 'search' ? '' : 'none';
-
-  if (tab === 'schedule' && !schedLoaded) {
-    schedLoaded = true;
-    loadSchedule();
-  }
-}
-
-// ======= TOAST =======
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-// ======= CLOSE ON OVERLAY CLICK =======
-document.getElementById('detail-modal').addEventListener('click', e => {
-  if (e.target === document.getElementById('detail-modal')) closeDetail();
-});
-
-// ======= INIT =======
-loadHome();
+/* ============================
+   BOOT
+   ============================ */
+boot();
 </script>
 </body>
 </html>
