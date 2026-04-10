@@ -4,517 +4,374 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RBX Script AI — Roblox Script Generator</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #06080f;
-    --surface: #0d1221;
-    --surface2: #111827;
-    --border: #1e2d4a;
-    --accent: #00d4ff;
-    --accent2: #ff4d6d;
-    --accent3: #7c3aed;
-    --text: #e2e8f0;
-    --muted: #64748b;
-    --success: #10b981;
-    --glow: 0 0 20px rgba(0,212,255,0.3);
-  }
+:root {
+  --bg: #05070f;
+  --surface: #0b0f1e;
+  --surface2: #0f1525;
+  --surface3: #131929;
+  --border: #1a2540;
+  --border2: #243050;
+  --accent: #00d4ff;
+  --accent2: #7c3aed;
+  --accent3: #ff4d6d;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --muted: #3d5070;
+  --success: #00e5a0;
+  --glow-blue: 0 0 30px rgba(0,212,255,0.2);
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  overflow: hidden;
+}
 
-  /* Animated background grid */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.022) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none; z-index: 0;
+}
 
-  /* Floating orbs */
-  .orb {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(80px);
-    pointer-events: none;
-    z-index: 0;
-    animation: floatOrb 8s ease-in-out infinite alternate;
-  }
-  .orb1 { width: 400px; height: 400px; background: rgba(0,212,255,0.06); top: -100px; right: -100px; }
-  .orb2 { width: 300px; height: 300px; background: rgba(124,58,237,0.07); bottom: -50px; left: -80px; animation-delay: -3s; }
-  .orb3 { width: 200px; height: 200px; background: rgba(255,77,109,0.05); top: 50%; left: 40%; animation-delay: -5s; }
-  @keyframes floatOrb { from { transform: translate(0,0) scale(1); } to { transform: translate(30px,20px) scale(1.1); } }
+.orb {
+  position: fixed; border-radius: 50%;
+  filter: blur(90px); pointer-events: none; z-index: 0;
+  animation: orbFloat 10s ease-in-out infinite alternate;
+}
+.orb1 { width: 520px; height: 520px; background: radial-gradient(circle, rgba(0,212,255,0.07), transparent); top: -160px; right: -100px; }
+.orb2 { width: 420px; height: 420px; background: radial-gradient(circle, rgba(124,58,237,0.09), transparent); bottom: -100px; left: -80px; animation-delay: -4s; }
+.orb3 { width: 260px; height: 260px; background: radial-gradient(circle, rgba(255,77,109,0.05), transparent); top: 45%; left: 42%; animation-delay: -7s; }
+@keyframes orbFloat { from{transform:translate(0,0) scale(1)} to{transform:translate(24px,16px) scale(1.08)} }
 
-  /* Layout */
-  .app {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
+.app { position: relative; z-index: 1; display: flex; flex-direction: column; height: 100vh; }
 
-  /* Header */
-  header {
-    padding: 20px 32px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    background: rgba(13,18,33,0.8);
-    backdrop-filter: blur(12px);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
+/* HEADER */
+header {
+  height: 62px; flex-shrink: 0;
+  padding: 0 28px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 14px;
+  background: rgba(11,15,30,0.92);
+  backdrop-filter: blur(18px);
+}
 
-  .logo-icon {
-    width: 40px; height: 40px;
-    background: linear-gradient(135deg, var(--accent), var(--accent3));
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px;
-    box-shadow: var(--glow);
-    flex-shrink: 0;
-  }
+.logo-wrap { display: flex; align-items: center; gap: 12px; }
 
-  .logo-text {
-    font-family: 'Orbitron', monospace;
-    font-weight: 900;
-    font-size: 1.3rem;
-    background: linear-gradient(90deg, var(--accent), var(--accent3));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: 2px;
-  }
+.logo-icon {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 0 22px rgba(0,212,255,0.35), inset 0 1px 0 rgba(255,255,255,0.12);
+  position: relative; overflow: hidden;
+}
+.logo-icon::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 55%);
+}
 
-  .logo-sub {
-    font-size: 0.7rem;
-    color: var(--muted);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    font-weight: 300;
-  }
+.logo-texts { display: flex; flex-direction: column; gap: 1px; }
 
-  .header-badge {
-    margin-left: auto;
-    background: rgba(0,212,255,0.1);
-    border: 1px solid rgba(0,212,255,0.3);
-    color: var(--accent);
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-family: 'Share Tech Mono', monospace;
-    letter-spacing: 2px;
-    animation: pulse-badge 2s ease-in-out infinite;
-  }
-  @keyframes pulse-badge {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(0,212,255,0.3); }
-    50% { box-shadow: 0 0 0 6px rgba(0,212,255,0); }
-  }
+.logo-title {
+  font-family: 'Orbitron', monospace;
+  font-weight: 900; font-size: 1.05rem;
+  background: linear-gradient(90deg, var(--accent) 0%, #a78bfa 55%, var(--accent2) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  letter-spacing: 3px;
+}
+.logo-sub {
+  font-size: 0.6rem; color: var(--muted);
+  letter-spacing: 3px; text-transform: uppercase; font-weight: 300;
+}
 
-  /* Main content */
-  main {
-    flex: 1;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-    height: calc(100vh - 81px);
-  }
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
 
-  /* Left panel */
-  .left-panel {
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
+.badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.61rem; letter-spacing: 1.5px;
+  padding: 4px 11px; border-radius: 20px;
+  text-transform: uppercase;
+}
+.badge-model {
+  background: rgba(124,58,237,0.1);
+  border: 1px solid rgba(124,58,237,0.28);
+  color: #a78bfa;
+}
+.badge-live {
+  background: rgba(0,229,160,0.08);
+  border: 1px solid rgba(0,229,160,0.28);
+  color: var(--success);
+  display: flex; align-items: center; gap: 5px;
+}
+.badge-live::before {
+  content: '';
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--success);
+  animation: livepulse 1.8s ease-in-out infinite;
+}
+@keyframes livepulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.65)} }
 
-  .panel-header {
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: rgba(17,24,39,0.5);
-  }
+/* MAIN */
+main {
+  flex: 1; min-height: 0;
+  display: grid;
+  grid-template-columns: 360px 1fr;
+}
 
-  .panel-icon {
-    width: 28px; height: 28px;
-    border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px;
-  }
-  .panel-icon.blue { background: rgba(0,212,255,0.15); }
-  .panel-icon.purple { background: rgba(124,58,237,0.15); }
+/* LEFT */
+.left-panel {
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  background: rgba(11,15,30,0.55);
+}
 
-  .panel-title {
-    font-family: 'Orbitron', monospace;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text);
-  }
+.panel-header {
+  height: 44px; flex-shrink: 0;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(13,21,37,0.8);
+}
+.ph-icon {
+  width: 24px; height: 24px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  background: rgba(0,212,255,0.1);
+  border: 1px solid rgba(0,212,255,0.18);
+}
+.ph-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.63rem; font-weight: 700;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--text2);
+}
 
-  /* Chat messages */
-  .chat-messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
-  }
+.chat-messages {
+  flex: 1; overflow-y: auto;
+  padding: 18px 16px;
+  display: flex; flex-direction: column; gap: 14px;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.chat-messages::-webkit-scrollbar { width: 3px; }
+.chat-messages::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 
-  .chat-messages::-webkit-scrollbar { width: 4px; }
-  .chat-messages::-webkit-scrollbar-track { background: transparent; }
-  .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.message { display: flex; gap: 8px; animation: msgIn 0.28s ease; }
+@keyframes msgIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.message.user { flex-direction: row-reverse; }
 
-  .message {
-    display: flex;
-    gap: 10px;
-    animation: slideIn 0.3s ease;
-  }
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+.avatar {
+  width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 13px;
+}
+.avatar.ai { background: linear-gradient(135deg, var(--accent), var(--accent2)); box-shadow: 0 0 12px rgba(0,212,255,0.28); }
+.avatar.user { background: linear-gradient(135deg, var(--accent3), var(--accent2)); }
 
-  .message.user { flex-direction: row-reverse; }
+.bubble {
+  max-width: 83%; padding: 11px 15px;
+  font-size: 0.84rem; line-height: 1.68; border-radius: 12px;
+}
+.message.ai .bubble {
+  background: var(--surface3); border: 1px solid var(--border);
+  border-top-left-radius: 3px; color: var(--text);
+}
+.message.user .bubble {
+  background: linear-gradient(135deg, rgba(0,212,255,0.09), rgba(124,58,237,0.09));
+  border: 1px solid rgba(0,212,255,0.18);
+  border-top-right-radius: 3px; color: var(--text); text-align: right;
+}
+.message.error .bubble {
+  background: rgba(255,77,109,0.06);
+  border-color: rgba(255,77,109,0.22);
+  color: #fca5b8;
+}
 
-  .avatar {
-    width: 32px; height: 32px;
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px;
-    flex-shrink: 0;
-  }
-  .avatar.ai { background: linear-gradient(135deg, var(--accent), var(--accent3)); }
-  .avatar.user { background: linear-gradient(135deg, var(--accent2), var(--accent3)); }
+.typing-indicator { display: flex; gap: 4px; padding: 6px 0; align-items: center; }
+.typing-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  animation: tdot 1s ease-in-out infinite;
+}
+.typing-dot:nth-child(2){animation-delay:.15s}
+.typing-dot:nth-child(3){animation-delay:.3s}
+@keyframes tdot { 0%,80%,100%{transform:translateY(0);opacity:.35} 40%{transform:translateY(-5px);opacity:1} }
 
-  .bubble {
-    max-width: 80%;
-    padding: 12px 16px;
-    border-radius: 12px;
-    font-size: 0.875rem;
-    line-height: 1.6;
-  }
+/* INPUT */
+.input-area {
+  padding: 14px 16px; flex-shrink: 0;
+  border-top: 1px solid var(--border);
+  background: rgba(11,15,30,0.88);
+}
+.input-row { display: flex; gap: 8px; align-items: flex-end; }
 
-  .message.ai .bubble {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-top-left-radius: 2px;
-    color: var(--text);
-  }
+.prompt-input {
+  flex: 1;
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 11px 15px;
+  color: var(--text); font-family: 'Inter', sans-serif;
+  font-size: 0.84rem; resize: none; outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  max-height: 110px; scrollbar-width: none; line-height: 1.5;
+}
+.prompt-input::placeholder { color: var(--muted); }
+.prompt-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0,212,255,0.07);
+}
 
-  .message.user .bubble {
-    background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(124,58,237,0.15));
-    border: 1px solid rgba(0,212,255,0.25);
-    border-top-right-radius: 2px;
-    color: var(--text);
-    text-align: right;
-  }
+.send-btn {
+  width: 42px; height: 42px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: none; border-radius: 10px; color: #fff;
+  cursor: pointer; font-size: 17px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--glow-blue);
+  transition: all 0.2s; position: relative; overflow: hidden;
+}
+.send-btn::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.14) 0%, transparent 55%);
+}
+.send-btn:hover { transform: translateY(-2px) scale(1.05); box-shadow: 0 0 28px rgba(0,212,255,0.5); }
+.send-btn:active { transform: scale(0.96); }
+.send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
 
-  /* Suggested prompts */
-  .suggestions {
-    padding: 16px 20px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    background: rgba(13,18,33,0.5);
-  }
+.hint-text {
+  margin-top: 7px; text-align: center;
+  font-size: 0.63rem; color: var(--muted);
+  font-family: 'Share Tech Mono', monospace; letter-spacing: 0.5px;
+}
 
-  .suggestion-label {
-    width: 100%;
-    font-size: 0.7rem;
-    color: var(--muted);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
+/* RIGHT */
+.right-panel {
+  display: flex; flex-direction: column;
+  overflow: hidden; background: var(--surface);
+}
 
-  .chip {
-    background: rgba(0,212,255,0.05);
-    border: 1px solid var(--border);
-    color: var(--muted);
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 0.72rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: 'Share Tech Mono', monospace;
-  }
-  .chip:hover {
-    background: rgba(0,212,255,0.12);
-    border-color: var(--accent);
-    color: var(--accent);
-    transform: translateY(-1px);
-  }
+.code-toolbar {
+  height: 44px; flex-shrink: 0;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(13,21,37,0.9);
+}
+.dots { display: flex; gap: 6px; }
+.dot { width: 11px; height: 11px; border-radius: 50%; }
+.dot.red { background: #ff5f57; }
+.dot.yellow { background: #ffbd2e; }
+.dot.green { background: #28ca41; }
 
-  /* Input area */
-  .input-area {
-    padding: 16px 20px;
-    border-top: 1px solid var(--border);
-    background: rgba(13,18,33,0.8);
-    backdrop-filter: blur(8px);
-  }
+.filename {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem; color: var(--text2); flex: 1;
+}
 
-  .input-row {
-    display: flex;
-    gap: 10px;
-    align-items: flex-end;
-  }
+.toolbar-btn {
+  background: var(--surface3); border: 1px solid var(--border2);
+  color: var(--text2); padding: 5px 12px; border-radius: 6px;
+  font-size: 0.68rem; cursor: pointer;
+  font-family: 'Share Tech Mono', monospace;
+  display: none; align-items: center; gap: 5px;
+  transition: all 0.15s; letter-spacing: 0.5px;
+}
+.toolbar-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,0.07); }
+.toolbar-btn.show { display: flex; }
 
-  .prompt-input {
-    flex: 1;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 16px;
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    font-size: 0.875rem;
-    resize: none;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    max-height: 120px;
-    scrollbar-width: none;
-  }
-  .prompt-input::placeholder { color: var(--muted); }
-  .prompt-input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(0,212,255,0.1);
-  }
+.code-wrapper {
+  flex: 1; min-height: 0; position: relative;
+  overflow: hidden; display: flex;
+}
 
-  .send-btn {
-    width: 44px; height: 44px;
-    background: linear-gradient(135deg, var(--accent), var(--accent3));
-    border: none;
-    border-radius: 10px;
-    color: white;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-    transition: all 0.2s;
-    flex-shrink: 0;
-    box-shadow: var(--glow);
-  }
-  .send-btn:hover { transform: translateY(-2px) scale(1.05); box-shadow: 0 0 25px rgba(0,212,255,0.5); }
-  .send-btn:active { transform: scale(0.97); }
-  .send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.empty-code {
+  flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 14px;
+  background: var(--surface);
+  font-family: 'Share Tech Mono', monospace;
+}
+.empty-icon {
+  font-size: 46px; opacity: 0.2;
+  animation: iconFloat 3.5s ease-in-out infinite alternate;
+}
+@keyframes iconFloat { from{transform:translateY(0)} to{transform:translateY(-10px)} }
+.empty-title { font-size: 0.78rem; color: var(--muted); letter-spacing: 1px; }
+.empty-sub { font-size: 0.66rem; color: #1e2d45; }
 
-  /* Right panel - Code editor */
-  .right-panel {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
+.line-numbers {
+  padding: 16px 0; background: var(--surface);
+  border-right: 1px solid var(--border);
+  min-width: 50px; text-align: right;
+  overflow: hidden; user-select: none; flex-shrink: 0;
+}
+.line-num {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.76rem; color: var(--muted);
+  line-height: 1.6; padding: 0 12px;
+}
 
-  .code-toolbar {
-    padding: 10px 16px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: rgba(17,24,39,0.5);
-    flex-wrap: wrap;
-  }
+.code-display {
+  flex: 1; overflow: auto;
+  padding: 16px 18px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem; line-height: 1.6;
+  white-space: pre; background: var(--surface);
+  scrollbar-width: thin; scrollbar-color: var(--border2) transparent;
+  animation: codeIn 0.35s ease;
+}
+@keyframes codeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+.code-display::-webkit-scrollbar { width: 5px; height: 5px; }
+.code-display::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 
-  .dots { display: flex; gap: 6px; }
-  .dot {
-    width: 12px; height: 12px;
-    border-radius: 50%;
-  }
-  .dot.red { background: #ff5f57; }
-  .dot.yellow { background: #ffbd2e; }
-  .dot.green { background: #28ca41; }
+.tok-comment { color: #2a3d5a; font-style: italic; }
+.tok-keyword { color: #a78bfa; font-weight: 600; }
+.tok-string { color: #34d399; }
+.tok-number { color: #fb923c; }
+.tok-builtin { color: #38bdf8; }
+.tok-func { color: #fbbf24; }
 
-  .filename {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.75rem;
-    color: var(--muted);
-    flex: 1;
-  }
+.status-bar {
+  height: 28px; flex-shrink: 0;
+  padding: 0 16px; border-top: 1px solid var(--border);
+  display: flex; align-items: center; gap: 16px;
+  background: rgba(13,21,37,0.9);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.64rem; color: var(--muted);
+}
+.status-item { display: flex; align-items: center; gap: 5px; }
+.status-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--success); box-shadow: 0 0 6px var(--success);
+  animation: sdot 2s ease-in-out infinite;
+}
+@keyframes sdot { 0%,100%{opacity:1} 50%{opacity:0.25} }
 
-  .toolbar-btn {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--muted);
-    padding: 5px 12px;
-    border-radius: 6px;
-    font-size: 0.72rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: 'Share Tech Mono', monospace;
-    display: flex; align-items: center; gap: 5px;
-  }
-  .toolbar-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .toolbar-btn.active { background: rgba(0,212,255,0.1); border-color: var(--accent); color: var(--accent); }
+.toast {
+  position: fixed; bottom: 22px; right: 22px;
+  background: var(--surface2);
+  border: 1px solid var(--success); color: var(--success);
+  padding: 9px 18px; border-radius: 8px;
+  font-family: 'Share Tech Mono', monospace; font-size: 0.76rem;
+  z-index: 9999; animation: toastIn 0.25s ease;
+  box-shadow: 0 0 20px rgba(0,229,160,0.12);
+}
+@keyframes toastIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 
-  /* Code editor */
-  .code-wrapper {
-    flex: 1;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-  }
-
-  .line-numbers {
-    padding: 16px 0;
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    text-align: right;
-    min-width: 48px;
-    overflow-y: hidden;
-    color: var(--muted);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.8rem;
-    line-height: 1.6;
-    user-select: none;
-  }
-  .line-num { padding: 0 12px; }
-
-  .code-display {
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: auto;
-    padding: 16px;
-    background: var(--surface);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.8rem;
-    line-height: 1.6;
-    white-space: pre;
-    color: var(--text);
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
-  }
-  .code-display::-webkit-scrollbar { width: 6px; height: 6px; }
-  .code-display::-webkit-scrollbar-track { background: transparent; }
-  .code-display::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-  /* Syntax highlighting */
-  .tok-comment { color: #4a5568; font-style: italic; }
-  .tok-keyword { color: #7c3aed; font-weight: 600; }
-  .tok-string { color: #10b981; }
-  .tok-number { color: #f97316; }
-  .tok-builtin { color: #00d4ff; }
-  .tok-func { color: #fbbf24; }
-  .tok-op { color: #94a3b8; }
-
-  /* Status bar */
-  .status-bar {
-    padding: 6px 16px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    background: rgba(17,24,39,0.8);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--muted);
-  }
-
-  .status-item { display: flex; align-items: center; gap: 5px; }
-  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); animation: blink 2s ease-in-out infinite; }
-  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-  /* Empty state */
-  .empty-code {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: var(--muted);
-    gap: 12px;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.85rem;
-    background: var(--surface);
-  }
-
-  .empty-icon {
-    font-size: 48px;
-    opacity: 0.3;
-    animation: floatIcon 3s ease-in-out infinite alternate;
-  }
-  @keyframes floatIcon { from { transform: translateY(0); } to { transform: translateY(-8px); } }
-
-  /* Loading animation */
-  .typing-indicator {
-    display: flex;
-    gap: 4px;
-    padding: 8px 0;
-    align-items: center;
-  }
-  .typing-dot {
-    width: 6px; height: 6px;
-    background: var(--accent);
-    border-radius: 50%;
-    animation: typingBounce 1s ease-in-out infinite;
-  }
-  .typing-dot:nth-child(2) { animation-delay: 0.15s; }
-  .typing-dot:nth-child(3) { animation-delay: 0.3s; }
-  @keyframes typingBounce {
-    0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
-    40% { transform: translateY(-6px); opacity: 1; }
-  }
-
-  /* Code stream */
-  .code-stream {
-    animation: codeReveal 0.5s ease;
-  }
-  @keyframes codeReveal {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Scrollbar-less line-nums sync */
-  .code-display { scroll-behavior: smooth; }
-
-  /* Toast */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: var(--surface2);
-    border: 1px solid var(--success);
-    color: var(--success);
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.8rem;
-    z-index: 999;
-    animation: toastIn 0.3s ease;
-    box-shadow: 0 0 20px rgba(16,185,129,0.2);
-  }
-  @keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-  /* Responsive */
-  @media (max-width: 768px) {
-    main { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; height: auto; min-height: calc(100vh - 81px); }
-    .left-panel { height: 50vh; border-right: none; border-bottom: 1px solid var(--border); }
-    .right-panel { height: 50vh; }
-    header { padding: 14px 18px; }
-    .logo-text { font-size: 1rem; }
-    .header-badge { display: none; }
-  }
+@media (max-width: 768px) {
+  main { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+  .left-panel { border-right: none; border-bottom: 1px solid var(--border); }
+}
 </style>
 </head>
 <body>
@@ -523,43 +380,35 @@
 <div class="orb orb3"></div>
 
 <div class="app">
-  <!-- Header -->
   <header>
-    <div class="logo-icon">🎮</div>
-    <div>
-      <div class="logo-text">RBX SCRIPT AI</div>
-      <div class="logo-sub">Roblox Studio Script Generator</div>
+    <div class="logo-wrap">
+      <div class="logo-icon">🎮</div>
+      <div class="logo-texts">
+        <div class="logo-title">RBX SCRIPT AI</div>
+        <div class="logo-sub">Roblox Lua Generator</div>
+      </div>
     </div>
-    <div class="header-badge">● AI ONLINE</div>
+    <div class="header-right">
+      <div class="badge badge-model">Claude Sonnet</div>
+      <div class="badge badge-live">AI ONLINE</div>
+    </div>
   </header>
 
-  <!-- Main -->
   <main>
-    <!-- Left: Chat -->
     <div class="left-panel">
       <div class="panel-header">
-        <div class="panel-icon blue">💬</div>
-        <span class="panel-title">AI Chat</span>
+        <div class="ph-icon">💬</div>
+        <span class="ph-title">Chat</span>
       </div>
 
       <div class="chat-messages" id="chatMessages">
         <div class="message ai">
           <div class="avatar ai">🤖</div>
           <div class="bubble">
-            Halo! Gue adalah <strong>RBX Script AI</strong> — asisten coding buat Roblox Studio lo.<br><br>
-            Describe script yang lo mau, gue bakal generate Lua script langsung buat dipakai di Roblox Studio! Bisa buat terrain, tools, GUI, gameplay, dan lainnya. 🚀
+            Halo! Gue <strong>RBX Script AI</strong> — siap generate script Lua buat Roblox Studio lo.<br><br>
+            Jelasin script yang lo mau, gue bikin langsung — tools, GUI, gameplay system, apapun! 🚀
           </div>
         </div>
-      </div>
-
-      <div class="suggestions">
-        <div class="suggestion-label">💡 Contoh prompt</div>
-        <div class="chip" onclick="usePrompt(this)">Buat floating island terrain kayak contoh</div>
-        <div class="chip" onclick="usePrompt(this)">Script door yang bisa dibuka pakai proximity prompt</div>
-        <div class="chip" onclick="usePrompt(this)">Buat leaderboard kills & deaths</div>
-        <div class="chip" onclick="usePrompt(this)">Script sprint dengan stamina bar GUI</div>
-        <div class="chip" onclick="usePrompt(this)">Day/night cycle otomatis setiap 5 menit</div>
-        <div class="chip" onclick="usePrompt(this)">Weapon sword dengan animasi swing</div>
       </div>
 
       <div class="input-area">
@@ -567,16 +416,16 @@
           <textarea
             class="prompt-input"
             id="promptInput"
-            placeholder="Describe script Roblox lo... misal: buat flying mount yang bisa dikendarai player"
+            placeholder="Describe script lo... e.g. buat sword dengan animasi swing dan damage"
             rows="2"
             onkeydown="handleKey(event)"
           ></textarea>
           <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
         </div>
+        <div class="hint-text">Enter to send &nbsp;·&nbsp; Shift+Enter new line</div>
       </div>
     </div>
 
-    <!-- Right: Code Editor -->
     <div class="right-panel">
       <div class="code-toolbar">
         <div class="dots">
@@ -584,23 +433,23 @@
           <div class="dot yellow"></div>
           <div class="dot green"></div>
         </div>
-        <div class="filename" id="filename">-- belum ada script --</div>
-        <button class="toolbar-btn" id="copyBtn" onclick="copyCode()" style="display:none">📋 Copy</button>
-        <button class="toolbar-btn" id="dlBtn" onclick="downloadCode()" style="display:none">⬇ Download .lua</button>
+        <div class="filename" id="filename">script.lua</div>
+        <button class="toolbar-btn" id="copyBtn" onclick="copyCode()">📋 Copy</button>
+        <button class="toolbar-btn" id="dlBtn" onclick="downloadCode()">⬇ Download .lua</button>
       </div>
 
       <div class="code-wrapper" id="codeWrapper">
         <div class="empty-code" id="emptyState">
           <div class="empty-icon">🛸</div>
-          <div>Script akan muncul di sini</div>
-          <div style="font-size:0.7rem; color: #334155">Kirim prompt di sebelah kiri untuk generate script</div>
+          <div class="empty-title">Belum ada script</div>
+          <div class="empty-sub">// Kirim prompt untuk generate</div>
         </div>
       </div>
 
       <div class="status-bar">
         <div class="status-item">
           <div class="status-dot"></div>
-          <span>Lua 5.1 (Roblox)</span>
+          <span>Lua 5.1 · Roblox Studio</span>
         </div>
         <div class="status-item" id="lineCount" style="margin-left:auto">0 baris</div>
         <div class="status-item" id="charCount">0 karakter</div>
@@ -610,147 +459,80 @@
 </div>
 
 <script>
-const SYSTEM_PROMPT = `Kamu adalah ahli Lua scripting untuk Roblox Studio. Tugasmu adalah membuat script Lua yang bersih, berkomentar, dan siap pakai untuk Roblox Studio.
+const SYSTEM_PROMPT = `Kamu adalah ahli Lua scripting untuk Roblox Studio. Tugasmu membuat script Lua yang bersih, berkomentar, dan siap pakai.
 
-ATURAN PENTING:
-1. Selalu buat script lengkap yang bisa langsung dipakai
-2. Tambahkan komentar penjelasan (dalam Bahasa Indonesia) di bagian penting
-3. Ikuti best practice Roblox scripting (pakai Services yang benar, game:GetService, etc.)
-4. Script harus aman (server-side logic di Script, client di LocalScript)
-5. Tambahkan header komentar yang jelas berisi: nama script, fungsi, cara pakai
-6. Gunakan Enum, Instance, Vector3 dan API Roblox yang benar
-7. Handle error dengan pcall jika perlu
+ATURAN:
+1. Buat script lengkap yang langsung bisa dipakai di Roblox Studio
+2. Tambahkan komentar (Bahasa Indonesia) di bagian penting
+3. Ikuti best practice Roblox (game:GetService, dll)
+4. Handle error dengan pcall jika perlu
 
-FORMAT RESPONSE:
-- Mulai LANGSUNG dengan kode Lua (jangan ada markdown, jangan ada \`\`\` fence)
-- Setelah kode, tambahkan baris:
-  ---PENJELASAN---
-  Penjelasan singkat cara menggunakan script ini dalam 2-3 kalimat.
-
-Buat script yang keren, fungsional, dan mudah dimodifikasi!`;
+FORMAT RESPONSE (WAJIB IKUTI PERSIS):
+- Tulis kode Lua LANGSUNG tanpa markdown fence sama sekali (jangan pakai backtick)
+- Setelah kode selesai, tulis persis teks ini di baris baru: ---PENJELASAN---
+- Lalu 2-3 kalimat cara pakai dalam Bahasa Indonesia`;
 
 let currentCode = '';
 let isLoading = false;
 
 function handleKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
-  }
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 }
 
-function usePrompt(el) {
-  document.getElementById('promptInput').value = el.textContent;
-  document.getElementById('promptInput').focus();
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
-function addMessage(role, text) {
-  const container = document.getElementById('chatMessages');
-  const div = document.createElement('div');
-  div.className = `message ${role}`;
-  div.innerHTML = `
-    <div class="avatar ${role}">${role === 'ai' ? '🤖' : '👤'}</div>
-    <div class="bubble">${text}</div>
-  `;
-  container.appendChild(div);
-  container.scrollTop = container.scrollHeight;
-  return div;
+function addMessage(role, html, isError) {
+  const c = document.getElementById('chatMessages');
+  const d = document.createElement('div');
+  d.className = `message ${role}${isError?' error':''}`;
+  d.innerHTML = `<div class="avatar ${role}">${role==='ai'?'🤖':'👤'}</div><div class="bubble">${html}</div>`;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
 }
 
-function addTypingIndicator() {
-  const container = document.getElementById('chatMessages');
-  const div = document.createElement('div');
-  div.className = 'message ai';
-  div.id = 'typingMsg';
-  div.innerHTML = `
-    <div class="avatar ai">🤖</div>
-    <div class="bubble">
-      <div class="typing-indicator">
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-      </div>
-    </div>
-  `;
-  container.appendChild(div);
-  container.scrollTop = container.scrollHeight;
+function addTyping() {
+  const c = document.getElementById('chatMessages');
+  const d = document.createElement('div');
+  d.className = 'message ai'; d.id = 'typingMsg';
+  d.innerHTML = `<div class="avatar ai">🤖</div><div class="bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
+  c.appendChild(d); c.scrollTop = c.scrollHeight;
 }
 
-function removeTypingIndicator() {
+function removeTyping() {
   const el = document.getElementById('typingMsg');
   if (el) el.remove();
 }
 
 function syntaxHighlight(code) {
-  const keywords = ['local', 'function', 'end', 'if', 'then', 'else', 'elseif', 'for', 'do', 'while', 'repeat', 'until', 'return', 'and', 'or', 'not', 'true', 'false', 'nil', 'in', 'break'];
-  const builtins = ['game', 'workspace', 'script', 'Players', 'RunService', 'UserInputService', 'TweenService', 'Debris', 'ReplicatedStorage', 'ServerStorage', 'StarterGui', 'Teams'];
-
+  const keywords = ['local','function','end','if','then','else','elseif','for','do','while','repeat','until','return','and','or','not','true','false','nil','in','break'];
+  const builtins = ['game','workspace','script','Players','RunService','UserInputService','TweenService','Debris','ReplicatedStorage','ServerStorage','StarterGui','Teams','HttpService','DataStoreService'];
   let result = '';
-  const lines = code.split('\n');
-
-  for (const line of lines) {
-    // Comment line
-    if (line.trimStart().startsWith('--')) {
-      result += `<span class="tok-comment">${escHtml(line)}</span>\n`;
-      continue;
-    }
-
-    let hl = escHtml(line);
-
-    // Strings
-    hl = hl.replace(/&quot;[^&]*&quot;|&#39;[^&]*&#39;/g, m => `<span class="tok-string">${m}</span>`);
-
-    // Numbers
-    hl = hl.replace(/\b(\d+\.?\d*)\b/g, '<span class="tok-number">$1</span>');
-
-    // Functions
-    hl = hl.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/g, (m, fn) => {
-      if (keywords.includes(fn)) return m;
-      return `<span class="tok-func">${fn}</span>(`;
-    });
-
-    // Keywords
-    for (const kw of keywords) {
-      const re = new RegExp(`\\b(${kw})\\b`, 'g');
-      hl = hl.replace(re, '<span class="tok-keyword">$1</span>');
-    }
-
-    // Builtins
-    for (const bi of builtins) {
-      const re = new RegExp(`\\b(${bi})\\b`, 'g');
-      hl = hl.replace(re, '<span class="tok-builtin">$1</span>');
-    }
-
-    result += hl + '\n';
+  for (const line of code.split('\n')) {
+    if (line.trimStart().startsWith('--')) { result += `<span class="tok-comment">${escHtml(line)}</span>\n`; continue; }
+    let h = escHtml(line);
+    h = h.replace(/(&quot;[^&]*?&quot;|&#39;[^&]*?&#39;)/g, m => `<span class="tok-string">${m}</span>`);
+    h = h.replace(/\b(\d+\.?\d*)\b/g, '<span class="tok-number">$1</span>');
+    h = h.replace(/\b([a-zA-Z_]\w*)\s*\(/g, (m, fn) => keywords.includes(fn) ? m : `<span class="tok-func">${fn}</span>(`);
+    for (const kw of keywords) h = h.replace(new RegExp(`\\b(${kw})\\b`, 'g'), '<span class="tok-keyword">$1</span>');
+    for (const bi of builtins) h = h.replace(new RegExp(`\\b(${bi})\\b`, 'g'), '<span class="tok-builtin">$1</span>');
+    result += h + '\n';
   }
   return result;
-}
-
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
 function renderCode(code) {
   const wrapper = document.getElementById('codeWrapper');
   const lines = code.split('\n');
-
-  const lineNums = lines.map((_, i) => `<div class="line-num">${i + 1}</div>`).join('');
-  const highlighted = syntaxHighlight(code);
-
-  wrapper.innerHTML = `
-    <div class="line-numbers" id="lineNums">${lineNums}</div>
-    <div class="code-display code-stream" id="codeDisplay">${highlighted}</div>
-  `;
-
-  // Sync scroll
+  const lineNums = lines.map((_, i) => `<div class="line-num">${i+1}</div>`).join('');
+  wrapper.innerHTML = `<div class="line-numbers" id="lineNums">${lineNums}</div><div class="code-display" id="codeDisplay">${syntaxHighlight(code)}</div>`;
   const display = document.getElementById('codeDisplay');
   const nums = document.getElementById('lineNums');
   display.addEventListener('scroll', () => { nums.scrollTop = display.scrollTop; });
-
   document.getElementById('lineCount').textContent = `${lines.length} baris`;
   document.getElementById('charCount').textContent = `${code.length} karakter`;
-  document.getElementById('copyBtn').style.display = 'flex';
-  document.getElementById('dlBtn').style.display = 'flex';
+  ['copyBtn','dlBtn'].forEach(id => document.getElementById(id).classList.add('show'));
 }
 
 function copyCode() {
@@ -760,21 +542,19 @@ function copyCode() {
 
 function downloadCode() {
   if (!currentCode) return;
-  const fn = (document.getElementById('filename').textContent || 'script') + '.lua';
-  const blob = new Blob([currentCode], { type: 'text/plain' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = fn; a.click();
-  URL.revokeObjectURL(url);
+  const fn = document.getElementById('filename').textContent || 'script.lua';
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob([currentCode],{type:'text/plain'})),
+    download: fn
+  });
+  a.click(); URL.revokeObjectURL(a.href);
   showToast('⬇ File didownload!');
 }
 
 function showToast(msg) {
-  const t = document.createElement('div');
-  t.className = 'toast';
-  t.textContent = msg;
+  const t = Object.assign(document.createElement('div'), {className:'toast', textContent:msg});
   document.body.appendChild(t);
-  setTimeout(() => t.remove(), 2500);
+  setTimeout(() => t.remove(), 2600);
 }
 
 async function sendMessage() {
@@ -788,58 +568,63 @@ async function sendMessage() {
   document.getElementById('sendBtn').disabled = true;
 
   addMessage('user', escHtml(prompt));
-  addTypingIndicator();
+  addTyping();
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': window.__ANTHROPIC_API_KEY__ || '',
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
+        max_tokens: 2000,
         system: SYSTEM_PROMPT,
         messages: [{ role: 'user', content: `Buat Roblox Studio Lua script untuk: ${prompt}` }]
       })
     });
 
-    const data = await response.json();
-    removeTypingIndicator();
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData?.error?.message || `HTTP ${res.status}`);
+    }
 
-    let fullText = data.content?.map(c => c.text || '').join('') || '';
+    const data = await res.json();
+    removeTyping();
 
-    // Split code and explanation
-    let code = fullText;
-    let explanation = '';
+    let fullText = (data.content || []).map(c => c.text || '').join('');
+    let code = fullText, explanation = '';
 
     if (fullText.includes('---PENJELASAN---')) {
       const parts = fullText.split('---PENJELASAN---');
       code = parts[0].trim();
-      explanation = parts[1]?.trim() || '';
+      explanation = (parts[1] || '').trim();
     }
-
-    // Strip any markdown fences just in case
-    code = code.replace(/^```lua\n?/, '').replace(/^```\n?/, '').replace(/\n?```$/, '').trim();
+    code = code.replace(/^```(?:lua)?\n?/, '').replace(/\n?```$/, '').trim();
 
     currentCode = code;
-
-    // Generate filename from prompt
-    const words = prompt.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(' ').slice(0, 3);
-    const fname = words.join('_') || 'script';
+    const fname = prompt.toLowerCase().replace(/[^a-z0-9\s]/g,'').split(' ').filter(Boolean).slice(0,3).join('_') || 'script';
     document.getElementById('filename').textContent = fname + '.lua';
-
     renderCode(code);
 
-    // Add AI reply to chat
-    const aiMsg = explanation
-      ? `Script berhasil di-generate! ✅<br><br><em style="color:#94a3b8;font-size:0.82rem">${escHtml(explanation)}</em>`
-      : `Script berhasil di-generate! ✅ Cek panel kanan untuk melihat kodenya. Lo bisa copy atau download langsung.`;
-
-    addMessage('ai', aiMsg);
+    const aiReply = explanation
+      ? `Script berhasil di-generate! ✅<br><br><em style="color:#64748b;font-size:0.8rem">${escHtml(explanation)}</em>`
+      : `Script berhasil di-generate! ✅<br><small style="color:#3d5070">Cek panel kanan — bisa copy atau download.</small>`;
+    addMessage('ai', aiReply);
 
   } catch (err) {
-    removeTypingIndicator();
-    addMessage('ai', `❌ Gagal generate script: ${err.message}. Coba lagi ya!`);
+    removeTyping();
     console.error(err);
+    let msg = `❌ Gagal: ${escHtml(err.message)}`;
+    if (/401|api.key|auth/i.test(err.message)) {
+      msg += `<br><br><span style="font-size:0.76rem;color:#64748b">Set API key di console browser:<br><code style="color:#a78bfa">window.__ANTHROPIC_API_KEY__ = "sk-ant-..."</code></span>`;
+    } else if (/failed to fetch|networkerror|cors/i.test(err.message)) {
+      msg += `<br><br><span style="font-size:0.76rem;color:#64748b">Pastikan buka file ini di browser (bukan file://) dan API key sudah di-set.</span>`;
+    }
+    addMessage('ai', msg, true);
   }
 
   isLoading = false;
