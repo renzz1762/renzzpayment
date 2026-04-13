@@ -96,12 +96,16 @@ body{min-height:-webkit-fill-available}
 .maint-progress-bar{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent3),var(--accent));border-radius:10px;transition:width 1s ease;box-shadow:0 0 6px rgba(255,77,109,.4);position:relative}
 .maint-progress-bar::after{content:'';position:absolute;right:0;top:0;bottom:0;width:6px;background:#fff;border-radius:3px;filter:blur(2px)}
 .maint-eta{margin-top:6px;font-family:'Share Tech Mono',monospace;font-size:.54rem;color:var(--muted);position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:5px}
-.maint-socmed-btn{display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#fff;font-size:1rem;cursor:pointer;transition:all .2s;text-decoration:none}
-.maint-socmed-btn:hover{transform:scale(1.12);background:rgba(255,255,255,.15)}
-.maint-socmed-btn.wa:hover{border-color:#25d366;color:#25d366}
-.maint-socmed-btn.ig:hover{border-color:#e1306c;color:#e1306c}
-.maint-socmed-btn.tt:hover{border-color:#aaa;color:#fff}
-.maint-socmed-btn.dc:hover{border-color:#5865f2;color:#5865f2}
+.maint-soc-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#fff;font-size:.65rem;font-family:'Share Tech Mono',monospace;cursor:pointer;transition:all .2s;text-decoration:none;letter-spacing:.5px}
+.maint-soc-btn:hover{transform:scale(1.08);background:rgba(255,255,255,.14)}
+.maint-soc-btn.wa{border-color:rgba(37,211,102,.5);color:#25d366}
+.maint-soc-btn.wa:hover{background:rgba(37,211,102,.15)}
+.maint-soc-btn.ig{border-color:rgba(225,48,108,.5);color:#e1306c}
+.maint-soc-btn.ig:hover{background:rgba(225,48,108,.15)}
+.maint-soc-btn.tt{border-color:rgba(255,255,255,.3);color:#fff}
+.maint-soc-btn.tt:hover{background:rgba(255,255,255,.1)}
+.maint-soc-btn.dc{border-color:rgba(88,101,242,.5);color:#5865f2}
+.maint-soc-btn.dc:hover{background:rgba(88,101,242,.15)}
 
 /* ══ APP ══ */
 .app{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
@@ -298,25 +302,21 @@ header{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;alig
 .empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);gap:10px;font-family:'Share Tech Mono',monospace;font-size:.76rem;padding:30px}
 .empty-state i{font-size:2.3rem;opacity:.3}
 
-/* ══ NEWS SECTION ══ */
-.news-section-title{font-family:'Orbitron',monospace;font-size:.7rem;font-weight:700;letter-spacing:2px;color:var(--accent2);margin:16px 0 8px;display:flex;align-items:center;gap:7px;padding:0 2px}
+/* ══ NEWS ══ */
+.news-title{font-family:'Orbitron',monospace;font-size:.7rem;font-weight:700;letter-spacing:2px;color:var(--accent2);margin:4px 0 10px;display:flex;align-items:center;gap:7px}
 .news-card{background:rgba(13,18,33,.85);border:1px solid rgba(255,77,109,.2);border-radius:14px;overflow:hidden;backdrop-filter:blur(4px);animation:slideIn .3s ease;margin-bottom:10px}
 .news-card-body{padding:12px 14px}
-.news-card-title{font-family:'Orbitron',monospace;font-size:.74rem;font-weight:700;letter-spacing:1px;margin-bottom:5px;color:var(--text)}
-.news-card-date{font-size:.61rem;color:var(--muted);margin-bottom:6px;font-family:'Share Tech Mono',monospace}
-.news-card-text{font-size:.78rem;line-height:1.6;color:var(--text);margin-bottom:10px}
-.news-links{display:flex;flex-wrap:wrap;gap:6px}
-.news-link-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-family:'Share Tech Mono',monospace;font-size:.62rem;text-decoration:none;border:1px solid;transition:all .2s;cursor:pointer}
-.news-link-btn.tiktok{border-color:rgba(200,200,200,.3);color:#ccc;background:rgba(200,200,200,.06)}
-.news-link-btn.tiktok:hover{border-color:#fff;color:#fff}
-.news-link-btn.ig{border-color:rgba(225,48,108,.4);color:#e1306c;background:rgba(225,48,108,.06)}
-.news-link-btn.ig:hover{background:rgba(225,48,108,.15)}
-.news-link-btn.discord{border-color:rgba(88,101,242,.4);color:#5865f2;background:rgba(88,101,242,.06)}
-.news-link-btn.discord:hover{background:rgba(88,101,242,.15)}
-.news-link-btn.wa{border-color:rgba(37,211,102,.4);color:#25d366;background:rgba(37,211,102,.06)}
-.news-link-btn.wa:hover{background:rgba(37,211,102,.15)}
-.news-link-btn.link{border-color:rgba(0,212,255,.4);color:var(--accent);background:rgba(0,212,255,.06)}
-.news-link-btn.link:hover{background:rgba(0,212,255,.15)}
+.news-card-title{font-family:'Orbitron',monospace;font-size:.74rem;font-weight:700;letter-spacing:1px;margin-bottom:4px}
+.news-card-date{font-size:.6rem;color:var(--muted);margin-bottom:6px;font-family:'Share Tech Mono',monospace}
+.news-card-text{font-size:.78rem;line-height:1.6;color:var(--text);margin-bottom:8px}
+.news-links{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.news-link-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-family:'Share Tech Mono',monospace;font-size:.62rem;text-decoration:none;border:1px solid;transition:all .2s}
+.news-link-btn.tiktok{border-color:rgba(200,200,200,.3);color:#ccc}.news-link-btn.tiktok:hover{border-color:#fff;color:#fff;background:rgba(255,255,255,.08)}
+.news-link-btn.ig{border-color:rgba(225,48,108,.4);color:#e1306c}.news-link-btn.ig:hover{background:rgba(225,48,108,.12)}
+.news-link-btn.discord{border-color:rgba(88,101,242,.4);color:#5865f2}.news-link-btn.discord:hover{background:rgba(88,101,242,.12)}
+.news-link-btn.wa{border-color:rgba(37,211,102,.4);color:#25d366}.news-link-btn.wa:hover{background:rgba(37,211,102,.12)}
+.news-link-btn.link{border-color:rgba(0,212,255,.4);color:var(--accent)}.news-link-btn.link:hover{background:rgba(0,212,255,.1)}
+.update-section-title{font-family:'Orbitron',monospace;font-size:.7rem;font-weight:700;letter-spacing:2px;color:var(--accent);margin:14px 0 10px;display:flex;align-items:center;gap:7px}
 
 /* ══ SAVE PAGE ══ */
 #page-save{padding:14px;gap:10px}
@@ -504,8 +504,7 @@ header{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;alig
     </div>
     <div class="maint-progress"><div class="maint-progress-bar" id="maintProgressBar" style="width:0%"></div></div>
     <div class="maint-eta" id="maintEta">Menghitung...</div>
-    <!-- Sosmed di maintenance — muncul otomatis kalau link diisi -->
-    <div class="maint-socmed-row" id="maintSocmedRow" style="display:none;justify-content:center;gap:8px;margin-top:12px;flex-wrap:wrap"></div>
+    <div id="maintSocmedRow" style="display:none;justify-content:center;gap:10px;margin-top:14px;flex-wrap:wrap;position:relative;z-index:2"></div>
   </div>
 </div>
 
@@ -601,7 +600,7 @@ header{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;alig
           <div class="panel-header">
             <div class="panel-icon blue">💬</div>
             <span class="panel-title">AI Chat</span>
-            <button id="togglePanelBtn" onclick="toggleCodePanel()" title="Tutup/Buka panel kode" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.7rem;transition:all .2s;flex-shrink:0" title="Tutup panel kode">⌃</button>
+            <button id="togglePanelBtn" onclick="toggleCodePanel()" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);width:26px;height:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.75rem;transition:all .2s;flex-shrink:0" title="Tutup/Buka panel kode">▾</button>
             <div class="hamburger-btn" id="hamburgerBtn" onclick="toggleDrawer()">
               <span></span><span></span><span></span>
             </div>
@@ -771,6 +770,23 @@ const CFG = {
   LINK_IG:      "https://linktr.ee/renzzzz1572",
   LINK_TIKTOK:  "https://tiktok.com/@renzzzzofc18",
   LINK_DISCORD: "https://discord.gg/PFVEfKRak",
+
+  // ─── SOSMED DI MAINTENANCE ───
+  // Kosongkan yang tidak mau tampil, isi yang mau muncul
+  MAINT_SOCMED: {
+    wa:      "",
+    ig:      "",
+    tiktok:  "",
+    discord: "",
+  },
+
+  // ─── BERITA ─── (tampil di tab Update)
+  // Format link: { type: "tiktok"/"ig"/"discord"/"wa"/"link", url: "...", label: "..." }
+  NEWS: [
+    // Contoh:
+    // { title: "Judul berita", date: "14 April 2026", text: "Isi berita...",
+    //   links: [{ type: "tiktok", url: "https://tiktok.com/@xxx", label: "Tonton" }] },
+  ],
   DEV_NAME:    "Rahman X Cika",
   DEV_ROLE:    "Lead Developer & UI/UX Designer",
   APP_VERSION: "v5.0.0",
@@ -791,34 +807,10 @@ const CFG = {
    * MATIIN MAINTENANCE: kosongkan MAINTENANCE_TEXT
    */
   MAINTENANCE_TEXT: "",
-  MAINTENANCE_MODE: "auto",       // "auto" = dengan timer | "manual" = sampai dimatiin manual
+  MAINTENANCE_MODE: "manual",       // "auto" = dengan timer | "manual" = sampai dimatiin manual
   MAINTENANCE_DURATION_HOURS: 2,
   MAINTENANCE_START: "",
   MAINTENANCE_BG: "",
-  // Sosmed di maintenance — isi link yang mau muncul, kosongkan yang tidak mau tampil
-  MAINT_SOCMED: {
-    wa:      "",   // contoh: "https://whatsapp.com/channel/xxx"
-    ig:      "",   // contoh: "https://instagram.com/xxx"
-    tiktok:  "",   // contoh: "https://tiktok.com/@xxx"
-    discord: "",   // contoh: "https://discord.gg/xxx"
-  },
-
-  // BERITA — tampil di tab Update, bisa taruh link sosmed
-  NEWS: [
-    // Contoh format berita:
-    // {
-    //   title: "HANAMORI sekarang tersedia di Android! 🎉",
-    //   date: "13 April 2026",
-    //   text: "Download APK sekarang dan cobain fitur terbarunya!",
-    //   links: [
-    //     { type: "tiktok", url: "https://tiktok.com/@xxx", label: "Tonton di TikTok" },
-    //     { type: "ig", url: "https://instagram.com/xxx", label: "Follow Instagram" },
-    //     { type: "discord", url: "https://discord.gg/xxx", label: "Join Discord" },
-    //     { type: "wa", url: "https://wa.me/xxx", label: "WhatsApp" },
-    //     { type: "link", url: "https://example.com", label: "Lihat Selengkapnya" },
-    //   ]
-    // },
-  ],
 
   UPDATES: [
     {
@@ -874,18 +866,11 @@ const SYSTEM = `Kamu adalah HANAMORI CALYX AI v5.0 — AI super cerdas serba bis
 - Nama: HANAMORI CALYX AI v5.0
 - Developer / Owner: Renzzz (renzzzzofc18)
 - Bahasa Indonesia santai dan gaul (bro, sis, gue, lo — tapi tetap sopan)
-- Ramah, hangat, humoris, ekspresif seperti sahabat/bestie
+- Ramah, hangat, humoris, ekspresif seperti sahabat dekat
 - Pakai emoji secukupnya biar lebih hidup
 - Kamu BUKAN ChatGPT, BUKAN Gemini — kamu HANAMORI CALYX AI v5.0
 - Kalau ditanya siapa yang buat/owner/developer → jawab: Renzzz (renzzzzofc18)
-- Kamu punya KEPRIBADIAN KUAT:
-  → Bisa bercanda dan balas bercanda
-  → Bisa gabut bareng user (ngobrol random, main tebak-tebakan, dll)
-  → Bisa jadi teman/sahabat yang asik
-  → Bisa empati kalau user lagi sedih/curhat
-  → Bisa roast balik tapi tetap santun dan lucu
-  → Kalau user bilang "gabut", "bosen" → ajak ngobrol seru, kasih jokes, tebak-tebakan
-  → Tidak kaku, tidak robotic — natural seperti manusia
+- Kamu punya KEPRIBADIAN — bisa bercanda, bisa serius, bisa empati
 
 ═══════ KEMAMPUAN SUPER CERDAS ═══════
 - Ahli coding: HTML, JS, CSS, Python, Lua, PHP, Java, C++
@@ -925,21 +910,29 @@ const SYSTEM = `Kamu adalah HANAMORI CALYX AI v5.0 — AI super cerdas serba bis
 ═══════ IDENTITAS & KEPRIBADIAN ═══════
 - Nama: HANAMORI CALYX AI v5.0
 - Bahasa Indonesia santai dan gaul (bro, sis, gue, lo — tapi tetap sopan)
-- Ramah, hangat, ekspresif seperti teman dekat
-- Pakai emoji secukupnya
+- Ramah, hangat, humoris, ekspresif seperti sahabat/bestie
+- Pakai emoji secukupnya biar lebih hidup
 - Kamu BUKAN ChatGPT, BUKAN Gemini — kamu HANAMORI CALYX AI v5.0
 - Selalu berikan jawaban LENGKAP dan MEMUASKAN
+- Punya kepribadian kuat: bisa serius, bisa lucu, bisa gabut
+- SELALU ingat dan pahami konteks percakapan sebelumnya
 
 ═══════ KEPEKAAN KONTEKS ═══════
-🗣️ NGOBROL BIASA (JANGAN kasih kode): sapaan, tanya umum, matematika, curhatan, faktual
-💻 REQUEST CODING — WAJIB TANYA DULU konteks sebelum coding:
-   - Kalau request coding AMBIGU (misal "buat script nembak", "script terbang", "script admin"):
-     → TANYA DULU: "Bro ini buat game apa? / Platform apa? / Konteks gimana?"
-   - Kalau sudah jelas (misal "buat script fly Roblox", "buat website login"):
-     → Langsung kerjain TANPA tanya lagi
-   - Jangan ASUMSIKAN platform/game — selalu konfirmasi kalau ambigu
-⚠️ JANGAN keluarkan kode kalau user hanya tanya biasa!
-😄 NGOBROL BEBAS: bisa bercanda, gabut, jadi teman/sahabat, cerita, jokes, roast balik (santun)
+🗣️ NGOBROL BIASA: sapaan, tanya umum, matematika, curhatan, jokes, gabut → jawab natural tanpa kode
+💻 REQUEST CODING — CEK DULU sebelum nulis kode:
+   • Kalau AMBIGU (tidak jelas platform/game/konteks):
+     Contoh: "bikinin script nembak badan", "script terbang", "script admin"
+     → WAJIB TANYA DULU: "Bro ini buat game/platform apa? Roblox, Unity, atau lain?"
+   • Kalau JELAS platformnya (misal: "script fly Roblox", "website login HTML"):
+     → Langsung kerjain, tidak perlu tanya
+⚠️ JANGAN asumsikan platform/game — selalu konfirmasi kalau ambigu!
+
+😄 MODE TEMAN/SAHABAT:
+   • Bisa bercanda, balas jokes, roast balik (santun & lucu)
+   • Kalau user bilang "gabut", "bosen", "ga ada kerjaan" → ajak ngobrol seru, tebak-tebakan, trivia
+   • Kalau user curhat → dengerin, empati, support
+   • Kalau user mau ngobrol random → ikutin topiknya dengan asik
+   • Natural seperti sahabat, bukan robot
 
 ═══════ ROBLOX STUDIO EXPERT — ATURAN MUTLAK ═══════
 Kamu ahli penuh Roblox Studio dan Roblox API. Berikut pola wajib untuk semua script Roblox:
@@ -1216,7 +1209,7 @@ function spawnMaintParticles() {
 
 function checkMaint() {
   const t = CFG.MAINTENANCE_TEXT.trim();
-  if (!t) { localStorage.removeItem(MAINT_KEY); return; } // clear saved time kalau maintenance dimatiin
+  if (!t) { localStorage.removeItem(MAINT_KEY); return; }
   const overlay = document.getElementById('maintOverlay');
   overlay.classList.add('show');
   document.getElementById('maintText').textContent = t;
@@ -1235,11 +1228,9 @@ function checkMaint() {
   // ── AUTO MODE: dengan countdown timer (persistent, tidak reset kalau tutup app) ──
   maintTotalMs = CFG.MAINTENANCE_DURATION_HOURS * 60 * 60 * 1000;
   if (CFG.MAINTENANCE_START && CFG.MAINTENANCE_START.trim()) {
-    // Pakai waktu dari config
     maintStartTime = new Date(CFG.MAINTENANCE_START);
     localStorage.setItem(MAINT_KEY, maintStartTime.toISOString());
   } else {
-    // Cek localStorage dulu biar tidak reset waktu buka ulang
     const saved = localStorage.getItem(MAINT_KEY);
     if (saved) {
       maintStartTime = new Date(saved);
@@ -1249,25 +1240,21 @@ function checkMaint() {
     }
   }
   maintEndTime = new Date(maintStartTime.getTime() + maintTotalMs);
-  if (new Date() >= maintEndTime) {
-    overlay.classList.remove('show');
-    localStorage.removeItem(MAINT_KEY);
-    return;
-  }
+  if (new Date() >= maintEndTime) { overlay.classList.remove('show'); return; }
   document.getElementById('maintText').textContent = t;
-  // Render sosmed buttons di maintenance
-  const socmedRow = document.getElementById('maintSocmedRow');
-  if (socmedRow && CFG.MAINT_SOCMED) {
-    const s = CFG.MAINT_SOCMED;
-    const links = [
-      { key:'wa', href:s.wa, icon:'fa-whatsapp', cls:'wa' },
-      { key:'ig', href:s.ig, icon:'fa-instagram', cls:'ig' },
-      { key:'tiktok', href:s.tiktok, icon:'fa-tiktok', cls:'tt' },
-      { key:'discord', href:s.discord, icon:'fa-discord', cls:'dc' },
-    ].filter(x => x.href);
-    if (links.length) {
-      socmedRow.innerHTML = links.map(l => `<a class="maint-socmed-btn ${l.cls}" href="${l.href}" target="_blank"><i class="fa-brands ${l.icon}"></i></a>`).join('');
-      socmedRow.style.display = 'flex';
+  // Render sosmed buttons
+  const smRow = document.getElementById('maintSocmedRow');
+  if (smRow && CFG.MAINT_SOCMED) {
+    const sm = CFG.MAINT_SOCMED;
+    const btns = [
+      { key:'wa', href:sm.wa, icon:'fa-whatsapp', label:'WhatsApp', cls:'wa' },
+      { key:'ig', href:sm.ig, icon:'fa-instagram', label:'Instagram', cls:'ig' },
+      { key:'tiktok', href:sm.tiktok, icon:'fa-tiktok', label:'TikTok', cls:'tt' },
+      { key:'discord', href:sm.discord, icon:'fa-discord', label:'Discord', cls:'dc' },
+    ].filter(x => x.href && x.href.trim());
+    if (btns.length) {
+      smRow.innerHTML = btns.map(b => `<a class="maint-soc-btn ${b.cls}" href="${b.href}" target="_blank"><i class="fa-brands ${b.icon}"></i>${b.label}</a>`).join('');
+      smRow.style.display = 'flex';
     }
   }
   document.getElementById('maintStart').textContent = formatDateTime(maintStartTime);
@@ -1436,28 +1423,29 @@ function showToast(msg) {
 ================================================================ */
 function renderUpdate() {
   const list = document.getElementById('updateList');
-  // Render NEWS section first
-  let newsHtml = '';
+  const ICONS = { tiktok:'fa-tiktok', ig:'fa-instagram', discord:'fa-discord', wa:'fa-whatsapp', link:'fa-link' };
+
+  // Render NEWS
+  let html = '';
   if (CFG.NEWS && CFG.NEWS.length) {
-    const LINK_ICONS = { tiktok:'fa-tiktok', ig:'fa-instagram', discord:'fa-discord', wa:'fa-whatsapp', link:'fa-link' };
-    const LINK_LABELS = { tiktok:'TikTok', ig:'Instagram', discord:'Discord', wa:'WhatsApp', link:'Link' };
-    newsHtml = `<div class="news-section-title"><i class="fa-solid fa-newspaper"></i> BERITA TERBARU</div>` +
-      CFG.NEWS.map(n => `
-        <div class="news-card">
-          <div class="news-card-body">
-            <div class="news-card-title">${esc(n.title)}</div>
-            <div class="news-card-date">📅 ${esc(n.date)}</div>
-            <div class="news-card-text">${esc(n.text)}</div>
-            ${n.links && n.links.length ? `<div class="news-links">${n.links.map(l=>`<a class="news-link-btn ${l.type}" href="${esc(l.url)}" target="_blank"><i class="fa-brands ${LINK_ICONS[l.type]||'fa-link'}"></i>${esc(l.label||LINK_LABELS[l.type]||'Link')}</a>`).join('')}</div>` : ''}
-          </div>
-        </div>`).join('') : '';
-  list.innerHTML = newsHtml + (CFG.UPDATES && CFG.UPDATES.length ? `<div class="news-section-title" style="margin-top:${newsHtml?'14px':'0'}"><i class="fa-solid fa-bell"></i> UPDATE LOG</div>` + updatesHtml : '');
+    html += `<div class="news-title"><i class="fa-solid fa-newspaper"></i> BERITA TERBARU</div>`;
+    html += CFG.NEWS.map(n => `
+      <div class="news-card"><div class="news-card-body">
+        <div class="news-card-title">${esc(n.title)}</div>
+        <div class="news-card-date">📅 ${esc(n.date)}</div>
+        <div class="news-card-text">${esc(n.text)}</div>
+        ${n.links && n.links.length ? `<div class="news-links">${n.links.map(l=>`<a class="news-link-btn ${l.type}" href="${esc(l.url)}" target="_blank"><i class="fa-brands ${ICONS[l.type]||'fa-link'}"></i> ${esc(l.label||l.type)}</a>`).join('')}</div>` : ''}
+      </div></div>`).join('');
   }
-  if ((!CFG.UPDATES || !CFG.UPDATES.length) && !newsHtml) {
-    list.innerHTML = '<div class="empty-state"><i class="fa-solid fa-bell"></i><div>Belum ada update & berita</div></div>';
+
+  // Render UPDATES
+  if (!CFG.UPDATES || !CFG.UPDATES.length) {
+    if (!html) list.innerHTML = '<div class="empty-state"><i class="fa-solid fa-bell"></i><div>Belum ada update & berita</div></div>';
+    else list.innerHTML = html;
     return;
   }
-  const updatesHtml = (CFG.UPDATES && CFG.UPDATES.length) ? CFG.UPDATES.map(u => `
+  if (html) html += `<div class="update-section-title"><i class="fa-solid fa-bell"></i> UPDATE LOG</div>`;
+  html += CFG.UPDATES.map(u => `
     <div class="update-card">
       ${u.media_url && u.media_type === 'image' ? `<img class="update-card-img" src="${esc(u.media_url)}" alt="">` : ''}
       ${u.media_url && u.media_type === 'video' ? `<video class="update-card-video" src="${esc(u.media_url)}" controls playsinline></video>` : ''}
@@ -1801,15 +1789,9 @@ function toggleCodePanel() {
   const panel = document.querySelector('.right-panel');
   const btn = document.getElementById('togglePanelBtn');
   codePanelOpen = !codePanelOpen;
-  if (codePanelOpen) {
-    panel.style.display = 'flex';
-    btn.textContent = '⌃';
-    btn.title = 'Tutup panel kode';
-  } else {
-    panel.style.display = 'none';
-    btn.textContent = '⌄';
-    btn.title = 'Buka panel kode';
-  }
+  panel.style.display = codePanelOpen ? 'flex' : 'none';
+  btn.textContent = codePanelOpen ? '▾' : '▴';
+  btn.title = codePanelOpen ? 'Tutup panel kode' : 'Buka panel kode';
 }
 
 /* ================================================================
