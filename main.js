@@ -1288,12 +1288,12 @@ async function sendMessage() {
   try {
     // Smart model routing
     function pickModel(p, hasImage) {
-      if (hasImage) return 'meta-llama/llama-4-scout-17b-16e-instruct'; // vision support
+      if (hasImage) return 'meta-llama/llama-3.2-11b-vision-instruct:free'; // vision support (free)
       const lower = (p||'').toLowerCase();
       if (/script|html|css|javascript|python|lua|kode|coding|website|buat\s*(web|app|gui|script)|bikin|generate\s*code/.test(lower)) {
-        return 'meta-llama/llama-4-scout-17b-16e-instruct'; // best for coding
+        return 'mistralai/mistral-small-3.1-24b-instruct:free'; // best for coding (free)
       }
-      return 'meta-llama/llama-4-scout-17b-16e-instruct';
+      return 'meta-llama/llama-3.3-70b-instruct:free'; // default (free)
     }
     const hasImage = userContent.some(x => x.type === 'image_url');
     const chosenModel = pickModel(prompt, hasImage);
@@ -1310,7 +1310,7 @@ async function sendMessage() {
       },
       body: JSON.stringify({
         model: chosenModel,
-        max_tokens: 8192,
+        max_tokens: 800,
         temperature: chosenTemp,
         messages: [{ role: 'system', content: SYSTEM }, ...chatHistory]
       })
