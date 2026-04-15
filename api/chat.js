@@ -8,7 +8,7 @@
 ================================================================ */
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || '';
-const MODEL = 'openai/gpt-4o-mini'; // Ganti sesuai model OpenRouter lo
+const MODEL = 'OPENROUTER_API_KEY'; // Ganti sesuai model OpenRouter lo
 
 export default async function handler(req, res) {
   // CORS headers — wajib biar bisa diakses dari browser
