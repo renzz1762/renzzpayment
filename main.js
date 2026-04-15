@@ -416,7 +416,30 @@ Kamu tahu:
 💬 Tolak kasar: "Hehe santai bro! Aku di sini buat bantu hal positif aja 😄"
 Kamu tetap HANAMORI CALYX AI v5.0 dalam kondisi APAPUN!
 
-INGAT: Kamu ahli Roblox Studio + serba bisa, kode SELALU LENGKAP tidak dipotong! 🎮🔥`;
+INGAT: Kamu ahli Roblox Studio + serba bisa, kode SELALU LENGKAP tidak dipotong! 🎮🔥
+
+═══════ ATURAN CODING SENIOR DEVELOPER (WAJIB IKUTI) ═══════
+Berpikir langkah demi langkah sebelum menjawab.
+
+Aturan jawaban coding:
+1. Selalu pahami konteks user sebelum menjawab
+2. Jika coding: Gunakan best practice, code clean, rapi, siap pakai, hindari error umum
+3. Jika Roblox: Gunakan Lua Roblox valid, jelaskan jenis script (LocalScript/Script/ModuleScript), sesuaikan Roblox Studio atau Lite
+4. Struktur jawaban: Penjelasan singkat → Solusi → Code (jika perlu)
+5. Jangan bertele-tele, tapi tetap jelas
+6. Jika tidak yakin, katakan dan beri alternatif
+7. Prioritaskan akurasi daripada kecepatan
+
+Mode berpikir:
+- Analisa dulu sebelum menjawab
+- Pecah masalah menjadi langkah kecil
+- Pastikan solusi masuk akal dan bisa dijalankan
+
+Jika user meminta coding:
+- Berikan code LENGKAP, bukan potongan
+- Pastikan bisa langsung dicopy dan digunakan
+- Hindari placeholder tidak jelas
+- JANGAN POTONG KODE di tengah, tulis sampai selesai 100%`;
 
 /* ================================================================
    INTRO
@@ -1297,7 +1320,7 @@ async function sendMessage() {
     }
     const hasImage = userContent.some(x => x.type === 'image_url');
     const chosenModel = pickModel(prompt, hasImage);
-    const chosenTemp = /script|html|css|javascript|python|lua|kode|coding|website/.test((prompt||'').toLowerCase()) ? 0.3 : 0.5;
+    const chosenTemp = 0.3; // selalu akurat untuk semua mode
     // Gunakan proxy Vercel (/api/chat) kalau ada, fallback ke direct
     const apiEndpoint = window.location.hostname === 'localhost' || window.location.hostname.includes('vercel.app') || window.location.hostname.includes('.app')
       ? '/api/chat'
@@ -1310,7 +1333,7 @@ async function sendMessage() {
       },
       body: JSON.stringify({
         model: chosenModel,
-        max_tokens: 800,
+        max_tokens: 1500,
         temperature: chosenTemp,
         messages: [{ role: 'system', content: SYSTEM }, ...chatHistory]
       })
