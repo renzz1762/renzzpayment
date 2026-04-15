@@ -1310,7 +1310,7 @@ async function sendMessage() {
       },
       body: JSON.stringify({
         model: chosenModel,
-        max_tokens: 99999,
+        max_tokens: 4000,
         temperature: chosenTemp,
         messages: [{ role: 'system', content: SYSTEM }, ...chatHistory]
       })
