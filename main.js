@@ -1288,12 +1288,12 @@ async function sendMessage() {
   try {
     // Smart model routing
     function pickModel(p, hasImage) {
-      if (hasImage) return 'google/gemma-3-27b-it:free'; // vision support (free, stable)
+      if (hasImage) return 'meta-llama/llama-3.2-11b-vision-instruct:free';
       const lower = (p||'').toLowerCase();
       if (/script|html|css|javascript|python|lua|kode|coding|website|buat\s*(web|app|gui|script)|bikin|generate\s*code/.test(lower)) {
-        return 'google/gemma-3-27b-it:free'; // coding (free, stable)
+        return 'deepseek/deepseek-r1-0528:free';
       }
-      return 'google/gemma-3-27b-it:free'; // default (free, stable)
+      return 'deepseek/deepseek-chat-v3-0324:free';
     }
     const hasImage = userContent.some(x => x.type === 'image_url');
     const chosenModel = pickModel(prompt, hasImage);
