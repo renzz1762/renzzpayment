@@ -1,9 +1,6 @@
 /* ================================================================
-   HANAMORI CALYX AI — Vercel API Proxy
-   By renzzzzofc18 | v5.2
+   HANAMORI CALYX AI — Vercel API Proxy v5.3
 ================================================================ */
-
-const MODEL = 'meta-llama/llama-3.3-70b-instruct:free';
 
 export default async function handler(req, res) {
   const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || '';
@@ -16,18 +13,15 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: { message: 'Method not allowed' } });
 
   if (!OPENROUTER_API_KEY) {
-    return res.status(500).json({ error: { message: 'API key tidak ditemukan. Set OPENROUTER_API_KEY di Vercel env.' } });
+    return res.status(500).json({ error: { message: 'API key tidak ditemukan.' } });
   }
 
   try {
     const body = req.body;
 
-    // Ganti openrouter/free ke model valid — model ID itu tidak bisa dikirim langsung ke API
-    let model = body.model || MODEL;
-    if (!model || model === 'openrouter/free') model = MODEL;
-
+    // Selalu pakai openrouter/free — router resmi OpenRouter, otomatis pilih model gratis aktif
     const orBody = {
-      model: model,
+      model: 'openrouter/free',
       max_tokens: body.max_tokens || 4000,
       temperature: body.temperature ?? 0.3,
       messages: body.messages || [],
