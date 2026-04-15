@@ -1,81 +1,78 @@
 /* ================================================================
-   HANAMORI CALYX AI — Vercel API Proxy
-   By renzzzzofc18 | v5.1
-   - Proxy ke OpenRouter AI
-   - Support web search tools
-   - Support max_tokens tinggi (4000+)
-   - CORS enabled untuk akses dari browser
+   HANAMORI CALYX AI — Vercel API Proxy v5.4
+   Pakai Anthropic API langsung (Claude) — lebih stabil
 ================================================================ */
 
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || '';
-const MODEL = 'openai/gpt-4o-mini'; // Ganti sesuai model OpenRouter lo
-
 export default async function handler(req, res) {
-  // CORS headers — wajib biar bisa diakses dari browser
+  const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || '';
+
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: { message: 'Method not allowed' } });
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: { message: 'Method not allowed' } });
+  if (!ANTHROPIC_API_KEY) {
+    return res.status(500).json({ error: { message: 'ANTHROPIC_API_KEY belum di-set di Vercel.' } });
   }
 
   try {
     const body = req.body;
+    const messages = (body.messages || []).filter(m => m.role !== 'system');
+    const systemMsg = (body.messages || []).find(m => m.role === 'system');
 
-    // Build request to OpenRouter — forward semua parameter termasuk tools
-    const orBody = {
-      model: body.model || MODEL,
+    // Normalize message content (handle array format dari frontend)
+    const normalizedMessages = messages.map(m => {
+      if (Array.isArray(m.content)) {
+        // Ada image atau multi-part
+        const parts = m.content.map(part => {
+          if (part.type === 'text') return { type: 'text', text: part.text };
+          if (part.type === 'image_url') {
+            const url = part.image_url?.url || '';
+            if (url.startsWith('data:')) {
+              const [meta, data] = url.split(',');
+              const mediaType = meta.replace('data:', '').replace(';base64', '');
+              return { type: 'image', source: { type: 'base64', media_type: mediaType, data } };
+            }
+          }
+          return { type: 'text', text: JSON.stringify(part) };
+        });
+        return { role: m.role, content: parts };
+      }
+      return { role: m.role, content: m.content };
+    });
+
+    const anthropicBody = {
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: body.max_tokens || 4000,
-      temperature: body.temperature ?? 0.3,
-      messages: body.messages || [],
+      messages: normalizedMessages,
+      ...(systemMsg ? { system: typeof systemMsg.content === 'string' ? systemMsg.content : JSON.stringify(systemMsg.content) } : {}),
     };
 
-    // Forward tools kalau ada (web search, dll)
-    if (body.tools && body.tools.length > 0) {
-      orBody.tools = body.tools;
-    }
-
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'HTTP-Referer': 'https://hanamori-calyx.vercel.app',
-        'X-Title': 'HANAMORI CALYX AI v5.0',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
       },
-      body: JSON.stringify(orBody),
+      body: JSON.stringify(anthropicBody),
     });
 
     const data = await response.json();
-
     if (!response.ok) {
-      return res.status(response.status).json(data);
+      return res.status(response.status).json({ error: { message: data?.error?.message || 'Anthropic API error' } });
     }
 
-    // Normalize response — handle tool_use blocks (web search)
-    // Jika ada tool_use blocks, extract text saja ke format standard
-    if (data.content && Array.isArray(data.content)) {
-      const textOnly = data.content
-        .filter(b => b.type === 'text')
-        .map(b => b.text)
-        .join('');
-      // Return dalam format OpenRouter-compatible untuk main.js
-      return res.status(200).json({
-        choices: [{ message: { content: textOnly } }],
-        _raw: data,
-      });
-    }
+    // Normalize ke format OpenAI-compatible biar main.js tidak perlu diubah
+    const text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+    return res.status(200).json({
+      choices: [{ message: { role: 'assistant', content: text } }],
+    });
 
-    return res.status(200).json(data);
   } catch (err) {
     console.error('Proxy error:', err);
-    return res.status(500).json({
-      error: { message: 'Server error: ' + err.message }
-    });
+    return res.status(500).json({ error: { message: 'Server error: ' + err.message } });
   }
 }
