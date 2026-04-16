@@ -62,7 +62,7 @@ const CFG = {
    *
    * MATIIN MAINTENANCE: kosongkan MAINTENANCE_TEXT
    */
-  MAINTENANCE_TEXT: "Mohon maaf untuk sekarang HC AI lagi mengalami masalah di API KEY untuk sementara kita tutup dulu yah nanti kalo udah UPGRADE API KEKEY bakal ada pemberitahuan dari DEVELOPER HC 🙏",
+  MAINTENANCE_TEXT: "Mohon maaf untuk sekarang HC AI lagi mengalami masalah di API KEY untuk sementara kita tutup dulu yah nanti kalo udah UPGRADE API KEY bakal ada pemberitahuan dari DEVELOPER HC 🙏",
   MAINTENANCE_MODE: "manual",       // "auto" = dengan timer | "manual" = sampai dimatiin manual
   MAINTENANCE_DURATION_HOURS: 2,
   MAINTENANCE_START: "",
