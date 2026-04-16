@@ -62,7 +62,7 @@ const CFG = {
    *
    * MATIIN MAINTENANCE: kosongkan MAINTENANCE_TEXT
    */
-  MAINTENANCE_TEXT: "Mohon maaf untuk sekarang HC AI lagi mengalami masalah di API KEY untuk sementara kita tutup dulu yah nanti kalo udah UPGRADE API KEY bakal ada pemberitahuan dari DEVELOPER HC 🙏",
+  MAINTENANCE_TEXT: "Aplikasi HC AI resmi dihentikan secara permanen Keputusan ini diambil karena berbagai kendala yang belum dapat kami perbaiki secara maksimal Developer sudah berusaha melakukan perbaikan namun hasilnya belum memuaskan Selain itu tingginya ekspektasi dan kurangnya kesabaran dari sebagian pengguna membuat proses pengembangan menjadi tidak kondusif Dengan pertimbangan tersebut layanan HC AI resmi kami hentikan secara permanen Ke depannya kami harap pengguna dapat lebih memahami bahwa setiap proses membutuhkan waktu dan kesabaran Terima kasih untuk yang tetap mendukung",
   MAINTENANCE_MODE: "manual",       // "auto" = dengan timer | "manual" = sampai dimatiin manual
   MAINTENANCE_DURATION_HOURS: 2,
   MAINTENANCE_START: "",
