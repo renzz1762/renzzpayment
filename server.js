@@ -235,6 +235,20 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// ⚠️ Maintenance mode is controlled 100% from Vercel env vars — nothing is
+// hardcoded and nothing lives client-side, so users can't fake/hide it via
+// devtools. Set these in Vercel: Project → Settings → Environment Variables:
+//   MAINTENANCE_MESSAGE -> the text shown to users. Leave EMPTY/unset to
+//                           keep the site fully live (overlay never shows).
+//   MAINTENANCE_TITLE   -> optional custom title (has a default below).
+// To turn maintenance ON: fill MAINTENANCE_MESSAGE and redeploy.
+// To turn it OFF: clear MAINTENANCE_MESSAGE and redeploy.
+app.get('/api/maintenance', (req, res) => {
+  const message = (process.env.MAINTENANCE_MESSAGE || '').trim();
+  const title = (process.env.MAINTENANCE_TITLE || '').trim() || '🛠 Sedang Maintenance';
+  res.json({ active: message.length > 0, title, message });
+});
+
 app.post('/api/process', requireAuth, upload.single('audio'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'File audio wajib diupload' });
 
