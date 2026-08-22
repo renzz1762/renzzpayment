@@ -19,17 +19,10 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ⚠️ Vercel serverless functions can only write to os.tmpdir() (/tmp) — the
-// rest of the filesystem, including __dirname, is read-only. Writing there
-// crashes the function on every request. Using os.tmpdir() works both on
-// Vercel and when running locally on your own machine.
-const RUNTIME_DIR = path.join(os.tmpdir(), 'renz-audio');
-const UPLOAD_DIR = path.join(RUNTIME_DIR, 'tmp_uploads');
-const OUTPUT_DIR = path.join(RUNTIME_DIR, 'tmp_output');
-const DATA_DIR = path.join(RUNTIME_DIR, 'data');
+const UPLOAD_DIR = path.join(os.tmpdir(), 'renz-audio', 'tmp_uploads');
+const OUTPUT_DIR = path.join(os.tmpdir(), 'renz-audio', 'tmp_output');
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-fs.mkdirSync(DATA_DIR, { recursive: true });
 
 const upload = multer({ dest: UPLOAD_DIR, limits: { fileSize: 200 * 1024 * 1024 } });
 
@@ -40,54 +33,18 @@ const SAMPLE_RATE = 44100;
 const DAILY_LIMIT = 2;
 
 // ---------- auth / users ----------
-// IMPORTANT (Vercel): the filesystem on Vercel serverless functions is
-// read-only/ephemeral — a local users.json file does NOT survive between
-// requests or deployments. So user data (owner/vip/vvip accounts) is stored
-// in Redis (Vercel KV or Upstash Redis, both use the same REST API) when the
-// KV_REST_API_URL / KV_REST_API_TOKEN env vars are present. If they are not
-// present (e.g. running locally on your own machine), it falls back to the
-// local users.json file so you can still develop without setting up Redis.
-const USERS_FILE = path.join(DATA_DIR, 'users.json');
-const USERS_KEY = 'renz:users';
+// ⚠️ Vercel serverless functions can only write to os.tmpdir() (/tmp) — the
+// rest of the filesystem, including __dirname, is read-only. Writing there
+// crashes the function on EVERY request. This is the actual reason logins
+// were failing before, regardless of any database setup.
+const RUNTIME_DIR = path.join(os.tmpdir(), 'renz-audio');
+const USERS_FILE = path.join(RUNTIME_DIR, 'users.json');
 
-const KV_URL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-const KV_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
-const useKV = Boolean(KV_URL && KV_TOKEN);
-
-async function kvGet(key) {
-  const res = await fetch(`${KV_URL}/get/${encodeURIComponent(key)}`, {
-    headers: { Authorization: `Bearer ${KV_TOKEN}` }
-  });
-  if (!res.ok) throw new Error(`KV get gagal (${res.status})`);
-  const data = await res.json();
-  return data.result ?? null;
-}
-
-async function kvSet(key, valueStr) {
-  const res = await fetch(`${KV_URL}/set/${encodeURIComponent(key)}`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${KV_TOKEN}` },
-    body: valueStr
-  });
-  if (!res.ok) throw new Error(`KV set gagal (${res.status})`);
-}
-
-async function loadUsersFromStore() {
-  if (useKV) {
-    const raw = await kvGet(USERS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  }
+function loadUsers() {
   try { return JSON.parse(fs.readFileSync(USERS_FILE, 'utf8')); } catch { return []; }
 }
-
-let users = [];
-
-async function saveUsers() {
-  if (useKV) {
-    await kvSet(USERS_KEY, JSON.stringify(users));
-  } else {
-    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
-  }
+function saveUsers() {
+  fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
 }
 
 function todayStr() {
@@ -105,21 +62,24 @@ function getUsage(user) {
 }
 function hasAutoAccess(user) {
   if (user.role === 'owner') return true;
-  if ((user.plan === 'vip' || user.plan === 'vvip') && user.planExpiresAt && user.planExpiresAt > Date.now()) return true;
+  if (user.plan === 'vip' || user.plan === 'vvip') {
+    // Fixed VIP/VVIP accounts below have no expiry (planExpiresAt = null),
+    // meaning they're always active until you change the password yourself.
+    if (!user.planExpiresAt) return true;
+    return user.planExpiresAt > Date.now();
+  }
   return false;
 }
 function publicUser(user) {
   const usage = getUsage(user);
   const autoAccess = hasAutoAccess(user);
-  // Owner AND active VIP/VVIP = unlimited converts, no daily cap at all.
+  // Owner AND VIP/VVIP = unlimited converts, no daily cap at all.
   // Only plain/free accounts are capped at DAILY_LIMIT per day.
   const unlimited = user.role === 'owner' || autoAccess;
   return {
     username: user.username,
     role: user.role,
     plan: user.plan || 'free',
-    planExpiresAt: user.planExpiresAt || null,
-    planDaysLeft: user.planExpiresAt ? Math.max(0, Math.ceil((user.planExpiresAt - Date.now()) / 86400000)) : null,
     autoAccess,
     limit: unlimited ? null : DAILY_LIMIT,
     used: usage.count,
@@ -127,58 +87,62 @@ function publicUser(user) {
   };
 }
 
-// ⚠️ Owner login now comes ONLY from environment variables — nothing is
-// hardcoded here anymore. Set these in Vercel: Project → Settings →
-// Environment Variables:
-//   OWNER_USERNAME = your chosen owner username
-//   OWNER_PASSWORD = your chosen owner password
-// then redeploy. If they are missing, no owner account is created and a
-// warning is printed to the server logs.
-const OWNER_USERNAME = process.env.OWNER_USERNAME;
-const OWNER_PASSWORD = process.env.OWNER_PASSWORD;
+// ⚠️ All three accounts below come ONLY from environment variables — nothing
+// is hardcoded in this file. Set these in Vercel: Project → Settings →
+// Environment Variables, then redeploy:
+//   OWNER_USERNAME / OWNER_PASSWORD   -> your owner login
+//   VIP_USERNAME   / VIP_PASSWORD     -> the one shared VIP login you hand out
+//   VVIP_USERNAME  / VVIP_PASSWORD    -> the one shared VVIP login you hand out
+// There is no admin panel anymore — if you want to change any of these
+// later, just edit the value in Vercel's Environment Variables and redeploy;
+// the account is recreated fresh from env vars on every server start.
+const FIXED_ACCOUNTS = [
+  { role: 'owner', plan: 'owner', username: process.env.OWNER_USERNAME, password: process.env.OWNER_PASSWORD },
+  { role: 'user', plan: 'vip', username: process.env.VIP_USERNAME, password: process.env.VIP_PASSWORD },
+  { role: 'user', plan: 'vvip', username: process.env.VVIP_USERNAME, password: process.env.VVIP_PASSWORD }
+];
 
-async function ensureOwner() {
-  const existing = users.find((u) => u.role === 'owner');
-  if (existing) {
-    // keep the stored owner login in sync if the env var was rotated
-    if (OWNER_USERNAME && OWNER_PASSWORD &&
-        (existing.username !== OWNER_USERNAME || !(await bcrypt.compare(OWNER_PASSWORD, existing.passwordHash).catch(() => false)))) {
-      existing.username = OWNER_USERNAME;
-      existing.passwordHash = await bcrypt.hash(OWNER_PASSWORD, 10);
-      await saveUsers();
+let users = [];
+
+async function ensureFixedAccounts() {
+  let changed = false;
+  for (const spec of FIXED_ACCOUNTS) {
+    if (!spec.username || !spec.password) {
+      console.warn(`⚠️  ${spec.plan.toUpperCase()}_USERNAME / ${spec.plan.toUpperCase()}_PASSWORD belum di-set di environment variables — akun ${spec.plan} tidak aktif.`);
+      continue;
     }
-    return;
+    let existing = users.find((u) => u.plan === spec.plan && (spec.plan === 'owner' ? u.role === 'owner' : true));
+    const passwordHash = await bcrypt.hash(spec.password, 10);
+    if (existing) {
+      if (existing.username !== spec.username || !(await bcrypt.compare(spec.password, existing.passwordHash).catch(() => false))) {
+        existing.username = spec.username;
+        existing.passwordHash = passwordHash;
+        changed = true;
+      }
+    } else {
+      users.push({
+        id: crypto.randomUUID(),
+        username: spec.username,
+        passwordHash,
+        role: spec.role,
+        plan: spec.plan,
+        planExpiresAt: null, // fixed accounts never expire on their own
+        createdAt: Date.now(),
+        usage: { date: todayStr(), count: 0 }
+      });
+      changed = true;
+    }
   }
-  if (!OWNER_USERNAME || !OWNER_PASSWORD) {
-    console.warn('⚠️  OWNER_USERNAME / OWNER_PASSWORD belum di-set di environment variables. Owner login tidak akan bisa dipakai sampai ini di-set (lalu redeploy).');
-    return;
-  }
-  users.push({
-    id: crypto.randomUUID(),
-    username: OWNER_USERNAME,
-    passwordHash: await bcrypt.hash(OWNER_PASSWORD, 10),
-    role: 'owner',
-    plan: 'owner',
-    planExpiresAt: null,
-    createdAt: Date.now(),
-    usage: { date: todayStr(), count: 0 }
-  });
-  await saveUsers();
+  if (changed) saveUsers();
 }
 
-let usersReady = (async () => {
-  users = await loadUsersFromStore();
-  await ensureOwner();
-})();
+fs.mkdirSync(RUNTIME_DIR, { recursive: true });
+users = loadUsers();
+let usersReady = ensureFixedAccounts();
 
-// Reload the freshest copy of users from the store on every request. This
-// matters on Vercel because multiple serverless instances can be running at
-// once — without this, an account added via the admin panel on one instance
-// might not be visible to logins hitting a different instance.
 app.use(async (req, res, next) => {
   try {
     await usersReady;
-    users = await loadUsersFromStore();
     next();
   } catch (err) {
     next(err);
@@ -188,7 +152,7 @@ app.use(async (req, res, next) => {
 app.use(session({
   // ⚠️ Also set SESSION_SECRET as a fixed env var in Vercel. If left on the
   // random fallback, every cold start / new instance gets a different
-  // secret and can invalidate other instances' login sessions.
+  // secret and can invalidate other people's login sessions.
   secret: process.env.SESSION_SECRET || 'renz-audio-' + crypto.randomBytes(16).toString('hex'),
   resave: false,
   saveUninitialized: false,
@@ -198,13 +162,6 @@ app.use(session({
 function requireAuth(req, res, next) {
   const user = users.find((u) => u.id === req.session.userId);
   if (!user) return res.status(401).json({ error: 'Kamu belum login. Login dulu untuk convert audio.' });
-  req.user = user;
-  next();
-}
-
-function requireOwner(req, res, next) {
-  const user = users.find((u) => u.id === req.session.userId);
-  if (!user || user.role !== 'owner') return res.status(403).json({ error: 'Khusus owner.' });
   req.user = user;
   next();
 }
@@ -227,7 +184,7 @@ app.post('/api/register', async (req, res) => {
     usage: { date: todayStr(), count: 0 }
   };
   users.push(user);
-  await saveUsers();
+  saveUsers();
   req.session.userId = user.id;
   res.json(publicUser(user));
 });
@@ -250,66 +207,6 @@ app.get('/api/me', (req, res) => {
   const user = users.find((u) => u.id === req.session.userId);
   if (!user) return res.status(401).json({ error: 'Belum login' });
   res.json(publicUser(user));
-});
-
-// ---------- admin panel (owner only) — add/remove VIP & VVIP accounts ----------
-app.get('/api/admin/users', requireOwner, (req, res) => {
-  const list = users
-    .filter((u) => u.role !== 'owner')
-    .map((u) => ({
-      username: u.username,
-      plan: u.plan,
-      planExpiresAt: u.planExpiresAt,
-      daysLeft: u.planExpiresAt ? Math.max(0, Math.ceil((u.planExpiresAt - Date.now()) / 86400000)) : null,
-      expired: u.planExpiresAt ? u.planExpiresAt <= Date.now() : false,
-      createdAt: u.createdAt
-    }))
-    .sort((a, b) => b.createdAt - a.createdAt);
-  res.json(list);
-});
-
-app.post('/api/admin/users', requireOwner, async (req, res) => {
-  const { username, password, plan, days } = req.body || {};
-  if (!username || !password) return res.status(400).json({ error: 'Username dan password wajib diisi' });
-  if (String(username).length < 3) return res.status(400).json({ error: 'Username minimal 3 karakter' });
-  if (String(password).length < 4) return res.status(400).json({ error: 'Password minimal 4 karakter' });
-  if (!['vip', 'vvip'].includes(plan)) return res.status(400).json({ error: "Plan harus 'vip' atau 'vvip'" });
-
-  const d = Number(days) > 0 ? Number(days) : (plan === 'vip' ? 10 : 30);
-  const expiresAt = Date.now() + d * 24 * 60 * 60 * 1000;
-
-  let user = findUser(username);
-  if (user && user.role === 'owner') return res.status(400).json({ error: 'Tidak bisa pakai username owner' });
-
-  if (user) {
-    // username sudah ada -> update jadi VIP/VVIP baru (password & masa aktif direset)
-    user.passwordHash = await bcrypt.hash(String(password), 10);
-    user.plan = plan;
-    user.planExpiresAt = expiresAt;
-  } else {
-    user = {
-      id: crypto.randomUUID(),
-      username: String(username).trim(),
-      passwordHash: await bcrypt.hash(String(password), 10),
-      role: 'user',
-      plan,
-      planExpiresAt: expiresAt,
-      createdAt: Date.now(),
-      usage: { date: todayStr(), count: 0 }
-    };
-    users.push(user);
-  }
-  await saveUsers();
-  res.json({ ok: true, username: user.username, plan: user.plan, planExpiresAt: user.planExpiresAt });
-});
-
-app.delete('/api/admin/users/:username', requireOwner, async (req, res) => {
-  const idx = users.findIndex((u) => u.username.toLowerCase() === req.params.username.toLowerCase());
-  if (idx === -1) return res.status(404).json({ error: 'User tidak ditemukan' });
-  if (users[idx].role === 'owner') return res.status(400).json({ error: 'Tidak bisa hapus akun owner' });
-  users.splice(idx, 1);
-  await saveUsers();
-  res.json({ ok: true });
 });
 
 const factorOf = (semi) => Math.pow(2, semi / 12);
@@ -356,7 +253,7 @@ app.post('/api/process', requireAuth, upload.single('audio'), async (req, res) =
       return res.status(429).json({ error: `Limit harian ${DAILY_LIMIT}x convert sudah habis. Coba lagi besok.` });
     }
     usage.count += 1;
-    await saveUsers();
+    saveUsers();
   }
 
   const jobId = crypto.randomUUID();
