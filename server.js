@@ -3,6 +3,7 @@ const cors = require('cors');
 const multer = require('multer');
 const crypto = require('crypto');
 const path = require('path');
+const os = require('os');
 const fs = require('fs');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
@@ -18,9 +19,14 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const UPLOAD_DIR = path.join(__dirname, 'tmp_uploads');
-const OUTPUT_DIR = path.join(__dirname, 'tmp_output');
-const DATA_DIR = path.join(__dirname, 'data');
+// ⚠️ Vercel serverless functions can only write to os.tmpdir() (/tmp) — the
+// rest of the filesystem, including __dirname, is read-only. Writing there
+// crashes the function on every request. Using os.tmpdir() works both on
+// Vercel and when running locally on your own machine.
+const RUNTIME_DIR = path.join(os.tmpdir(), 'renz-audio');
+const UPLOAD_DIR = path.join(RUNTIME_DIR, 'tmp_uploads');
+const OUTPUT_DIR = path.join(RUNTIME_DIR, 'tmp_output');
+const DATA_DIR = path.join(RUNTIME_DIR, 'data');
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 fs.mkdirSync(DATA_DIR, { recursive: true });
