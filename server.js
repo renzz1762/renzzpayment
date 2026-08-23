@@ -62,9 +62,9 @@ function getUsage(user) {
 }
 function hasAutoAccess(user) {
   if (user.role === 'owner') return true;
-  if (user.plan === 'vip' || user.plan === 'vvip') {
-    // Fixed VIP/VVIP accounts below have no expiry (planExpiresAt = null),
-    // meaning they're always active until you change the password yourself.
+  // VIP is permanent — planExpiresAt is always null for the fixed VIP
+  // account below, so once granted it never lapses on its own.
+  if (user.plan === 'vip') {
     if (!user.planExpiresAt) return true;
     return user.planExpiresAt > Date.now();
   }
@@ -73,7 +73,7 @@ function hasAutoAccess(user) {
 function publicUser(user) {
   const usage = getUsage(user);
   const autoAccess = hasAutoAccess(user);
-  // Owner AND VIP/VVIP = unlimited converts, no daily cap at all.
+  // Owner AND VIP = unlimited converts, no daily cap at all.
   // Only plain/free accounts are capped at DAILY_LIMIT per day.
   const unlimited = user.role === 'owner' || autoAccess;
   return {
@@ -87,20 +87,28 @@ function publicUser(user) {
   };
 }
 
-// ⚠️ All three accounts below come ONLY from environment variables — nothing
-// is hardcoded in this file. Set these in Vercel: Project → Settings →
+// ⚠️ Both accounts below come ONLY from environment variables — nothing is
+// hardcoded in this file. Set these in Vercel: Project → Settings →
 // Environment Variables, then redeploy:
 //   OWNER_USERNAME / OWNER_PASSWORD   -> your owner login
 //   VIP_USERNAME   / VIP_PASSWORD     -> the one shared VIP login you hand out
-//   VVIP_USERNAME  / VVIP_PASSWORD    -> the one shared VVIP login you hand out
-// There is no admin panel anymore — if you want to change any of these
-// later, just edit the value in Vercel's Environment Variables and redeploy;
+// VIP status is PERMANENT (never expires on its own) and is only ever
+// granted through this env-var-backed account — there is no client-facing
+// way to become VIP, upgrade a plan, or edit your own role/plan. If you
+// want to change the VIP login later, just edit the env var and redeploy;
 // the account is recreated fresh from env vars on every server start.
 const FIXED_ACCOUNTS = [
   { role: 'owner', plan: 'owner', username: process.env.OWNER_USERNAME, password: process.env.OWNER_PASSWORD },
-  { role: 'user', plan: 'vip', username: process.env.VIP_USERNAME, password: process.env.VIP_PASSWORD },
-  { role: 'user', plan: 'vvip', username: process.env.VVIP_USERNAME, password: process.env.VVIP_PASSWORD }
+  { role: 'user', plan: 'vip', username: process.env.VIP_USERNAME, password: process.env.VIP_PASSWORD }
 ];
+
+// Reserved usernames can never be claimed through public /api/register —
+// this stops anyone from racing a fixed account's username on cold start
+// or from squatting a name that looks like the VIP/owner account.
+function isReservedUsername(username) {
+  const u = String(username || '').toLowerCase();
+  return FIXED_ACCOUNTS.some((spec) => spec.username && spec.username.toLowerCase() === u);
+}
 
 let users = [];
 
@@ -149,6 +157,10 @@ app.use(async (req, res, next) => {
   }
 });
 
+// Vercel sits behind a proxy/load balancer — without this, Express can't
+// tell the request is actually HTTPS, which breaks secure cookies below.
+app.set('trust proxy', 1);
+
 app.use(session({
   // ⚠️ Also set SESSION_SECRET as a fixed env var in Vercel. If left on the
   // random fallback, every cold start / new instance gets a different
@@ -156,7 +168,14 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'renz-audio-' + crypto.randomBytes(16).toString('hex'),
   resave: false,
   saveUninitialized: false,
-  cookie: { httpOnly: true, sameSite: 'lax', maxAge: 30 * 24 * 60 * 60 * 1000 }
+  cookie: {
+    httpOnly: true,
+    sameSite: 'lax',
+    // Secure cookies in production (Vercel is always HTTPS) so the session
+    // token can never leak over an unencrypted connection.
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 30 * 24 * 60 * 60 * 1000
+  }
 }));
 
 function requireAuth(req, res, next) {
@@ -171,8 +190,13 @@ app.post('/api/register', async (req, res) => {
   if (!username || !password) return res.status(400).json({ error: 'Username dan password wajib diisi' });
   if (String(username).length < 3) return res.status(400).json({ error: 'Username minimal 3 karakter' });
   if (String(password).length < 4) return res.status(400).json({ error: 'Password minimal 4 karakter' });
+  if (isReservedUsername(username)) return res.status(409).json({ error: 'Username sudah dipakai' });
   if (findUser(username)) return res.status(409).json({ error: 'Username sudah dipakai' });
 
+  // Plan/role are hardcoded here on purpose — there is no field the client
+  // can send to make itself 'vip' or 'owner'. Every new account starts free,
+  // full stop. The only way to get VIP/owner access is the fixed env-var
+  // account above.
   const user = {
     id: crypto.randomUUID(),
     username: String(username).trim(),
@@ -255,10 +279,10 @@ app.post('/api/process', requireAuth, upload.single('audio'), async (req, res) =
   const modeReq = req.body.mode === 'manual' ? 'manual' : 'linked';
   if (modeReq === 'linked' && !hasAutoAccess(req.user)) {
     fs.unlink(req.file.path, () => {});
-    return res.status(403).json({ error: 'Mode Otomatis khusus VIP/VVIP. Upgrade dulu untuk pakai fitur ini.', vipRequired: true });
+    return res.status(403).json({ error: 'Mode Otomatis khusus VIP. Upgrade dulu untuk pakai fitur ini.', vipRequired: true });
   }
 
-  // Owner and active VIP/VVIP accounts skip the daily counter entirely —
+  // Owner and active VIP accounts skip the daily counter entirely —
   // only plain/free accounts are limited to DAILY_LIMIT per day.
   if (req.user.role !== 'owner' && !hasAutoAccess(req.user)) {
     const usage = getUsage(req.user);
