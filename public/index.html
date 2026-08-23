@@ -172,10 +172,10 @@ button,.dropzone,a.btn,.gate-step-btn{cursor:pointer}
 .mode-btn:not(.on) .vip-tag{background:rgba(255,35,64,.15);color:var(--red2);border:1px solid var(--red-dark)}
 .vip-plans{display:flex;flex-direction:column;gap:10px;margin:16px 0}
 .vip-plan{border:1px solid var(--border2);border-radius:12px;padding:14px 16px;background:var(--surface2)}
-.vip-plan.vvip{border-color:var(--red-dark);background:linear-gradient(135deg,rgba(255,35,64,.08),var(--surface2))}
+.vip-plan.featured{border-color:var(--red-dark);background:linear-gradient(135deg,rgba(255,35,64,.08),var(--surface2))}
 .vip-plan .vp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
 .vip-plan .vp-name{font-weight:900;font-size:13px}
-.vip-plan.vvip .vp-name{color:var(--red2)}
+.vip-plan.featured .vp-name{color:var(--red2)}
 .vip-plan .vp-price{font-family:'JetBrains Mono',monospace;font-weight:900;font-size:14px;color:var(--red2)}
 .vip-plan .vp-desc{font-size:11px;color:var(--dim)}
 .wa-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:10px;background:#25D366;color:#08150c;font-weight:900;font-family:'JetBrains Mono',monospace;font-size:12px;text-decoration:none;letter-spacing:.5px;margin-top:4px}
@@ -348,15 +348,11 @@ button,.dropzone,a.btn,.gate-step-btn{cursor:pointer}
 <div class="rbx-overlay" id="vipOverlay">
   <div class="rbx-box">
     <h3>👑 Mode Otomatis — VIP only</h3>
-    <div class="hint">mode otomatis (auto-fit satu slider) khusus buat member VIP/VVIP. Akun biasa masih bisa convert full pakai mode <b>MANUAL</b> (atur pitch &amp; speed sendiri), tanpa batas fitur.</div>
+    <div class="hint">mode otomatis (auto-fit satu slider) khusus buat member VIP. Akun biasa masih bisa convert full pakai mode <b>MANUAL</b> (atur pitch &amp; speed sendiri), tanpa batas fitur.</div>
     <div class="vip-plans">
-      <div class="vip-plan">
-        <div class="vp-top"><span class="vp-name">VIP</span><span class="vp-price">Rp10.000</span></div>
-        <div class="vp-desc">Aktif 10 hari · buka mode Otomatis</div>
-      </div>
-      <div class="vip-plan vvip">
-        <div class="vp-top"><span class="vp-name">VVIP</span><span class="vp-price">Rp25.000</span></div>
-        <div class="vp-desc">Aktif 30 hari · buka mode Otomatis</div>
+      <div class="vip-plan featured">
+        <div class="vp-top"><span class="vp-name">VIP</span><span class="vp-price">Rp15.000</span></div>
+        <div class="vp-desc">Permanen · buka mode Otomatis selamanya</div>
       </div>
     </div>
     <a class="wa-btn" id="vipWaBtn" href="https://wa.me/62XXXXXXXXXX?text=Halo%2C%20saya%20mau%20beli%20VIP%20Renz%20Audio" target="_blank" rel="noopener"><svg viewBox="0 0 32 32" fill="currentColor"><path d="M16.02 3C9.4 3 4 8.4 4 15.02c0 2.35.68 4.53 1.86 6.38L4 29l7.77-1.83a12.9 12.9 0 0 0 4.25.71h.01c6.62 0 12.02-5.4 12.02-12.03C28.05 8.4 22.65 3 16.02 3zm7.05 17.16c-.3.85-1.53 1.56-2.44 1.75-.62.13-1.44.24-4.2-.9-3.52-1.46-5.79-5.03-5.97-5.26-.17-.23-1.42-1.89-1.42-3.6 0-1.72.9-2.56 1.22-2.92.32-.35.7-.44.93-.44.23 0 .47 0 .67.01.22.01.5-.08.79.6.3.7.99 2.42 1.08 2.6.09.17.15.38.03.6-.12.23-.18.37-.35.57-.17.2-.36.44-.52.6-.17.16-.35.34-.15.67.2.33.87 1.44 1.87 2.34 1.29 1.15 2.37 1.5 2.7 1.67.33.17.53.15.72-.09.2-.24.83-.97 1.05-1.3.22-.33.44-.28.74-.17.3.11 1.9.9 2.23 1.06.33.17.55.25.63.39.08.14.08.79-.22 1.64z"/></svg>ORDER VIA WHATSAPP</a>
