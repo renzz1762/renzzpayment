@@ -1,0 +1,793 @@
+<!-- Dilarang keras menghapus credits 
+Devoleper : Rahmad Tenpoles
+WhatsApp : wa.me/6285764735713
+Instagram : instagram.com/rahmad_tenpoles
+Telegram : t.me/rahmad_tenpoles
+Dilarang keras menghapus credits --><!DOCTYPE html><html lang="id" class="dark"><head>
+    <meta charset="utf-8">
+  
+  <meta name="viewport" id="meta-viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    (function () {
+      var isMobile = (
+        'ontouchstart' in window ||
+        navigator.maxTouchPoints > 0 ||
+        window.matchMedia('(pointer: coarse)').matches
+      );
+      if (isMobile) {
+        
+        var mv = document.getElementById('meta-viewport');
+        if (mv) mv.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+        var s = document.createElement('style');
+        s.textContent = 'html,body{touch-action:manipulation;}';
+        document.head.appendChild(s);
+        document.addEventListener('touchmove', function (e) {
+          if (e.touches && e.touches.length > 1) e.preventDefault();
+        }, { passive: false });
+      } else {
+        
+        var mv = document.getElementById('meta-viewport');
+        if (mv) mv.content = 'width=device-width, initial-scale=1.0';
+      }
+    })();
+  </script>
+    <title>Login - Rahmad Shop</title>
+    <meta name="description" content="Penyedia Panel Pterodactyl, Bot WhatsApp, Nomor Virtual, dan Suntik Sosmed. Proses cepat, otomatis, dan terpercaya.">
+    <link rel="icon" href="images/837edefa89.jpg">
+    
+    <link rel="stylesheet" href="css/themes.css">
+    
+    <script>window.__GLOBAL_THEME__ = '';</script>
+    <script src="js/global-theme.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap');
+
+        
+        :root {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #29394f;
+            --text-main: #ffffff;
+            --text-dim: #94a3b8;
+            --text-muted: #64748b;
+            --border-line: #334155;
+            --btn-hover: #334155;
+            --accent: #6366f1;
+            --accent2: #a855f7;
+            --accent-blue: #6366f1;
+            --accent-blue-hover: #4f46e5;
+            --glow: rgba(99,102,241,0.35);
+        }
+        body.light-mode {
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --bg-input: #f8fafc;
+            --text-main: #1e293b;
+            --text-dim: #64748b;
+            --text-muted: #94a3b8;
+            --border-line: #e2e8f0;
+            --btn-hover: #f1f5f9;
+        }
+
+        * { font-family: 'Inter', system-ui, sans-serif; }
+        body {
+            background: var(--bg-body);
+            min-height: 100vh;
+            transition: background 0.3s ease;
+        }
+
+        
+        .auth-hero {
+            position: relative;
+            overflow: hidden;
+            border-radius: 32px;
+            padding: 38px 20px 64px;
+            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent, var(--accent-blue)) 55%, var(--accent2, var(--accent-blue)) 100%);
+            box-shadow: 0 16px 32px -12px var(--glow);
+        }
+        .hero-blob {
+            position: absolute;
+            border-radius: 999px;
+            filter: blur(2px);
+            opacity: 0.35;
+            background: rgba(255,255,255,0.35);
+        }
+        .hero-blob.b1 { width: 120px; height: 120px; top: -40px; left: -30px; animation: blobFloat 7s ease-in-out infinite; }
+        .hero-blob.b2 { width: 70px; height: 70px; bottom: -10px; right: 10px; opacity: 0.25; animation: blobFloat 6s ease-in-out infinite reverse; }
+        .hero-blob.b3 { width: 46px; height: 46px; top: 30%; right: -12px; opacity: 0.2; animation: blobFloat 5s ease-in-out infinite; }
+        @keyframes blobFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-10px) scale(1.06); }
+        }
+
+        .hero-illustration { position: relative; display: flex; justify-content: center; margin-bottom: 18px; }
+        .hero-core {
+            width: 96px; height: 96px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.16);
+            border: 1.5px solid rgba(255,255,255,0.4);
+            backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 0 10px rgba(255,255,255,0.06), 0 12px 24px -6px rgba(0,0,0,0.35);
+            animation: corePulse 3.2s ease-in-out infinite;
+        }
+        .hero-core img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; }
+        .hero-core i { font-size: 2.1rem; color: #fff; }
+        @keyframes corePulse {
+            0%, 100% { box-shadow: 0 0 0 10px rgba(255,255,255,0.06), 0 12px 24px -6px rgba(0,0,0,0.35); }
+            50% { box-shadow: 0 0 0 16px rgba(255,255,255,0.1), 0 12px 24px -6px rgba(0,0,0,0.35); }
+        }
+        .hero-badge {
+            position: absolute;
+            width: 38px; height: 38px;
+            border-radius: 50%;
+            background: #fff;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 6px 14px -4px rgba(0,0,0,0.4);
+            font-size: 0.95rem;
+            color: var(--accent-blue);
+        }
+        .hero-badge.badge-a { top: -6px; left: calc(50% - 70px); animation: badgeFloat 3.4s ease-in-out infinite; }
+        .hero-badge.badge-b { bottom: -8px; right: calc(50% - 76px); animation: badgeFloat 3.8s ease-in-out infinite 0.4s; }
+        .hero-badge.badge-c { top: 12px; right: calc(50% - 72px); width: 30px; height: 30px; font-size: 0.8rem; animation: badgeFloat 3s ease-in-out infinite 0.8s; }
+        @keyframes badgeFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .hero-text { text-align: center; position: relative; }
+        .hero-text h1 { color: #fff; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1.15rem; text-shadow: 0 2px 8px rgba(0,0,0,0.25); }
+        .hero-text p { color: rgba(255,255,255,0.85); font-size: 0.8rem; margin-top: 2px; }
+
+        
+        .auth-card {
+            position: relative;
+            margin-top: -40px;
+            background: var(--bg-card);
+            border-radius: 28px;
+            padding: 28px 22px 26px;
+            box-shadow: 0 20px 40px -16px rgba(0,0,0,0.35);
+            border: 1px solid var(--border-line);
+            animation: cardIn 0.5s ease;
+        }
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(14px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .af-label { font-size: 0.8rem; font-weight: 600; color: var(--text-dim); margin-bottom: 7px; display: block; }
+        .af-field { position: relative; }
+        .af-icon {
+            position: absolute; left: 6px; top: 50%; transform: translateY(-50%);
+            width: 36px; height: 36px; border-radius: 50%;
+            background: var(--btn-hover);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--accent-blue); font-size: 0.9rem;
+        }
+        .af-input {
+            width: 100%;
+            padding: 13px 18px 13px 54px;
+            border-radius: 999px;
+            border: 1.5px solid var(--border-line);
+            background: var(--bg-input);
+            color: var(--text-main);
+            font-size: 0.88rem;
+            transition: all 0.2s ease;
+        }
+        .af-input::placeholder { color: var(--text-muted); }
+        .af-input:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 0 4px var(--glow); }
+        .af-input.has-toggle { padding-right: 48px; }
+        .af-toggle-eye {
+            position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+            width: 34px; height: 34px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-dim); background: transparent; border: none; cursor: pointer;
+        }
+        .af-toggle-eye:hover { background: var(--btn-hover); color: var(--text-main); }
+
+        .af-btn-primary {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.92rem;
+            color: #fff;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent2, var(--accent-blue)));
+            box-shadow: 0 14px 26px -8px var(--glow);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .af-btn-primary:active { transform: scale(0.985); }
+
+        .af-social-btn {
+            width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            padding: 13px 16px;
+            border-radius: 999px;
+            border: 1.5px solid var(--border-line);
+            background: transparent;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.88rem;
+            transition: all 0.2s ease;
+        }
+        .af-social-btn:hover { background: var(--btn-hover); transform: translateY(-1px); }
+
+        .af-divider { display: flex; align-items: center; gap: 12px; }
+        .af-divider .line { flex: 1; height: 1px; background: var(--border-line); }
+        .af-divider span { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em; color: var(--text-muted); }
+
+        .af-link { color: var(--accent-blue); font-weight: 600; }
+        .af-link:hover { color: var(--accent-blue-hover); }
+
+        .fpw-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.6);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+        }
+        .fpw-overlay.active { display: flex; }
+        .fpw-modal {
+            width: 100%;
+            max-width: 400px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-line);
+            border-radius: 24px;
+            padding: 26px 22px;
+            box-shadow: 0 20px 40px -16px rgba(0,0,0,.4);
+            animation: fpwPop .25s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        @keyframes fpwPop {
+            from { opacity: 0; transform: scale(.94) translateY(10px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .fpw-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+        .fpw-head-title { display: flex; align-items: center; gap: 10px; }
+        .fpw-head-icon {
+            width: 38px; height: 38px;
+            border-radius: 12px;
+            background: var(--btn-hover);
+            color: var(--accent-blue);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+        }
+        .fpw-head-title h3 { font-size: 1rem; font-weight: 700; color: var(--text-main); margin: 0; }
+        .fpw-head-title p { font-size: .72rem; color: var(--text-dim); margin: 2px 0 0; }
+        .fpw-close {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            color: var(--text-dim);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            font-size: .95rem;
+        }
+        .fpw-close:hover { background: var(--btn-hover); color: var(--text-main); }
+        .fpw-step { display: none; }
+        .fpw-step.active { display: block; animation: fpwFade .3s ease; }
+        @keyframes fpwFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .fpw-desc { font-size: .82rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 18px; }
+        .fpw-desc strong { color: var(--text-main); }
+        .fpw-alert {
+            display: none;
+            align-items: flex-start;
+            gap: 8px;
+            border-radius: 14px;
+            padding: 11px 14px;
+            font-size: .78rem;
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+        .fpw-alert.show { display: flex; }
+        .fpw-alert.error { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); color: #f87171; }
+        .fpw-alert.success { background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.3); color: #4ade80; }
+        .otp-box-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 6px; }
+        .otp-box {
+            width: 54px; height: 58px;
+            border-radius: 14px;
+            border: 1.5px solid var(--border-line);
+            background: var(--bg-input);
+            color: var(--text-main);
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            outline: none;
+            transition: all .2s ease;
+        }
+        .otp-box:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 4px var(--glow); }
+        .fpw-timer { text-align: center; font-size: .75rem; color: var(--text-muted); margin: 10px 0 18px; }
+        .fpw-timer strong { color: var(--accent-blue); }
+        .fpw-resend { text-align: center; margin-top: 4px; }
+        .fpw-resend-btn {
+            background: none; border: none; cursor: pointer;
+            color: var(--accent-blue); font-weight: 600; font-size: .82rem;
+        }
+        .fpw-resend-btn:disabled { color: var(--text-muted); cursor: not-allowed; }
+        .fpw-success-icon {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            background: rgba(34,197,94,.12);
+            color: #22c55e;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem;
+            margin: 6px auto 18px;
+        }
+        .fpw-success-text { text-align: center; font-size: .85rem; color: var(--text-dim); margin-bottom: 20px; line-height: 1.6; }
+        .fpw-btn-secondary {
+            width: 100%;
+            padding: 13px;
+            border-radius: 999px;
+            border: 1.5px solid var(--border-line);
+            background: transparent;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: .85rem;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .fpw-btn-secondary:hover { background: var(--btn-hover); }
+        .fpw-loading { opacity: .6; pointer-events: none; }
+    </style>
+    
+    <script src="js/api.js" async="" defer=""></script>
+    
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 sm:p-6">
+    <div class="w-full max-w-[420px]">
+
+        
+        <div class="auth-hero">
+            <span class="hero-blob b1"></span>
+            <span class="hero-blob b2"></span>
+            <span class="hero-blob b3"></span>
+            <div class="hero-illustration">
+                <span class="hero-badge badge-a"><i class="fa-solid fa-lock"></i></span>
+                <span class="hero-badge badge-b"><i class="fa-solid fa-shield-halved"></i></span>
+                <span class="hero-badge badge-c"><i class="fa-solid fa-user"></i></span>
+                <div class="hero-core">
+                    
+                    <img src="images/837edefa89.jpg" alt="Rahmad Shop">
+                    
+                </div>
+            </div>
+            <div class="hero-text">
+                <h1>Rahmad Shop</h1>
+                <p>Selamat datang kembali! 👋</p>
+            </div>
+        </div>
+
+        
+        <div class="auth-card">
+            <div class="text-center mb-6">
+                <h2 class="text-lg font-bold" style="color:var(--text-main)">Masuk ke Akun</h2>
+                <p class="text-xs mt-1" style="color:var(--text-dim)">Akses dashboard Rahmad Shop kamu</p>
+            </div>
+
+            
+            
+
+            
+            
+            <div class="flex items-start gap-3 bg-red-500/10 border border-red-500/30 text-red-400 rounded-2xl p-4 mb-5 text-sm">
+                <i class="fa-solid fa-circle-exclamation mt-0.5 shrink-0"></i>
+                <span>Silakan login terlebih dahulu</span>
+            </div>
+            
+
+            
+            <form action="/login" method="POST" class="space-y-4">
+                <div>
+                    <label class="af-label">Username atau Email</label>
+                    <div class="af-field">
+                        <span class="af-icon"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" name="login" class="af-input" placeholder="Masukkan username atau email" required="" autocomplete="username">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="af-label">Password</label>
+                    <div class="af-field">
+                        <span class="af-icon"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="password" name="password" class="af-input has-toggle" placeholder="Masukkan password" required="" autocomplete="current-password">
+                        <button type="button" onclick="togglePassword()" class="af-toggle-eye" title="Tampilkan/sembunyikan password">
+                            <i class="fa-solid fa-eye" id="eye-icon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between text-xs pt-1">
+                    <label class="flex items-center gap-2 cursor-pointer" style="color:var(--text-dim)">
+                        <input type="checkbox" name="remember" class="w-4 h-4 rounded" style="accent-color: var(--accent-blue)">
+                        <span>Ingat Saya</span>
+                    </label>
+                    <a href="javascript:void(0)" class="af-link" onclick="fpwOpen()">Lupa Password?</a>
+                </div>
+
+                
+                <div class="cf-turnstile" data-sitekey="0x4AAAAAAEBJlMFMNrPsn6LW"></div>
+                
+
+                <button type="submit" class="af-btn-primary mt-1">Masuk</button>
+            </form>
+
+            <div class="af-divider my-6">
+                <div class="line"></div>
+                <span>ATAU</span>
+                <div class="line"></div>
+            </div>
+
+            
+            <a href="/auth/google" class="af-social-btn">
+                <i class="fa-brands fa-google text-red-500"></i>
+                <span>Masuk dengan Google</span>
+            </a>
+
+            <div class="text-center mt-7">
+                <p class="text-sm" style="color:var(--text-dim)">
+                    Belum punya akun?
+                    <a href="/register" class="af-link">Daftar sekarang</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="text-center mt-6 text-xs" style="color:var(--text-muted)">
+            © 2026 Rahmad Shop • Developer: Rahmad Tenpoles
+        </div>
+    </div>
+
+    <div class="fpw-overlay" id="fpwOverlay" onclick="fpwOverlayClick(event)">
+        <div class="fpw-modal" id="fpwModal">
+
+            <div class="fpw-head">
+                <div class="fpw-head-title">
+                    <div class="fpw-head-icon"><i class="fa-solid fa-key"></i></div>
+                    <div>
+                        <h3>Lupa Password</h3>
+                        <p id="fpwStepLabel">Cari akun kamu</p>
+                    </div>
+                </div>
+                <button type="button" class="fpw-close" onclick="fpwClose()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="fpw-alert" id="fpwAlert"></div>
+
+            <div class="fpw-step active" id="fpwStep1">
+                <p class="fpw-desc">Masukkan <strong>email</strong> atau <strong>username</strong> akun kamu. Kami akan mengirimkan kode OTP 4 digit ke email yang terdaftar.</p>
+                <div class="pf-form-group" style="margin-bottom:18px">
+                    <label class="af-label">Email atau Username</label>
+                    <div class="af-field">
+                        <span class="af-icon"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" id="fpwIdentifier" class="af-input" placeholder="Masukkan email atau username" autocomplete="username">
+                    </div>
+                </div>
+                <button type="button" class="af-btn-primary" id="fpwRequestBtn" onclick="fpwRequestOtp()">Kirim Kode OTP</button>
+            </div>
+
+            <div class="fpw-step" id="fpwStep2">
+                <p class="fpw-desc">Masukkan 4 digit kode OTP yang telah dikirim ke <strong id="fpwMaskedEmail">email kamu</strong>.</p>
+                <div class="otp-box-row">
+                    <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="0">
+                    <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="1">
+                    <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="2">
+                    <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="3">
+                </div>
+                <div class="fpw-timer">Kode berlaku selama <strong id="fpwExpiryTimer">05:00</strong></div>
+                <button type="button" class="af-btn-primary" id="fpwVerifyBtn" onclick="fpwVerifyOtp()">Verifikasi Kode</button>
+                <div class="fpw-resend">
+                    <button type="button" class="fpw-resend-btn" id="fpwResendBtn" onclick="fpwResendOtp()">Kirim ulang kode</button>
+                </div>
+            </div>
+
+            <div class="fpw-step" id="fpwStep3">
+                <p class="fpw-desc">Buat password baru untuk akun kamu.</p>
+                <div class="pf-form-group" style="margin-bottom:16px">
+                    <label class="af-label">Password Baru</label>
+                    <div class="af-field">
+                        <span class="af-icon"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="fpwNewPassword" class="af-input has-toggle" placeholder="Minimal 8 karakter" minlength="8" autocomplete="new-password">
+                        <button type="button" onclick="fpwTogglePwd('fpwNewPassword', this)" class="af-toggle-eye"><i class="fa-solid fa-eye"></i></button>
+                    </div>
+                </div>
+                <div class="pf-form-group" style="margin-bottom:18px">
+                    <label class="af-label">Konfirmasi Password Baru</label>
+                    <div class="af-field">
+                        <span class="af-icon"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="fpwConfirmPassword" class="af-input has-toggle" placeholder="Ulangi password baru" minlength="8" autocomplete="new-password">
+                        <button type="button" onclick="fpwTogglePwd('fpwConfirmPassword', this)" class="af-toggle-eye"><i class="fa-solid fa-eye"></i></button>
+                    </div>
+                </div>
+                <button type="button" class="af-btn-primary" id="fpwResetBtn" onclick="fpwResetPassword()">Simpan Password Baru</button>
+            </div>
+
+            <div class="fpw-step" id="fpwStep4">
+                <div class="fpw-success-icon"><i class="fa-solid fa-circle-check"></i></div>
+                <p class="fpw-success-text">Password kamu berhasil direset. Silakan masuk kembali menggunakan password baru.</p>
+                <button type="button" class="af-btn-primary" onclick="fpwClose()">Kembali ke Login</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        
+        function togglePassword() {
+            const password = document.getElementById('password');
+            const eye = document.getElementById('eye-icon');
+            if (password.type === 'password') {
+                password.type = 'text';
+                eye.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                password.type = 'password';
+                eye.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        const FPW_OTP_TTL = 300;
+        const FPW_RESEND_COOLDOWN = 60;
+        let fpwExpiryInterval = null;
+        let fpwResendInterval = null;
+        let fpwResendRemaining = 0;
+
+        function fpwOpen() {
+            document.getElementById('fpwOverlay').classList.add('active');
+            fpwGoStep(1);
+            document.getElementById('fpwIdentifier').value = '';
+            fpwHideAlert();
+        }
+
+        function fpwClose() {
+            document.getElementById('fpwOverlay').classList.remove('active');
+            clearInterval(fpwExpiryInterval);
+            clearInterval(fpwResendInterval);
+        }
+
+        function fpwOverlayClick(e) {
+            if (e.target === e.currentTarget) fpwClose();
+        }
+
+        function fpwGoStep(step) {
+            document.querySelectorAll('.fpw-step').forEach(el => el.classList.remove('active'));
+            document.getElementById('fpwStep' + step).classList.add('active');
+            const labels = {
+                1: 'Cari akun kamu',
+                2: 'Verifikasi kode OTP',
+                3: 'Buat password baru',
+                4: 'Selesai'
+            };
+            document.getElementById('fpwStepLabel').textContent = labels[step] || '';
+            fpwHideAlert();
+        }
+
+        function fpwShowAlert(msg, type) {
+            const el = document.getElementById('fpwAlert');
+            el.textContent = msg;
+            el.className = 'fpw-alert show ' + type;
+        }
+
+        function fpwHideAlert() {
+            const el = document.getElementById('fpwAlert');
+            el.className = 'fpw-alert';
+            el.textContent = '';
+        }
+
+        function fpwSetLoading(btnId, loading) {
+            const btn = document.getElementById(btnId);
+            if (!btn) return;
+            btn.disabled = loading;
+            btn.classList.toggle('fpw-loading', loading);
+        }
+
+        async function fpwRequestOtp() {
+            const identifier = document.getElementById('fpwIdentifier').value.trim();
+            if (!identifier) {
+                fpwShowAlert('Email atau username wajib diisi.', 'error');
+                return;
+            }
+            fpwSetLoading('fpwRequestBtn', true);
+            try {
+                const resp = await fetch('/forgot-password/request', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ identifier })
+                });
+                const data = await resp.json();
+                if (!data.success) {
+                    fpwShowAlert(data.message || 'Gagal mengirim kode OTP.', 'error');
+                    return;
+                }
+                document.getElementById('fpwMaskedEmail').textContent = data.maskedEmail || 'email kamu';
+                fpwClearOtpBoxes();
+                fpwGoStep(2);
+                fpwStartExpiryTimer();
+                fpwStartResendCooldown();
+            } catch (e) {
+                fpwShowAlert('Terjadi kesalahan koneksi. Coba lagi.', 'error');
+            } finally {
+                fpwSetLoading('fpwRequestBtn', false);
+            }
+        }
+
+        async function fpwResendOtp() {
+            if (fpwResendRemaining > 0) return;
+            try {
+                const resp = await fetch('/forgot-password/resend', { method: 'POST' });
+                const data = await resp.json();
+                if (!data.success) {
+                    fpwShowAlert(data.message || 'Gagal mengirim ulang kode OTP.', 'error');
+                    return;
+                }
+                fpwShowAlert(data.message || 'Kode OTP baru telah dikirim.', 'success');
+                fpwClearOtpBoxes();
+                fpwStartExpiryTimer();
+                fpwStartResendCooldown();
+            } catch (e) {
+                fpwShowAlert('Terjadi kesalahan koneksi. Coba lagi.', 'error');
+            }
+        }
+
+        function fpwStartExpiryTimer() {
+            clearInterval(fpwExpiryInterval);
+            let remaining = FPW_OTP_TTL;
+            const el = document.getElementById('fpwExpiryTimer');
+            const render = () => {
+                const m = Math.floor(remaining / 60).toString().padStart(2, '0');
+                const s = (remaining % 60).toString().padStart(2, '0');
+                el.textContent = m + ':' + s;
+            };
+            render();
+            fpwExpiryInterval = setInterval(() => {
+                remaining--;
+                if (remaining <= 0) {
+                    clearInterval(fpwExpiryInterval);
+                    remaining = 0;
+                }
+                render();
+            }, 1000);
+        }
+
+        function fpwStartResendCooldown() {
+            clearInterval(fpwResendInterval);
+            fpwResendRemaining = FPW_RESEND_COOLDOWN;
+            const btn = document.getElementById('fpwResendBtn');
+            const render = () => {
+                if (fpwResendRemaining > 0) {
+                    btn.disabled = true;
+                    btn.textContent = 'Kirim ulang kode (' + fpwResendRemaining + 's)';
+                } else {
+                    btn.disabled = false;
+                    btn.textContent = 'Kirim ulang kode';
+                }
+            };
+            render();
+            fpwResendInterval = setInterval(() => {
+                fpwResendRemaining--;
+                if (fpwResendRemaining <= 0) {
+                    fpwResendRemaining = 0;
+                    clearInterval(fpwResendInterval);
+                }
+                render();
+            }, 1000);
+        }
+
+        function fpwClearOtpBoxes() {
+            document.querySelectorAll('#fpwStep2 .otp-box').forEach(box => box.value = '');
+            const first = document.querySelector('#fpwStep2 .otp-box[data-idx="0"]');
+            if (first) first.focus();
+        }
+
+        function fpwGetOtpValue() {
+            const boxes = document.querySelectorAll('#fpwStep2 .otp-box');
+            let val = '';
+            boxes.forEach(b => val += b.value.trim());
+            return val;
+        }
+
+        document.querySelectorAll('#fpwStep2 .otp-box').forEach((box, idx, list) => {
+            box.addEventListener('input', () => {
+                box.value = box.value.replace(/[^0-9]/g, '').slice(0, 1);
+                if (box.value && idx < list.length - 1) list[idx + 1].focus();
+            });
+            box.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !box.value && idx > 0) list[idx - 1].focus();
+                if (e.key === 'Enter') fpwVerifyOtp();
+            });
+            box.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '').slice(0, 4);
+                text.split('').forEach((ch, i) => { if (list[i]) list[i].value = ch; });
+                if (text.length === 4) list[3].focus();
+            });
+        });
+
+        async function fpwVerifyOtp() {
+            const otp = fpwGetOtpValue();
+            if (otp.length !== 4) {
+                fpwShowAlert('Masukkan 4 digit kode OTP.', 'error');
+                return;
+            }
+            fpwSetLoading('fpwVerifyBtn', true);
+            try {
+                const resp = await fetch('/forgot-password/verify-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ otp })
+                });
+                const data = await resp.json();
+                if (!data.success) {
+                    fpwShowAlert(data.message || 'Kode OTP tidak valid.', 'error');
+                    return;
+                }
+                clearInterval(fpwExpiryInterval);
+                clearInterval(fpwResendInterval);
+                document.getElementById('fpwNewPassword').value = '';
+                document.getElementById('fpwConfirmPassword').value = '';
+                fpwGoStep(3);
+            } catch (e) {
+                fpwShowAlert('Terjadi kesalahan koneksi. Coba lagi.', 'error');
+            } finally {
+                fpwSetLoading('fpwVerifyBtn', false);
+            }
+        }
+
+        function fpwTogglePwd(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        async function fpwResetPassword() {
+            const newPassword = document.getElementById('fpwNewPassword').value;
+            const confirmPassword = document.getElementById('fpwConfirmPassword').value;
+            if (newPassword.length < 8) {
+                fpwShowAlert('Password baru minimal 8 karakter.', 'error');
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                fpwShowAlert('Konfirmasi password tidak cocok.', 'error');
+                return;
+            }
+            fpwSetLoading('fpwResetBtn', true);
+            try {
+                const resp = await fetch('/forgot-password/reset', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ newPassword, confirmPassword })
+                });
+                const data = await resp.json();
+                if (!data.success) {
+                    fpwShowAlert(data.message || 'Gagal mereset password.', 'error');
+                    return;
+                }
+                fpwGoStep(4);
+            } catch (e) {
+                fpwShowAlert('Terjadi kesalahan koneksi. Coba lagi.', 'error');
+            } finally {
+                fpwSetLoading('fpwResetBtn', false);
+            }
+        }
+    </script>
+
+
+</body></html>
