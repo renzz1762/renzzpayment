@@ -360,7 +360,7 @@ footer a:hover{color:var(--p3);}
           <i class="fas fa-server"></i> WA OFFLINE
         </div>
       </div>
-      <div class="hsub">Terhubung langsung ke WhatsApp — Kirim pesan real, bug testing, dan lainnya</div>
+      <div class="hsub">Terhubung langsung ke WhatsApp — Kirim pesan real & bug testing</div>
       <div class="hbtns">
         <a href="https://wa.me/6283178098872" target="_blank" class="btn-o"><i class="fas fa-code"></i> Contact Dev</a>
         <a href="https://whatsapp.com/channel/0029VbC1zvC4NVinIpJqza0h" target="_blank" class="btn-o"><i class="fab fa-whatsapp"></i> Channel</a>
@@ -467,12 +467,15 @@ footer a:hover{color:var(--p3);}
 <script>
 // ============================================================
 //  HEAVEN CROWN V2 - REAL WHATSAPP (NO NPM, 1 FILE HTML)
-//  Menggunakan WhatsApp Web JS via CDN
+//  LANGSUNG KONEK KE WHATSAPP PAKAI BAILEYS VIA CDN
 // ============================================================
 
 // ─── LOAD WHATSAPP WEB JS ──────────────────────────────────
 const waScript = document.createElement('script');
 waScript.src = 'https://cdn.jsdelivr.net/npm/@whiskeysockets/baileys@6.6.0/lib/index.min.js';
+waScript.onload = function() {
+  console.log('✅ Baileys loaded');
+};
 document.head.appendChild(waScript);
 
 let sock = null;
@@ -536,6 +539,16 @@ function doLogout(){
 // ─── INIT WHATSAPP ──────────────────────────────────────────
 async function initWhatsApp() {
   try {
+    // Tunggu library load
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    const baileys = window.whiskeysockets?.baileys || window.Baileys;
+    if (!baileys) {
+      showToast('Loading WhatsApp library...', 'ok');
+      setTimeout(initWhatsApp, 2000);
+      return;
+    }
+
     const { 
       default: makeWASocket,
       DisconnectReason,
@@ -543,14 +556,7 @@ async function initWhatsApp() {
       fetchLatestBaileysVersion,
       Browsers,
       delay
-    } = window.whiskeysockets?.baileys || {};
-
-    if (!makeWASocket) {
-      // Fallback: coba load ulang
-      showToast('Loading WhatsApp library...');
-      setTimeout(initWhatsApp, 2000);
-      return;
-    }
+    } = baileys;
 
     const { state, saveCreds } = await useMultiFileAuthState('sessions');
     const { version } = await fetchLatestBaileysVersion();
@@ -626,7 +632,7 @@ async function initWhatsApp() {
       if (content) {
         console.log(`📩 ${m.pushName || 'Unknown'}: ${content}`);
         
-        // Auto reply untuk command
+        // Auto reply
         if (content.toLowerCase() === 'ping') {
           await sock.sendMessage(m.key.remoteJid, { text: '🏓 Pong! 🟢' });
         }
@@ -745,11 +751,11 @@ const BUG_API_TREE = {
         }
       ]},
       { type: 'folder', id: 'cat-sender', name: 'sender', children: [
-        { type: 'file', id: 'sender-wa', name: 'Sender WA', method: 'POST', url: 'sender/wa',
-          description: 'Kirim pesan real ke nomor WhatsApp',
+        { type: 'file', id: 'sender-wa', name: '📤 Sender WA', method: 'POST', url: 'sender/wa',
+          description: 'Kirim pesan REAL ke nomor WhatsApp — LANGSUNG TERKIRIM!',
           params: [
             { name: 'target', type: 'text', description: 'Nomor tujuan', placeholder: '+628xxxxxxxxxx' },
-            { name: 'message', type: 'text', description: 'Isi pesan', placeholder: 'Tulis pesan...' }
+            { name: 'message', type: 'text', description: 'Isi pesan', placeholder: 'Tulis pesan yang mau dikirim...' }
           ]
         }
       ]},
@@ -957,7 +963,7 @@ async function execAPI(eid) {
   
   // Cek koneksi
   if (!isReady) {
-    showToast('⚠️ WhatsApp tidak terhubung!', 'err');
+    showToast('⚠️ WhatsApp tidak terhubung! Scan QR dulu.', 'err');
     return;
   }
 
@@ -1015,12 +1021,22 @@ async function execAPI(eid) {
       
       case 'sender-wa': {
         const { target, message } = formData;
-        if (!target || !message) throw new Error('Target dan pesan wajib diisi');
+        if (!target) throw new Error('Target nomor wajib diisi');
+        if (!message) throw new Error('Pesan wajib diisi');
+        
         const jid = target.includes('@') ? target : `${target}@s.whatsapp.net`;
         const check = await sock.onWhatsApp(jid);
-        if (!check || check.length === 0) throw new Error('Nomor tidak terdaftar di WhatsApp');
+        if (!check || check.length === 0) throw new Error('❌ Nomor tidak terdaftar di WhatsApp');
+        
         const sent = await sock.sendMessage(jid, { text: message });
-        result = { target, message, messageId: sent.key?.id, status: 'sent' };
+        result = { 
+          target, 
+          message, 
+          messageId: sent.key?.id, 
+          status: '✅ TERKIRIM!',
+          timestamp: new Date().toISOString()
+        };
+        showToast('✅ Pesan terkirim ke ' + target);
         break;
       }
       
@@ -1066,8 +1082,6 @@ async function execAPI(eid) {
     const formatted = JSON.stringify(result, null, 2);
     rb.innerHTML = `<pre class="rp" id="rp-cek">${hl(formatted)}</pre>`;
     responseCache[eid] = { type: 'text', data: formatted };
-    
-    showToast('✅ Eksekusi berhasil!');
     
   } catch (error) {
     rs.textContent = 'ERROR';
@@ -1134,7 +1148,7 @@ window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('mainWrap').classList.remove('app-hidden');
       document.getElementById('mainNavbar2').classList.remove('app-hidden');
       document.getElementById('profile-box').classList.remove('hidden');
-      initWhatsApp();
+      setTimeout(initWhatsApp, 1000);
     } else {
       document.getElementById('login-gate').classList.remove('hidden');
       document.getElementById('mainWrap').classList.add('app-hidden');
@@ -1144,17 +1158,9 @@ window.addEventListener('DOMContentLoaded', () => {
   }, 2000);
 });
 
-// ─── STATUS POLLING ────────────────────────────────────────
-setInterval(() => {
-  if (isReady) {
-    document.getElementById('online-badge').innerHTML = 
-      `<span class="online-dot"></span><span id="online-count">${Math.floor(Math.random() * 50) + 100}</span> Online`;
-  }
-}, 5000);
-
 console.log('👑 HEAVEN CROWN V2 - REAL WHATSAPP');
 console.log('📱 Scan QR di halaman login untuk konek ke WhatsApp');
+console.log('📤 Fitur SENDER WA ada di kategori "sender"');
 </script>
-
 </body>
 </html>
