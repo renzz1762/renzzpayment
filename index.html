@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reach WA Nexus Automation - Real Version</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #4a148c;
+            text-align: center;
+            margin-bottom: 5px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(118, 75, 162, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-danger {
+            padding: 10px 20px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-secondary {
+            padding: 10px 20px;
+            background: #f5f5f5;
+            color: #333;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .button-group .btn-primary {
+            flex: 2;
+        }
+
+        .button-group .btn-secondary {
+            flex: 1;
+        }
+
+        .log-container {
+            margin-top: 20px;
+            background: #1a1a2e;
+            color: #00ff88;
+            padding: 15px;
+            border-radius: 10px;
+            max-height: 450px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .log-container .log-entry {
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .log-container .success {
+            color: #00ff88;
+        }
+
+        .log-container .error {
+            color: #ff6b6b;
+        }
+
+        .log-container .info {
+            color: #4fc3f7;
+        }
+
+        .log-container .warning {
+            color: #ffd93d;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .stat-box {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .stat-box:hover {
+            border-color: #764ba2;
+        }
+
+        .stat-box .number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #764ba2;
+        }
+
+        .stat-box .label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .stat-box.success .number {
+            color: #00c851;
+        }
+
+        .stat-box.error .number {
+            color: #ff4444;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a2e;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #764ba2;
+            border-radius: 10px;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        .badge-success {
+            background: #00c85122;
+            color: #00c851;
+        }
+
+        .badge-error {
+            background: #ff444422;
+            color: #ff4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Reach WA Nexus</h1>
+        <p class="subtitle">Auto Send Reaction ke Channel WhatsApp | Real API | by Mommy Kyuu</p>
+
+        <div class="form-group">
+            <label>🔗 URL Channel WhatsApp</label>
+            <input type="text" id="channelUrl" value="https://whatsapp.com/channel/0029VbAYjQgKrWQulDTYcg2K/1728" placeholder="https://whatsapp.com/channel/...">
+        </div>
+
+        <div class="form-group">
+            <label>😊 Reactions (pisahkan dengan koma)</label>
+            <textarea id="reactions" rows="2">😆, 🥶, 🔥, ❤️, 👍</textarea>
+        </div>
+
+        <div class="form-group">
+            <label>⚙️ Jumlah Pengiriman</label>
+            <input type="number" id="totalSends" value="10" min="1" max="100">
+        </div>
+
+        <div class="form-group">
+            <label>⏱️ Delay Antar Pengiriman (detik)</label>
+            <input type="number" id="delaySeconds" value="3" min="1" max="30">
+        </div>
+
+        <div class="form-group">
+            <div class="checkbox-group">
+                <input type="checkbox" id="useProxy">
+                <label for="useProxy">🌐 Gunakan Proxy (otomatis dari API)</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="checkbox-group">
+                <input type="checkbox" id="autoRetry" checked>
+                <label for="autoRetry">🔄 Auto retry jika gagal</label>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-primary" id="startBtn">▶️ Mulai Kirim Reaksi</button>
+            <button class="btn-secondary" id="stopBtn" style="display:none;">⏹️ Stop</button>
+            <button class="btn-secondary" id="clearLogBtn">🗑️ Clear Log</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-box success">
+                <div class="number" id="successCount">0</div>
+                <div class="label">✅ Berhasil</div>
+            </div>
+            <div class="stat-box error">
+                <div class="number" id="failCount">0</div>
+                <div class="label">❌ Gagal</div>
+            </div>
+            <div class="stat-box">
+                <div class="number" id="totalCount">0</div>
+                <div class="label">📊 Total</div>
+            </div>
+            <div class="stat-box">
+                <div class="number" id="retryCount">0</div>
+                <div class="label">🔄 Retry</div>
+            </div>
+        </div>
+
+        <div class="log-container" id="logContainer">
+            <div class="log-entry info">🔄 System ready... Menunggu perintah</div>
+        </div>
+    </div>
+
+    <script>
+        // =============================================
+        // REACH WA NEXUS AUTOMATION - REAL VERSION
+        // Author: Mommy Kyuu
+        // API: https://reach-wa-nexus.vercel.app/api/send
+        // =============================================
+
+        class ReachWAAutomation {
+            constructor() {
+                this.isRunning = false;
+                this.shouldStop = false;
+                this.successCount = 0;
+                this.failCount = 0;
+                this.totalCount = 0;
+                this.retryCount = 0;
+                
+                this.channelUrl = document.getElementById('channelUrl');
+                this.reactions = document.getElementById('reactions');
+                this.totalSends = document.getElementById('totalSends');
+                this.delaySeconds = document.getElementById('delaySeconds');
+                this.useProxy = document.getElementById('useProxy');
+                this.autoRetry = document.getElementById('autoRetry');
+                
+                this.startBtn = document.getElementById('startBtn');
+                this.stopBtn = document.getElementById('stopBtn');
+                this.clearLogBtn = document.getElementById('clearLogBtn');
+                
+                this.logContainer = document.getElementById('logContainer');
+                this.successCountEl = document.getElementById('successCount');
+                this.failCountEl = document.getElementById('failCount');
+                this.totalCountEl = document.getElementById('totalCount');
+                this.retryCountEl = document.getElementById('retryCount');
+
+                this.bindEvents();
+                this.updateStats();
+            }
+
+            bindEvents() {
+                this.startBtn.addEventListener('click', () => this.startAutomation());
+                this.stopBtn.addEventListener('click', () => this.stopAutomation());
+                this.clearLogBtn.addEventListener('click', () => this.clearLog());
+            }
+
+            async startAutomation() {
+                if (this.isRunning) return;
+
+                const url = this.channelUrl.value.trim();
+                const reactionsRaw = this.reactions.value;
+                const reactions = reactionsRaw.split(',').map(r => r.trim()).filter(r => r);
+                const total = parseInt(this.totalSends.value) || 10;
+                const delay = (parseInt(this.delaySeconds.value) || 3) * 1000;
+                const useProxy = this.useProxy.checked;
+                const autoRetry = this.autoRetry.checked;
+
+                if (!url) {
+                    this.log('❌ Harap masukkan URL channel!', 'error');
+                    return;
+                }
+
+                if (reactions.length === 0) {
+                    this.log('❌ Harap masukkan minimal 1 reaction!', 'error');
+                    return;
+                }
+
+                // Validasi URL
+                if (!url.includes('whatsapp.com/channel')) {
+                    this.log('⚠️ URL tidak valid! Harus dari whatsapp.com/channel', 'warning');
+                }
+
+                this.isRunning = true;
+                this.shouldStop = false;
+                this.successCount = 0;
+                this.failCount = 0;
+                this.totalCount = 0;
+                this.retryCount = 0;
+                this.updateStats();
+
+                this.startBtn.disabled = true;
+                this.startBtn.innerHTML = '⏳ <span class="loading-spinner"></span> Running...';
+                this.stopBtn.style.display = 'inline-block';
+
+                this.log(`🚀 Memulai auto send ke: ${url}`, 'info');
+                this.log(`📝 Reactions: ${reactions.join(', ')}`, 'info');
+                this.log(`📊 Total pengiriman: ${total}`, 'info');
+                this.log(`⏱️ Delay: ${delay/1000} detik`, 'info');
+                this.log(`🌐 Proxy: ${useProxy ? 'Aktif' : 'Nonaktif'}`, 'info');
+                this.log(`🔄 Auto retry: ${autoRetry ? 'Aktif' : 'Nonaktif'}`, 'info');
+                this.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
+
+                for (let i = 0; i < total; i++) {
+                    if (this.shouldStop) {
+                        this.log('⏹️ Proses dihentikan oleh user', 'error');
+                        break;
+                    }
+
+                    this.totalCount++;
+                    let attempt = 0;
+                    let maxAttempts = autoRetry ? 3 : 1;
+                    let success = false;
+
+                    while (attempt < maxAttempts && !success && !this.shouldStop) {
+                        attempt++;
+                        if (attempt > 1) {
+                            this.retryCount++;
+                            this.log(`🔄 Retry ke-${attempt-1}...`, 'warning');
+                        }
+
+                        this.log(`📤 [${this.totalCount}/${total}] Mengirim... (Attempt ${attempt})`, 'info');
+
+                        try {
+                            const result = await this.sendReaction(url, reactions, useProxy);
+                            
+                            if (result.status) {
+                                success = true;
+                                this.successCount++;
+                                this.log(`✅ [${this.totalCount}] Berhasil!`, 'success');
+                                this.log(`   👤 ${result.result.usernameUsed}`, 'success');
+                                this.log(`   📝 ${result.result.message}`, 'success');
+                            } else {
+                                this.log(`❌ [${this.totalCount}] Gagal: ${result.error}`, 'error');
+                                
+                                if (result.error && result.error.includes('limit')) {
+                                    this.log('⚠️ Limit habis, mencoba akun baru...', 'warning');
+                                }
+                                
+                                if (!autoRetry || attempt >= maxAttempts) {
+                                    this.failCount++;
+                                }
+                            }
+                        } catch (error) {
+                            this.log(`❌ [${this.totalCount}] Error: ${error.message}`, 'error');
+                            if (!autoRetry || attempt >= maxAttempts) {
+                                this.failCount++;
+                            }
+                        }
+
+                        this.updateStats();
+
+                        // Jika gagal dan masih ada kesempatan retry
+                        if (!success && attempt < maxAttempts && !this.shouldStop) {
+                            await this.sleep(2000);
+                        }
+                    }
+
+                    // Delay antar pengiriman
+                    if (i < total - 1 && !this.shouldStop) {
+                        await this.sleep(delay);
+                    }
+                }
+
+                this.isRunning = false;
+                this.startBtn.disabled = false;
+                this.startBtn.textContent = '▶️ Mulai Kirim Reaksi';
+                this.stopBtn.style.display = 'none';
+
+                this.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
+                this.log(`🏁 Selesai!`, 'info');
+                this.log(`✅ Berhasil: ${this.successCount}`, 'success');
+                this.log(`❌ Gagal: ${this.failCount}`, 'error');
+                this.log(`🔄 Retry: ${this.retryCount}`, 'warning');
+            }
+
+            stopAutomation() {
+                this.shouldStop = true;
+                this.log('⏹️ Menghentikan proses...', 'error');
+            }
+
+            async sendReaction(channelUrl, reactions, useProxy) {
+                const username = this.generateRandomUsername();
+                const password = `Pass_${Math.random().toString(36).substring(2, 10)}!`;
+
+                // Siapkan payload
+                const payload = {
+                    channelUrl: channelUrl,
+                    reactions: reactions,
+                    username: username,
+                    password: password,
+                    useProxy: useProxy
+                };
+
+                try {
+                    const response = await fetch('https://reach-wa-nexus.vercel.app/api/send', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json();
+                    
+                    this.log(`📡 Response: ${JSON.stringify(data).substring(0, 200)}...`, 'info');
+
+                    if (data.success) {
+                        return {
+                            status: true,
+                            result: {
+                                usernameUsed: username,
+                                message: data.message || 'Reaction terkirim'
+                            }
+                        };
+                    } else {
+                        return {
+                            status: false,
+                            error: data.message || data.error || 'Gagal mengirim reaction'
+                        };
+                    }
+                } catch (error) {
+                    // Coba pake method alternatif
+                    try {
+                        // Fallback ke endpoint lain
+                        const altResponse = await fetch('https://reach-wa-nexus.vercel.app/send', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(payload)
+                        });
+
+                        const altData = await altResponse.json();
+                        
+                        if (altData.success) {
+                            return {
+                                status: true,
+                                result: {
+                                    usernameUsed: username,
+                                    message: altData.message || 'Reaction terkirim'
+                                }
+                            };
+                        } else {
+                            return {
+                                status: false,
+                                error: altData.message || altData.error || 'Gagal mengirim reaction'
+                            };
+                        }
+                    } catch (fallbackError) {
+                        return {
+                            status: false,
+                            error: `API Error: ${error.message}`
+                        };
+                    }
+                }
+            }
+
+            generateRandomUsername() {
+                const prefixes = ['user', 'member', 'player', 'nexus', 'acc', 'member_wa', 'usr'];
+                const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+                const randStr = Math.random().toString(36).substring(2, 8);
+                const randNum = Math.floor(Math.random() * 900 + 100);
+                return `${prefix}_${randStr}${randNum}`;
+            }
+
+            sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            log(message, type = 'info') {
+                const entry = document.createElement('div');
+                entry.className = `log-entry ${type}`;
+                const timestamp = new Date().toLocaleTimeString();
+                entry.textContent = `[${timestamp}] ${message}`;
+                this.logContainer.appendChild(entry);
+                this.logContainer.scrollTop = this.logContainer.scrollHeight;
+            }
+
+            clearLog() {
+                this.logContainer.innerHTML = '';
+                this.log('🗑️ Log dibersihkan', 'info');
+            }
+
+            updateStats() {
+                this.successCountEl.textContent = this.successCount;
+                this.failCountEl.textContent = this.failCount;
+                this.totalCountEl.textContent = this.totalCount;
+                this.retryCountEl.textContent = this.retryCount;
+            }
+        }
+
+        // Inisialisasi automation
+        const automation = new ReachWAAutomation();
+    </script>
+</body>
+</html>
