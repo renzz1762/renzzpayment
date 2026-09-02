@@ -1,432 +1,375 @@
-<!DOCTYPE html><html lang="en"><head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Free Reaction - WA Reaction</title>
-    <meta name="description" content="Send free reactions to WhatsApp Channel posts">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-    <script src="js/api.js" async="" defer=""></script>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>探す — Anime Finder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #121014;
+    --panel: #1c1a1f;
+    --panel-line: #322f36;
+    --bone: #ede9e2;
+    --muted: #948e93;
+    --hanko: #c8102e;
+    --hanko-dim: #7a0d1e;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--ink);
+    color: var(--bone);
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    min-height: 100vh;
+  }
+
+  ::selection { background: var(--hanko); color: var(--bone); }
+
+  header {
+    padding: 64px 24px 40px;
+    max-width: 960px;
+    margin: 0 auto;
+    border-bottom: 1px solid var(--panel-line);
+  }
+
+  .kanji {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 15px;
+    color: var(--hanko);
+    letter-spacing: 0.15em;
+    margin: 0 0 6px;
+  }
+
+  h1 {
+    font-family: 'Shippori Mincho', serif;
+    font-weight: 700;
+    font-size: clamp(36px, 6vw, 56px);
+    margin: 0 0 12px;
+    line-height: 1.1;
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 16px;
+    max-width: 480px;
+    line-height: 1.6;
+    margin: 0 0 32px;
+  }
+
+  form {
+    display: flex;
+    gap: 0;
+    max-width: 520px;
+    border: 1px solid var(--panel-line);
+  }
+
+  input[type="text"] {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 14px 16px;
+    color: var(--bone);
+    font-family: inherit;
+    font-size: 15px;
+    outline: none;
+  }
+
+  input[type="text"]::placeholder { color: var(--muted); }
+
+  button {
+    background: var(--hanko);
+    color: var(--bone);
+    border: none;
+    padding: 14px 28px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  button:hover { background: var(--hanko-dim); }
+  button:disabled { background: var(--panel-line); cursor: not-allowed; }
+
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 24px 100px;
+  }
+
+  .status {
+    color: var(--muted);
+    font-size: 14px;
+    padding: 20px 0;
+  }
+
+  .status.error { color: var(--hanko); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1px;
+    background: var(--panel-line);
+    border: 1px solid var(--panel-line);
+  }
+
+  .card {
+    background: var(--panel);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    transition: background 0.15s ease;
+  }
+
+  .card:hover { background: #232025; }
+
+  .card img {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    display: block;
+  }
+
+  .card-body { padding: 12px 14px 16px; flex: 1; }
+
+  .card-title {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.35;
+    margin: 0 0 8px;
+  }
+
+  .card-meta {
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .card-meta .score { color: var(--hanko); font-weight: 700; }
+
+  /* Detail panel */
+  .detail {
+    display: none;
+    border: 1px solid var(--panel-line);
+    background: var(--panel);
+    margin-top: 32px;
+  }
+
+  .detail.open { display: block; }
+
+  .detail-top {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 28px;
+    padding: 28px;
+    border-bottom: 1px solid var(--panel-line);
+  }
+
+  .detail-top img {
+    width: 100%;
+    border: 1px solid var(--panel-line);
+  }
+
+  .detail-close {
+    background: transparent;
+    border: 1px solid var(--panel-line);
+    color: var(--muted);
+    padding: 6px 14px;
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+
+  .detail-close:hover { color: var(--bone); border-color: var(--bone); }
+
+  .detail h2 {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 24px;
+    margin: 0 0 4px;
+  }
+
+  .detail .jp-title { color: var(--muted); font-size: 14px; margin: 0 0 16px; }
+
+  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+
+  .tag {
+    font-size: 12px;
+    border: 1px solid var(--panel-line);
+    color: var(--muted);
+    padding: 4px 10px;
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .fact-label { font-size: 11px; color: var(--muted); letter-spacing: 0.05em; }
+  .fact-value { font-size: 15px; font-weight: 500; }
+
+  .synopsis {
+    padding: 24px 28px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #cfcad2;
+    max-width: 68ch;
+  }
+
+  .watch-note {
+    margin: 0 28px 28px;
+    padding: 14px 16px;
+    border-left: 2px solid var(--hanko);
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .watch-note a { color: var(--bone); }
+
+  @media (max-width: 560px) {
+    .detail-top { grid-template-columns: 1fr; }
+    .detail-top img { max-width: 160px; }
+  }
+</style>
 </head>
-
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>WA Reaction <span style="font-size: 0.75rem; color: var(--text-muted);">FREE</span></h1>
-            <p>Send reactions to WhatsApp Channel posts</p>
+
+<header>
+  <p class="kanji">探す — sagasu, "mencari"</p>
+  <h1>Anime Finder</h1>
+  <p>Cari judul anime dan lihat sinopsis, skor, serta daftar episodenya. Data dari MyAnimeList lewat Jikan API.</p>
+  <form id="search-form">
+    <input type="text" id="search-input" placeholder="Judul anime, mis. Kimetsu no Yaiba" autocomplete="off" />
+    <button type="submit">Cari</button>
+  </form>
+</header>
+
+<main>
+  <div id="status" class="status">Ketik judul anime lalu tekan Cari.</div>
+  <div id="grid" class="grid" style="display:none;"></div>
+  <div id="detail" class="detail"></div>
+</main>
+
+<script>
+  const form = document.getElementById('search-form');
+  const input = document.getElementById('search-input');
+  const statusEl = document.getElementById('status');
+  const grid = document.getElementById('grid');
+  const detail = document.getElementById('detail');
+
+  function setStatus(text, isError = false) {
+    statusEl.textContent = text;
+    statusEl.className = 'status' + (isError ? ' error' : '');
+    statusEl.style.display = text ? 'block' : 'none';
+  }
+
+  function renderResults(items) {
+    if (!items.length) {
+      grid.style.display = 'none';
+      setStatus('Tidak ada hasil ditemukan.');
+      return;
+    }
+    setStatus('');
+    grid.style.display = 'grid';
+    grid.innerHTML = items.map(anime => `
+      <div class="card" data-id="${anime.mal_id}">
+        <img src="${anime.images?.jpg?.image_url || ''}" alt="${anime.title}" loading="lazy" />
+        <div class="card-body">
+          <p class="card-title">${anime.title}</p>
+          <div class="card-meta">
+            <span>${anime.type || '—'} · ${anime.episodes ?? '?'} eps</span>
+            <span class="score">${anime.score ?? '—'}</span>
+          </div>
         </div>
+      </div>
+    `).join('');
 
-        <div class="status-badge online" id="statusBadge">
-            🟢 Server Online
+    grid.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('click', () => loadDetail(card.dataset.id));
+    });
+  }
+
+  async function searchAnime(query) {
+    setStatus('Mencari...');
+    grid.style.display = 'none';
+    detail.classList.remove('open');
+    try {
+      const res = await fetch(`/api/api?action=search&q=${encodeURIComponent(query)}&limit=12`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Gagal mencari anime');
+      renderResults(data.data || []);
+    } catch (err) {
+      setStatus(err.message, true);
+    }
+  }
+
+  async function loadDetail(id) {
+    detail.classList.add('open');
+    detail.innerHTML = '<div class="status">Memuat detail...</div>';
+    detail.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    try {
+      const res = await fetch(`/api/api?action=detail&id=${id}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Gagal memuat detail');
+      renderDetail(data.data);
+    } catch (err) {
+      detail.innerHTML = `<div class="status error" style="padding:24px;">${err.message}</div>`;
+    }
+  }
+
+  function renderDetail(a) {
+    const genres = (a.genres || []).map(g => `<span class="tag">${g.name}</span>`).join('');
+    const studios = (a.studios || []).map(s => s.name).join(', ') || '—';
+    const malSearchUrl = `https://myanimelist.net/anime.php?q=${encodeURIComponent(a.title)}`;
+
+    detail.innerHTML = `
+      <div class="detail-top">
+        <img src="${a.images?.jpg?.image_url || ''}" alt="${a.title}" />
+        <div>
+          <button class="detail-close" id="close-detail">← Tutup</button>
+          <h2>${a.title}</h2>
+          <p class="jp-title">${a.title_japanese || ''}</p>
+          <div class="tag-row">${genres}</div>
+          <div class="facts">
+            <div><div class="fact-label">TIPE</div><div class="fact-value">${a.type || '—'}</div></div>
+            <div><div class="fact-label">EPISODE</div><div class="fact-value">${a.episodes ?? '—'}</div></div>
+            <div><div class="fact-label">STATUS</div><div class="fact-value">${a.status || '—'}</div></div>
+            <div><div class="fact-label">SKOR</div><div class="fact-value">${a.score ?? '—'}</div></div>
+            <div><div class="fact-label">TAYANG</div><div class="fact-value">${a.aired?.string || '—'}</div></div>
+            <div><div class="fact-label">STUDIO</div><div class="fact-value">${studios}</div></div>
+          </div>
         </div>
+      </div>
+      <p class="synopsis">${a.synopsis ? a.synopsis.replace(/\n/g, '<br>') : 'Sinopsis tidak tersedia.'}</p>
+      <p class="watch-note">
+        Ini cuma data (bukan pemutar video). Untuk nonton legal, cari judul ini di
+        <a href="https://www.crunchyroll.com/search?q=${encodeURIComponent(a.title)}" target="_blank" rel="noopener">Crunchyroll</a>,
+        <a href="https://www.bilibili.tv/en/search?q=${encodeURIComponent(a.title)}" target="_blank" rel="noopener">Bstation</a>,
+        atau <a href="${malSearchUrl}" target="_blank" rel="noopener">MyAnimeList</a>.
+      </p>
+    `;
 
-        <div id="alert" class="alert"></div>
+    document.getElementById('close-detail').addEventListener('click', () => {
+      detail.classList.remove('open');
+      detail.innerHTML = '';
+    });
+  }
 
-        <!-- Service Closed Overlay -->
-        <div id="serviceClosed" class="card" style="display: none; text-align: center; padding: 2rem;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🔒</div>
-            <h2 style="color: var(--text-primary); margin-bottom: 1rem;">Layanan Sedang Tutup</h2>
-            <p style="color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6;">
-                Layanan sedang tidak tersedia untuk sementara waktu.<br>
-                Silakan coba lagi nanti.
-            </p>
-            <div style="background: linear-gradient(135deg, rgba(37, 211, 102, 0.1), rgba(37, 211, 102, 0.05)); border: 2px solid rgba(37, 211, 102, 0.3); border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem;">
-                <p style="color: var(--text-muted); margin-bottom: 0.75rem; font-size: 0.9rem;">📢 Join saluran untuk
-                    info kapan server dibuka:</p>
-                <a href="https://whatsapp.com/channel/0029Vb6xflDKAwEmGOltPU2X" target="_blank" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.25rem; background: #25D366; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 0.9rem;">
-                    📲 Join Saluran WhatsApp
-                </a>
-            </div>
-            <a href="/" class="btn btn-secondary">← Kembali</a>
-        </div>
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const q = input.value.trim();
+    if (q) searchAnime(q);
+  });
+</script>
 
-        <div class="card">
-            <div class="info-box" style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 0.75rem;">
-                <span style="font-size: 1.2rem;">🆓</span>
-                <span style="color: var(--text-muted);">Free users get <strong style="color: var(--primary);">1
-                        request</strong> per day</span>
-            </div>
-
-            <!-- WhatsApp Channel Info -->
-            <a href="https://whatsapp.com/channel/0029Vb6xflDKAwEmGOltPU2X" target="_blank" class="info-box" style="display: flex; align-items: center; gap: 8px; background: rgba(37, 211, 102, 0.1); border: 1px solid rgba(37, 211, 102, 0.3); border-radius: 50px; padding: 10px 16px; margin-bottom: 1.5rem; text-decoration: none; transition: all 0.2s ease;">
-                <span style="font-size: 1rem;">📢</span>
-                <span style="color: var(--text-muted); font-size: 0.85rem;">Join saluran untuk info selanjutnya, <strong style="color: #25D366;">klik disini</strong></span>
-            </a>
-
-            <form id="reactionForm">
-                <!-- Honeypot field (anti-bot) -->
-                <input type="text" id="honeypot" name="website" style="display: none;" tabindex="-1" autocomplete="off">
-
-                <div class="form-group">
-                    <label for="postUrl">WhatsApp Channel Post URL</label>
-                    <input type="url" id="postUrl" class="form-input" placeholder="https://www.whatsapp.com/channel/..." required="">
-                    <small style="color: var(--text-muted);">Paste the URL of the WhatsApp Channel post</small>
-
-                    <!-- Channel Preview Loading -->
-                    <div id="channelLoading" class="channel-preview-loading">
-                        <div class="spinner" style="border-top-color: var(--text-muted);"></div>
-                        <span>Mengambil info channel...</span>
-                    </div>
-
-                    <!-- Channel Preview Card -->
-                    <div id="channelPreview" class="channel-preview">
-                        <img id="channelImg" class="channel-preview-img" src="" alt="Channel">
-                        <div class="channel-preview-info">
-                            <div class="channel-preview-name">
-                                <span id="channelName"></span>
-                            </div>
-                            <div class="channel-preview-followers">
-                                👥 <span id="channelFollowers"></span> Followers
-                            </div>
-                        </div>
-                        <span class="channel-preview-verified"></span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="emojiInput">Reactions (max 5)</label>
-                    <input type="text" id="emojiInput" class="form-input" placeholder="😍❤️🔥👍🎉 atau 😍, ❤️, 🔥" required="">
-                    <small style="color: var(--text-muted);">Bisa langsung tempel emoji atau pisah dengan koma. Count:
-                        <span id="emojiCount">0</span>/5</small>
-                </div>
-
-                <div class="g-recaptcha" data-sitekey="6LdzXJosAAAAAKP3UCfk_TFJaBBTt6vi2vi22WS2" style="margin-bottom: 1rem; display: flex; justify-content: center;"></div>
-
-                <button type="submit" id="submitBtn" class="btn btn-primary" style="width: 100%;">
-                    <span id="btnText">Send Reaction</span>
-                    <div id="btnSpinner" class="spinner" style="display: none;"></div>
-                </button>
-            </form>
-        </div>
-
-        <div class="btn-group">
-            <a href="/" class="btn btn-secondary">← Back</a>
-            <a href="vip-login" class="btn btn-secondary">VIP Mode</a>
-        </div>
-    </div>
-
-    <script>
-        const MAX_EMOJI = 5;
-        const pageLoadTime = Date.now();
-        let csrfToken = null;
-        let csrfChallenge = null;
-
-        // Fetch CSRF token on page load (required for submit)
-        async function fetchCsrfToken() {
-            try {
-                const response = await fetch('/api/get-token', {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                });
-                const data = await response.json();
-                if (data.success) {
-                    csrfToken = data.token;
-                    csrfChallenge = data.challenge;
-                }
-            } catch (error) {
-                console.error('Error fetching CSRF token:', error);
-            }
-        }
-
-        fetchCsrfToken();
-        // Refresh CSRF token every 8 minutes (tokens expire after 10)
-        setInterval(fetchCsrfToken, 8 * 60 * 1000);
-
-        // Channel metadata preview
-        let channelFetchTimeout = null;
-        let lastFetchedUrl = '';
-
-        function extractChannelUrl(inputUrl) {
-            const match = inputUrl.match(/https?:\/\/(www\.)?whatsapp\.com\/channel\/([a-zA-Z0-9]+)/);
-            if (match) {
-                return `https://whatsapp.com/channel/${match[2]}`;
-            }
-            return null;
-        }
-
-        async function fetchChannelMetadata(url) {
-            const channelUrl = extractChannelUrl(url);
-            if (!channelUrl || channelUrl === lastFetchedUrl) return;
-
-            lastFetchedUrl = channelUrl;
-            const previewEl = document.getElementById('channelPreview');
-            const loadingEl = document.getElementById('channelLoading');
-
-            previewEl.classList.remove('show');
-            loadingEl.classList.add('show');
-
-            try {
-                const response = await fetch('/api/get-token?channel=' + encodeURIComponent(channelUrl));
-                const data = await response.json();
-
-                if (data.success && data.name) {
-                    document.getElementById('channelName').textContent = data.name;
-                    document.getElementById('channelFollowers').textContent = data.followers?.toLocaleString() || '0';
-
-                    const imgEl = document.getElementById('channelImg');
-                    if (data.preview) {
-                        imgEl.src = data.preview;
-                        imgEl.style.display = 'block';
-                    } else {
-                        imgEl.style.display = 'none';
-                    }
-
-                    loadingEl.classList.remove('show');
-                    previewEl.classList.add('show');
-                } else {
-                    loadingEl.classList.remove('show');
-                }
-            } catch (error) {
-                console.error('Error fetching channel metadata:', error);
-                loadingEl.classList.remove('show');
-            }
-        }
-
-        document.getElementById('postUrl').addEventListener('input', (e) => {
-            const val = e.target.value.trim();
-            clearTimeout(channelFetchTimeout);
-
-            if (!val || !extractChannelUrl(val)) {
-                document.getElementById('channelPreview').classList.remove('show');
-                document.getElementById('channelLoading').classList.remove('show');
-                lastFetchedUrl = '';
-                return;
-            }
-
-            channelFetchTimeout = setTimeout(() => fetchChannelMetadata(val), 500);
-        });
-
-        document.getElementById('postUrl').addEventListener('paste', (e) => {
-            setTimeout(() => {
-                const val = document.getElementById('postUrl').value.trim();
-                if (val && extractChannelUrl(val)) {
-                    fetchChannelMetadata(val);
-                }
-            }, 100);
-        });
-
-        // Check service status on load
-        async function checkServiceStatus() {
-            try {
-                const response = await fetch('/api/admin/settings');
-                const data = await response.json();
-
-                if (data.success && data.isOpenFree === false) {
-                    document.getElementById('serviceClosed').style.display = 'block';
-                    document.querySelector('.card:not(#serviceClosed)').style.display = 'none';
-                    document.querySelector('.btn-group').style.display = 'none';
-                    document.getElementById('statusBadge').innerHTML = '🔴 Layanan Free Tutup';
-                    document.getElementById('statusBadge').className = 'status-badge';
-                    document.getElementById('statusBadge').style.background = 'var(--pink)';
-                }
-            } catch (error) {
-                console.error('Error checking service status:', error);
-            }
-        }
-
-        checkServiceStatus();
-
-        // Anti-bot: Generate browser fingerprint
-        function generateFingerprint() {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            ctx.textBaseline = 'top';
-            ctx.font = '14px Arial';
-            ctx.fillText('fingerprint', 2, 2);
-            const canvasData = canvas.toDataURL();
-
-            const fp = {
-                screen: `${screen.width}x${screen.height}`,
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                language: navigator.language,
-                platform: navigator.platform,
-                cookieEnabled: navigator.cookieEnabled,
-                canvas: canvasData.slice(-50),
-                timestamp: Date.now()
-            };
-
-            return btoa(JSON.stringify(fp));
-        }
-
-        // Parse emoji input
-        function parseEmojis(input) {
-            input = input.trim();
-            let emojis = [];
-
-            if (input.includes(',')) {
-                emojis = input.split(',')
-                    .map(e => e.trim())
-                    .filter(e => e.length > 0);
-            } else {
-                if (typeof Intl !== 'undefined' && Intl.Segmenter) {
-                    try {
-                        const segmenter = new Intl.Segmenter('en', { granularity: 'grapheme' });
-                        const segments = [...segmenter.segment(input)];
-                        emojis = segments
-                            .map(s => s.segment.trim())
-                            .filter(e => e.length > 0 && /\p{Emoji}/u.test(e));
-                    } catch (e) {
-                        console.warn('Segmenter failed:', e);
-                    }
-                }
-
-                if (emojis.length === 0) {
-                    const emojiRegex = /\p{Emoji}(\p{Emoji_Modifier}|\u200D\p{Emoji})*/gu;
-                    const matches = input.match(emojiRegex);
-                    emojis = matches ? matches : [];
-                }
-            }
-
-            return [...new Set(emojis)];
-        }
-
-        // Update emoji counter
-        document.getElementById('emojiInput').addEventListener('input', (e) => {
-            const emojis = parseEmojis(e.target.value);
-            const count = emojis.length;
-            const counterEl = document.getElementById('emojiCount');
-            counterEl.textContent = count;
-
-            if (count > MAX_EMOJI) {
-                counterEl.style.color = 'var(--error)';
-            } else if (count > 0) {
-                counterEl.style.color = 'var(--success)';
-            } else {
-                counterEl.style.color = 'inherit';
-            }
-        });
-
-        // Form submission
-        document.getElementById('reactionForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const postUrl = document.getElementById('postUrl').value.trim();
-            const emojiInput = document.getElementById('emojiInput').value.trim();
-            const honeypot = document.getElementById('honeypot').value;
-            const submitBtn = document.getElementById('submitBtn');
-            const btnText = document.getElementById('btnText');
-            const btnSpinner = document.getElementById('btnSpinner');
-
-            if (honeypot) {
-                showAlert('❌ Bot detected', 'error');
-                return;
-            }
-
-            const timeSpent = Date.now() - pageLoadTime;
-            if (timeSpent < 3000) {
-                showAlert('❌ Please wait a moment before submitting', 'error');
-                return;
-            }
-
-            // Check CSRF token
-            if (!csrfToken) {
-                showAlert('❌ Security token not ready. Please wait and try again.', 'error');
-                await fetchCsrfToken();
-                return;
-            }
-
-            const emojis = parseEmojis(emojiInput);
-
-            if (!postUrl) {
-                showAlert('Please enter the post URL', 'error');
-                return;
-            }
-
-            if (emojis.length === 0) {
-                showAlert('Please enter at least one emoji', 'error');
-                return;
-            }
-
-            if (emojis.length > MAX_EMOJI) {
-                showAlert(`Maximum ${MAX_EMOJI} emojis allowed for Free users`, 'error');
-                return;
-            }
-            
-            const recaptchaResponse = typeof grecaptcha !== 'undefined' ? grecaptcha.getResponse() : '';
-            if (!recaptchaResponse) {
-                showAlert('Selesaikan verifikasi recaptcha (I\'m not robot) terlebih dahulu', 'error');
-                return;
-            }
-
-            submitBtn.disabled = true;
-            btnText.textContent = 'Sending...';
-            btnSpinner.style.display = 'block';
-
-            // Solve challenge
-            let challengeAnswer = '';
-            try {
-                if (csrfChallenge) {
-                    challengeAnswer = Function('"use strict";return (' + csrfChallenge + ')')();
-                }
-            } catch (e) {
-                console.error('Failed to solve challenge');
-            }
-
-            try {
-                const response = await fetch('/api/submit-free', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-Token': csrfToken,
-                        'X-Challenge-Answer': challengeAnswer.toString()
-                    },
-                    body: JSON.stringify({
-                        postUrl,
-                        reactions: emojis,
-                        fingerprint: generateFingerprint(),
-                        timeSpent: timeSpent,
-                        recaptcha_response: recaptchaResponse
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    showAlert('✅ ' + data.message, 'success');
-                    document.getElementById('reactionForm').reset();
-                    document.getElementById('emojiCount').textContent = '0';
-                    document.getElementById('channelPreview').classList.remove('show');
-                    lastFetchedUrl = '';
-                    // Refresh CSRF token after successful submit
-                    fetchCsrfToken();
-                } else {
-                    if (data.code === 'INVALID_URL_FORMAT') {
-                        showAlert('❌ Format link salah! Link harus memiliki ID postingan. <a href="/tutorial.html" style="color: inherit; text-decoration: underline; font-weight: 700;">📖 Lihat Tutorial</a>', 'error', false);
-                    } else if (data.code === 'INVALID_CSRF') {
-                        // Token expired, refresh and retry
-                        await fetchCsrfToken();
-                        showAlert('❌ Token keamanan expired. Silakan coba submit lagi.', 'error');
-                    } else {
-                        showAlert('❌ ' + (data.error || 'Failed to submit'), 'error');
-                    }
-                }
-            } catch (error) {
-                showAlert('❌ Network error. Please try again.', 'error');
-            } finally {
-                if (typeof grecaptcha !== 'undefined') grecaptcha.reset();
-                submitBtn.disabled = false;
-                btnText.textContent = 'Send Reaction';
-                btnSpinner.style.display = 'none';
-            }
-        });
-
-        function showAlert(message, type, autoHide = true) {
-            const alertEl = document.getElementById('alert');
-            alertEl.innerHTML = message;
-            alertEl.className = 'alert alert-' + type + ' show';
-            if (autoHide) {
-                setTimeout(() => alertEl.classList.remove('show'), 5000);
-            }
-        }
-
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('keydown', e => {
-            if (e.ctrlKey && (e.key === 'u' || e.key === 's')) {
-                e.preventDefault();
-            }
-        });
-    </script>
-
-
-</body></html>
+</body>
+</html>
