@@ -223,16 +223,19 @@
     max-width: 68ch;
   }
 
-  .watch-note {
-    margin: 0 28px 28px;
-    padding: 14px 16px;
-    border-left: 2px solid var(--hanko);
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.6;
+  .watch-btn {
+    display: inline-block;
+    background: var(--hanko);
+    color: var(--bone);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px 22px;
+    margin-top: 4px;
+    transition: background 0.15s ease;
   }
 
-  .watch-note a { color: var(--bone); }
+  .watch-btn:hover { background: var(--hanko-dim); }
 
   @media (max-width: 560px) {
     .detail-top { grid-template-columns: 1fr; }
@@ -329,7 +332,7 @@
   function renderDetail(a) {
     const genres = (a.genres || []).map(g => `<span class="tag">${g.name}</span>`).join('');
     const studios = (a.studios || []).map(s => s.name).join(', ') || '—';
-    const malSearchUrl = `https://myanimelist.net/anime.php?q=${encodeURIComponent(a.title)}`;
+    const bstationUrl = `https://www.bilibili.tv/en/search?q=${encodeURIComponent(a.title)}`;
 
     detail.innerHTML = `
       <div class="detail-top">
@@ -347,15 +350,10 @@
             <div><div class="fact-label">TAYANG</div><div class="fact-value">${a.aired?.string || '—'}</div></div>
             <div><div class="fact-label">STUDIO</div><div class="fact-value">${studios}</div></div>
           </div>
+          <a class="watch-btn" href="${bstationUrl}" target="_blank" rel="noopener">Tonton di Bstation →</a>
         </div>
       </div>
       <p class="synopsis">${a.synopsis ? a.synopsis.replace(/\n/g, '<br>') : 'Sinopsis tidak tersedia.'}</p>
-      <p class="watch-note">
-        Ini cuma data (bukan pemutar video). Untuk nonton legal, cari judul ini di
-        <a href="https://www.crunchyroll.com/search?q=${encodeURIComponent(a.title)}" target="_blank" rel="noopener">Crunchyroll</a>,
-        <a href="https://www.bilibili.tv/en/search?q=${encodeURIComponent(a.title)}" target="_blank" rel="noopener">Bstation</a>,
-        atau <a href="${malSearchUrl}" target="_blank" rel="noopener">MyAnimeList</a>.
-      </p>
     `;
 
     document.getElementById('close-detail').addEventListener('click', () => {
