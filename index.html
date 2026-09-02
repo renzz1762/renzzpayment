@@ -1,29 +1,24 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nonton Anime • Tanpa NPM</title>
-    <!-- Font & Icon -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Anime Streaming • API</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
-
         body {
-            background: #0b0e14;
-            font-family: 'Inter', sans-serif;
+            background: #0a0e14;
             color: #eef2f6;
-            padding: 20px;
             min-height: 100vh;
+            padding: 16px;
         }
-
         .container {
-            max-width: 1280px;
+            max-width: 1100px;
             margin: 0 auto;
         }
 
@@ -33,484 +28,520 @@
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            border-bottom: 1px solid #2a2f3a;
-            padding-bottom: 20px;
+            gap: 14px;
+            margin-bottom: 28px;
+            border-bottom: 1px solid #1f2833;
+            padding-bottom: 18px;
         }
-
-        .logo h1 {
-            font-size: 1.9rem;
-            font-weight: 700;
-            background: linear-gradient(145deg, #facc15, #f97316);
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #facc15, #f97316);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -0.5px;
         }
-
-        .logo span {
+        .logo small {
             font-weight: 400;
-            font-size: 0.9rem;
-            color: #8892a0;
-            -webkit-text-fill-color: #8892a0;
-            background: none;
+            font-size: 0.8rem;
+            color: #6a7b8e;
+            -webkit-text-fill-color: #6a7b8e;
             margin-left: 8px;
         }
-
         .search-box {
             display: flex;
-            background: #1e232b;
+            background: #161e28;
             border-radius: 40px;
-            padding: 6px 6px 6px 18px;
-            align-items: center;
-            border: 1px solid #313844;
-            transition: 0.2s;
+            border: 1px solid #2a3340;
+            overflow: hidden;
+            flex: 1 1 280px;
         }
-
-        .search-box:focus-within {
-            border-color: #facc15;
-            box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.2);
-        }
-
-        .search-box i {
-            color: #7a8496;
-            font-size: 0.95rem;
-        }
-
         .search-box input {
+            flex: 1;
             background: transparent;
             border: none;
-            padding: 10px 12px;
+            padding: 12px 20px;
+            color: #f0f5fc;
             font-size: 0.95rem;
-            color: #f0f4fa;
-            width: 220px;
             outline: none;
+            min-width: 140px;
         }
-
         .search-box input::placeholder {
-            color: #5d6779;
+            color: #5a6a7c;
         }
-
         .search-box button {
             background: #facc15;
             border: none;
-            border-radius: 30px;
-            padding: 8px 18px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: #0b0e14;
+            padding: 0 22px;
+            font-weight: 700;
+            color: #0a0e14;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+        .search-box button:hover {
+            background: #fbbf24;
+        }
+
+        /* HASIL PENCARIAN */
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 16px;
+            margin-top: 10px;
+        }
+        .anime-card {
+            background: #131b25;
+            border-radius: 16px;
+            padding: 14px 12px;
+            border: 1px solid #212b38;
             cursor: pointer;
             transition: 0.2s;
         }
-
-        .search-box button:hover {
-            background: #fbbf24;
-            transform: scale(0.96);
+        .anime-card:hover {
+            background: #1c2735;
+            border-color: #facc15;
+            transform: scale(1.02);
+        }
+        .anime-card h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+        .anime-card .meta {
+            font-size: 0.7rem;
+            color: #8b9bb0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .anime-card .meta span {
+            background: #1f2a38;
+            padding: 2px 10px;
+            border-radius: 20px;
         }
 
-        /* GRID HURUF */
-        .alpha-grid {
+        /* PLAYER */
+        .player-wrapper {
+            margin: 24px 0 18px 0;
+            background: #0f1620;
+            border-radius: 20px;
+            padding: 16px;
+            border: 1px solid #1f2a38;
+            display: none;
+        }
+        .player-wrapper.active {
+            display: block;
+        }
+        .player-wrapper .anime-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .player-wrapper .anime-title .close {
+            background: #2a3443;
+            border: none;
+            color: #f0f5fc;
+            padding: 4px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .player-wrapper .anime-title .close:hover {
+            background: #3c4a5e;
+        }
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            /* 16:9 */
+            height: 0;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #000;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* EPISODE LIST */
+        .episode-list {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin-bottom: 30px;
-            justify-content: center;
+            margin: 14px 0 6px 0;
         }
-
-        .alpha-btn {
-            background: #171d26;
-            border: 1px solid #2b323e;
-            color: #bcc3d0;
-            padding: 8px 14px;
+        .episode-btn {
+            background: #1a232f;
+            border: 1px solid #2a3443;
+            color: #d4dce8;
+            padding: 6px 16px;
             border-radius: 30px;
-            font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             cursor: pointer;
             transition: 0.15s;
-            min-width: 40px;
-            text-align: center;
         }
-
-        .alpha-btn:hover {
-            background: #2d3543;
-            color: white;
-            border-color: #facc15;
-        }
-
-        .alpha-btn.active {
+        .episode-btn:hover {
             background: #facc15;
-            color: #0b0e14;
+            color: #0a0e14;
             border-color: #facc15;
-            font-weight: 700;
         }
-
-        /* ANIME LIST */
-        .anime-section {
-            margin-top: 10px;
-        }
-
-        .section-title {
-            font-size: 1.5rem;
+        .episode-btn.active {
+            background: #facc15;
+            color: #0a0e14;
             font-weight: 600;
-            margin: 28px 0 16px 0;
-            padding-left: 6px;
-            border-left: 5px solid #facc15;
-            padding-left: 14px;
-        }
-
-        .anime-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 14px;
-        }
-
-        .anime-card {
-            background: #151c26;
-            border-radius: 18px;
-            padding: 14px 16px;
-            border: 1px solid #242c38;
-            transition: 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            cursor: default;
-        }
-
-        .anime-card:hover {
-            background: #1e2735;
             border-color: #facc15;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
         }
 
-        .anime-title {
-            font-weight: 600;
-            font-size: 0.95rem;
-            line-height: 1.3;
-            color: #f0f5fc;
-        }
-
-        .anime-title i {
-            color: #facc15;
-            margin-right: 6px;
-            font-size: 0.75rem;
-        }
-
-        .anime-link {
-            font-size: 0.75rem;
-            color: #8f9bb3;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-top: 4px;
-            text-decoration: none;
-            transition: 0.15s;
-        }
-
-        .anime-link i {
-            font-size: 0.7rem;
-            color: #facc15;
-        }
-
-        .anime-link:hover {
-            color: #facc15;
-        }
-
-        .badge-id {
-            background: #1f2a37;
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-size: 0.65rem;
-            color: #b0bedb;
-            align-self: flex-start;
-            margin-top: 4px;
-            letter-spacing: 0.3px;
-        }
-
-        /* empty state */
-        .empty-state {
+        .loading {
             text-align: center;
-            padding: 50px 20px;
-            color: #6b7a8f;
+            padding: 40px 10px;
+            color: #6a7b8e;
+        }
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 10px;
         }
 
         .footer {
-            margin-top: 50px;
-            border-top: 1px solid #1f2733;
-            padding-top: 20px;
+            margin-top: 40px;
             text-align: center;
-            font-size: 0.8rem;
-            color: #54616f;
+            font-size: 0.75rem;
+            color: #3f4d5e;
+            border-top: 1px solid #1a222e;
+            padding-top: 20px;
         }
-
-        .footer i {
+        .footer a {
             color: #facc15;
+            text-decoration: none;
         }
 
-        /* responsive */
-        @media (max-width: 640px) {
+        @media (max-width: 600px) {
             .header {
                 flex-direction: column;
                 align-items: stretch;
-                gap: 16px;
             }
-            .search-box {
-                width: 100%;
+            .result-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             }
-            .search-box input {
-                width: 100%;
-            }
-            .anime-grid {
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            }
-            .alpha-btn {
-                padding: 6px 12px;
-                font-size: 0.8rem;
-                min-width: 34px;
+            .logo {
+                font-size: 1.4rem;
             }
         }
     </style>
 </head>
 <body>
+
 <div class="container">
 
     <!-- HEADER -->
     <div class="header">
         <div class="logo">
-            <h1>🎬 AniList <span>• tanpa npm</span></h1>
+            🎬 AniStream
+            <small>• API • nonton gratis</small>
         </div>
         <div class="search-box">
-            <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder="Cari anime...">
-            <button id="searchBtn"><i class="fas fa-arrow-right"></i></button>
+            <input type="text" id="searchInput" placeholder="Cari anime... (contoh: one piece)" />
+            <button id="searchBtn">Cari</button>
         </div>
     </div>
 
-    <!-- HURUF NAV -->
-    <div class="alpha-grid" id="alphaNav"></div>
+    <!-- PLAYER -->
+    <div class="player-wrapper" id="playerWrapper">
+        <div class="anime-title">
+            <span id="playerTitle">Judul Anime</span>
+            <button class="close" id="closePlayer">✕ tutup</button>
+        </div>
+        <div class="video-container" id="videoContainer">
+            <iframe id="videoIframe" src="" allowfullscreen></iframe>
+        </div>
+        <div class="episode-list" id="episodeList"></div>
+    </div>
 
-    <!-- LIST ANIME -->
-    <div id="animeContainer" class="anime-section"></div>
+    <!-- HASIL PENCARIAN -->
+    <div id="resultContainer">
+        <div class="loading"><i class="fas fa-spinner fa-spin"></i><br />Cari anime dulu yuk!</div>
+    </div>
 
     <div class="footer">
-        <i class="fas fa-tv"></i> Data dari otakudesu.blog • pure HTML/CSS/JS • no install
+        <i class="fas fa-tv"></i> Sumber: consumet API • <a href="#" id="sourceLink">source</a> • no install
     </div>
 </div>
 
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
 <script>
-    // ----- DATA ANIME (dari response) -----
-    const animeData = {
-  "list": [
-    {
-      "startWith": "#",
-      "animeList": [
-        { "title": "#Compass 2.0: Sentou Setsuri Kaiseki System", "animeId": "compass-20-sub-indo", "href": "/anime/anime/compass-20-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/compass-20-sub-indo/" }
-      ]
-    },
-    {
-      "startWith": "1",
-      "animeList": [
-        { "title": "100-man no Inochi no Ue ni Ore wa Tatteiru", "animeId": "100-man-no-inochi-sub-indo", "href": "/anime/anime/100-man-no-inochi-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/100-man-no-inochi-sub-indo/" },
-        { "title": "100-man no Inochi no Ue ni Ore wa Tatteiru Season 2", "animeId": "100-man-no-inochi-s2-sub-indo", "href": "/anime/anime/100-man-no-inochi-s2-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/100-man-no-inochi-s2-sub-indo/" },
-        { "title": "11eyes", "animeId": "1eye-subtitle-indonesia", "href": "/anime/anime/1eye-subtitle-indonesia", "otakudesuUrl": "https://otakudesu.blog/anime/1eye-subtitle-indonesia/" },
-        { "title": "12-sai.: Chicchana Mune no Tokimeki", "animeId": "12-sai-chicchana-mune-no-tokimeki", "href": "/anime/anime/12-sai-chicchana-mune-no-tokimeki", "otakudesuUrl": "https://otakudesu.blog/anime/12-sai-chicchana-mune-no-tokimeki/" },
-        { "title": "16bit Sensation: Another Layer", "animeId": "16bit-layer-sub-indo", "href": "/anime/anime/16bit-layer-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/16bit-layer-sub-indo/" }
-      ]
-    },
-    {
-      "startWith": "2",
-      "animeList": [
-        { "title": "2.43: Seiin Koukou Danshi Volley-bu", "animeId": "seiin-koukou-danshi-volley-sub-indo", "href": "/anime/anime/seiin-koukou-danshi-volley-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/seiin-koukou-danshi-volley-sub-indo/" },
-        { "title": "2.5-jigen no Ririsa", "animeId": "2-5-jigen-sub-indo", "href": "/anime/anime/2-5-jigen-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/2-5-jigen-sub-indo/" },
-        { "title": "22/7", "animeId": "27-sub-indo", "href": "/anime/anime/27-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/27-sub-indo/" },
-        { "title": "29-sai Dokushin Chuuken Boukensha no Nichijou", "animeId": "29sai-nichijou-sub-indo", "href": "/anime/anime/29sai-nichijou-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/29sai-nichijou-sub-indo/" }
-      ]
-    },
-    {
-      "startWith": "3",
-      "animeList": [
-        { "title": "3-gatsu no Lion", "animeId": "3-gatsu-lion-sub-indo", "href": "/anime/anime/3-gatsu-lion-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/3-gatsu-lion-sub-indo/" },
-        { "title": "3-gatsu no Lion Season 2", "animeId": "3-gats-lion-season-2-subtitle-indonesia", "href": "/anime/anime/3-gats-lion-season-2-subtitle-indonesia", "otakudesuUrl": "https://otakudesu.blog/anime/3-gats-lion-season-2-subtitle-indonesia/" },
-        { "title": "3D Kanojo: Real Girl", "animeId": "3d-girl-kanojo-subtitle-indonesia", "href": "/anime/anime/3d-girl-kanojo-subtitle-indonesia", "otakudesuUrl": "https://otakudesu.blog/anime/3d-girl-kanojo-subtitle-indonesia/" },
-        { "title": "3D Kanojo: Real Girl Season 2", "animeId": "3d-girl-kanojo-season-2-subtitle-indonesia", "href": "/anime/anime/3d-girl-kanojo-season-2-subtitle-indonesia", "otakudesuUrl": "https://otakudesu.blog/anime/3d-girl-kanojo-season-2-subtitle-indonesia/" }
-      ]
-    },
-    {
-      "startWith": "4",
-      "animeList": [
-        { "title": "4-nin wa Sorezore Uso wo Tsuku", "animeId": "4nin-tsuku-sub-indo", "href": "/anime/anime/4nin-tsuku-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/4nin-tsuku-sub-indo/" }
-      ]
-    },
-    {
-      "startWith": "8",
-      "animeList": [
-        { "title": "86", "animeId": "86-sub-indo", "href": "/anime/anime/86-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/86-sub-indo/" },
-        { "title": "86 Season 2", "animeId": "86-season-2-sub-indo", "href": "/anime/anime/86-season-2-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/86-season-2-sub-indo/" }
-      ]
-    },
-    {
-      "startWith": "9",
-      "animeList": [
-        { "title": "91 Days", "animeId": "91-days-subtitle-indonesia", "href": "/anime/anime/91-days-subtitle-indonesia", "otakudesuUrl": "https://otakudesu.blog/anime/91-days-subtitle-indonesia/" }
-      ]
-    },
-    {
-      "startWith": "A",
-      "animeList": [
-        { "title": "A-Channel", "animeId": "channel-subtitle-indonesia", "href": "/anime/anime/channel-subtitle-indonesia", "otakudesuUrl": "https://otakudesu.blog/anime/channel-subtitle-indonesia/" },
-        { "title": "A-Rank Party wo Ridatsu shita Ore wa", "animeId": "a-rank-party-sub-indo", "href": "/anime/anime/a-rank-party-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/a-rank-party-sub-indo/" },
-        { "title": "AICO Incarnation", "animeId": "aico-incarnation-subtitle-indonesia", "href": "/anime/anime/aico-incarnation-subtitle-indonesia", "otakudesuUrl": "https://otakudesu.blog/anime/aico-incarnation-subtitle-indonesia/" },
-        { "title": "Absolute Duo", "animeId": "absol-duo-subtitle-indonesia", "href": "/anime/anime/absol-duo-subtitle-indonesia", "otakudesuUrl": "https://otakudesu.blog/anime/absol-duo-subtitle-indonesia/" },
-        { "title": "ACCA: 13-ku Kansatsu-ka", "animeId": "acca-13-kansatsu-subtitle-indonesia", "href": "/anime/anime/acca-13-kansatsu-subtitle-indonesia", "otakudesuUrl": "https://otakudesu.blog/anime/acca-13-kansatsu-subtitle-indonesia/" },
-        { "title": "Accel World", "animeId": "acl-world-sub-indo", "href": "/anime/anime/acl-world-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/acl-world-sub-indo/" },
-        { "title": "Acchi Kocchi", "animeId": "acchi-no-kocchi-subtitle-indonesia", "href": "/anime/anime/acchi-no-kocchi-subtitle-indonesia", "otakudesuUrl": "https://otakudesu.blog/anime/acchi-no-kocchi-subtitle-indonesia/" },
-        { "title": "Acro Trip", "animeId": "acrotrip-sub-indo", "href": "/anime/anime/acrotrip-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/acrotrip-sub-indo/" },
-        { "title": "Adachi to Shimamura", "animeId": "adachi-shimamura-sub-indo", "href": "/anime/anime/adachi-shimamura-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/adachi-shimamura-sub-indo/" },
-        { "title": "Aharen-san wa Hakarenai", "animeId": "aharen-sub-indo", "href": "/anime/anime/aharen-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/aharen-sub-indo/" },
-        { "title": "Aharen-san wa Hakarenai Season 2", "animeId": "aharen-s2-sub-indo", "href": "/anime/anime/aharen-s2-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/aharen-s2-sub-indo/" },
-        { "title": "Ahiru no Sora", "animeId": "ahn-sora-sub-indo", "href": "/anime/anime/ahn-sora-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/ahn-sora-sub-indo/" },
-        { "title": "Aho Girl", "animeId": "aho-girl-subtitle-indonesia", "href": "/anime/anime/aho-girl-subtitle-indonesia", "otakudesuUrl": "https://otakudesu.blog/anime/aho-girl-subtitle-indonesia/" },
-        { "title": "Air", "animeId": "air-sub-indo", "href": "/anime/anime/air-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/air-sub-indo/" },
-        { "title": "Aishiteru Game wo Owarasetai", "animeId": "aishiteru-game-owarasetai-sub-indo", "href": "/anime/anime/aishiteru-game-owarasetai-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/aishiteru-game-owarasetai-sub-indo/" },
-        { "title": "Ajin", "animeId": "ajn-sub-indo", "href": "/anime/anime/ajn-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/ajn-sub-indo/" },
-        { "title": "Ajin Season 2", "animeId": "ajn-season-2-subtitle-indonesia", "href": "/anime/anime/ajn-season-2-subtitle-indonesia", "otakudesuUrl": "https://otakudesu.blog/anime/ajn-season-2-subtitle-indonesia/" }
-      ]
-    },
-    {
-      "startWith": "B",
-      "animeList": [
-        { "title": "B-gata H-kei", "animeId": "b-gata-h-kei-subtitle-indonesia", "href": "/anime/anime/b-gata-h-kei-subtitle-indonesia", "otakudesuUrl": "https://otakudesu.blog/anime/b-gata-h-kei-subtitle-indonesia/" },
-        { "title": "Babylon", "animeId": "bylon-sub-indo", "href": "/anime/anime/bylon-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/bylon-sub-indo/" },
-        { "title": "Baccano!", "animeId": "bacno-subtitle-indonesia", "href": "/anime/anime/bacno-subtitle-indonesia", "otakudesuUrl": "https://otakudesu.blog/anime/bacno-subtitle-indonesia/" },
-        { "title": "Back Arrow", "animeId": "back-arr-sub-indo", "href": "/anime/anime/back-arr-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/back-arr-sub-indo/" },
-        { "title": "Back Street Girls: Gokudolls", "animeId": "back-girls-the-gokudoll-subtitle-indonesia", "href": "/anime/anime/back-girls-the-gokudoll-subtitle-indonesia", "otakudesuUrl": "https://otakudesu.blog/anime/back-girls-the-gokudoll-subtitle-indonesia/" },
-        { "title": "Bad Girl", "animeId": "bad-girl-sub-indo", "href": "/anime/anime/bad-girl-sub-indo", "otakudesuUrl": "https://otakudesu.blog/anime/bad-girl-sub-indo/" }
-      ]
-    }
-  ]
-};
+    // ========================================
+    //  CONFIG
+    // ========================================
+    const API_BASE = 'https://api.consumet.org/anime/gogoanime';
 
-    // flatten all anime into one array with startWith info
-    const allAnime = [];
-    const alphaMap = new Map(); // key: startWith, value: [anime, ...]
-
-    animeData.list.forEach(group => {
-        const key = group.startWith;
-        if (!alphaMap.has(key)) alphaMap.set(key, []);
-        group.animeList.forEach(anime => {
-            const entry = { ...anime, startWith: key };
-            alphaMap.get(key).push(entry);
-            allAnime.push(entry);
-        });
-    });
-
-    // sort keys (biar rapi)
-    const sortedKeys = Array.from(alphaMap.keys()).sort((a, b) => {
-        if (a === '#') return -1;
-        if (b === '#') return 1;
-        if (a === '�') return 1; // Ubel Blatt
-        if (b === '�') return -1;
-        return a.localeCompare(b);
-    });
-
-    // ----- RENDER -----
-    const alphaNav = document.getElementById('alphaNav');
-    const container = document.getElementById('animeContainer');
+    // DOM refs
     const searchInput = document.getElementById('searchInput');
     const searchBtn = document.getElementById('searchBtn');
+    const resultContainer = document.getElementById('resultContainer');
+    const playerWrapper = document.getElementById('playerWrapper');
+    const playerTitle = document.getElementById('playerTitle');
+    const videoIframe = document.getElementById('videoIframe');
+    const episodeList = document.getElementById('episodeList');
+    const closePlayer = document.getElementById('closePlayer');
 
-    let currentActive = '#';
+    // state
+    let currentAnimeId = null;
+    let currentEpisodes = [];
+    let currentTitle = '';
 
-    // fungsi render berdasarkan huruf
-    function renderByLetter(letter) {
-        currentActive = letter;
-        // update active class
-        document.querySelectorAll('.alpha-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.letter === letter);
-        });
+    // ========================================
+    //  FUNGSI FETCH
+    // ========================================
+    async function fetchAnime(query) {
+        try {
+            const url = `${API_BASE}/search?keyw=${encodeURIComponent(query)}`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('Gagal fetch');
+            const data = await res.json();
+            return data.results || [];
+        } catch (err) {
+            console.error(err);
+            return [];
+        }
+    }
 
-        const list = alphaMap.get(letter) || [];
-        if (list.length === 0) {
-            container.innerHTML = `<div class="empty-state"><i class="fas fa-box-open" style="font-size:2rem; opacity:0.3;"></i><p style="margin-top:12px;">Tidak ada anime dengan awalan "${letter}"</p></div>`;
+    async function fetchEpisodes(animeId) {
+        try {
+            const url = `${API_BASE}/info/${animeId}`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('Gagal ambil episode');
+            const data = await res.json();
+            return data.episodes || [];
+        } catch (err) {
+            console.error(err);
+            return [];
+        }
+    }
+
+    // ========================================
+    //  RENDER HASIL PENCARIAN
+    // ========================================
+    function renderResults(animeList) {
+        if (!animeList || animeList.length === 0) {
+            resultContainer.innerHTML = `
+                <div class="loading">
+                    <i class="fas fa-frown"></i><br />
+                    Tidak ada hasil. Coba kata kunci lain.
+                </div>
+            `;
             return;
         }
 
-        let html = `<div class="section-title"><i class="fas fa-list-ul" style="margin-right:10px; color:#facc15;"></i> ${letter}</div>`;
-        html += `<div class="anime-grid">`;
-        list.forEach(anime => {
+        let html = `<div class="result-grid">`;
+        animeList.forEach(anime => {
+            const title = anime.title || 'No title';
+            const id = anime.id || '';
+            const sub = anime.subOrDub || 'sub';
+            const type = anime.type || 'TV';
             html += `
-                <div class="anime-card">
-                    <div class="anime-title"><i class="fas fa-play-circle"></i> ${anime.title}</div>
-                    <a href="${anime.otakudesuUrl}" target="_blank" class="anime-link">
-                        <i class="fas fa-external-link-alt"></i> tonton
-                    </a>
-                    <span class="badge-id">${anime.animeId}</span>
+                <div class="anime-card" data-id="${id}" data-title="${title.replace(/"/g, '&quot;')}">
+                    <h4>${title}</h4>
+                    <div class="meta">
+                        <span>${type}</span>
+                        <span>${sub}</span>
+                    </div>
                 </div>
             `;
         });
         html += `</div>`;
-        container.innerHTML = html;
+        resultContainer.innerHTML = html;
+
+        // attach click listener
+        document.querySelectorAll('.anime-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const title = this.dataset.title;
+                if (id) loadAnime(id, title);
+            });
+        });
     }
 
-    // buat tombol huruf
-    sortedKeys.forEach(key => {
-        const btn = document.createElement('button');
-        btn.className = 'alpha-btn';
-        if (key === currentActive) btn.classList.add('active');
-        btn.textContent = key;
-        btn.dataset.letter = key;
-        btn.addEventListener('click', () => {
-            renderByLetter(key);
-            searchInput.value = '';
+    // ========================================
+    //  LOAD ANIME + EPISODE
+    // ========================================
+    async function loadAnime(animeId, title) {
+        currentAnimeId = animeId;
+        currentTitle = title || 'Anime';
+        playerTitle.textContent = currentTitle;
+        playerWrapper.classList.add('active');
+
+        // tampilkan loading di episode
+        episodeList.innerHTML = `<span style="color:#8b9bb0; font-size:0.85rem;"><i class="fas fa-spinner fa-spin"></i> loading episode...</span>`;
+
+        // fetch episodes
+        const eps = await fetchEpisodes(animeId);
+        currentEpisodes = eps || [];
+
+        if (currentEpisodes.length === 0) {
+            episodeList.innerHTML = `<span style="color:#b84a4a;">Tidak ada episode ditemukan.</span>`;
+            // tetap coba mainkan episode pertama? 
+            // tapi ga ada, skip
+            videoIframe.src = '';
+            return;
+        }
+
+        // render tombol episode
+        renderEpisodeButtons(currentEpisodes);
+
+        // mainkan episode pertama otomatis
+        const firstEp = currentEpisodes[0];
+        if (firstEp && firstEp.id) {
+            playEpisode(firstEp.id);
+        } else {
+            videoIframe.src = '';
+        }
+    }
+
+    // ========================================
+    //  EPISODE BUTTONS
+    // ========================================
+    function renderEpisodeButtons(episodes) {
+        let html = '';
+        episodes.forEach((ep, index) => {
+            const epNumber = ep.number || index + 1;
+            const epId = ep.id || '';
+            html += `<button class="episode-btn" data-ep-id="${epId}" data-ep-num="${epNumber}">EP ${epNumber}</button>`;
         });
-        alphaNav.appendChild(btn);
+        episodeList.innerHTML = html;
+
+        // click event
+        document.querySelectorAll('.episode-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const epId = this.dataset.epId;
+                if (epId) {
+                    // remove active all
+                    document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    playEpisode(epId);
+                }
+            });
+        });
+
+        // set active pertama
+        const firstBtn = document.querySelector('.episode-btn');
+        if (firstBtn) firstBtn.classList.add('active');
+    }
+
+    // ========================================
+    //  PLAY EPISODE (ambil link streaming)
+    // ========================================
+    async function playEpisode(episodeId) {
+        try {
+            // ambil link streaming dari consumet
+            const url = `${API_BASE}/watch/${episodeId}`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('Gagal ambil link video');
+            const data = await res.json();
+
+            // cari sumber video (biasanya di sources)
+            const sources = data.sources || [];
+            // cari yg punya url dan quality, prioritaskan 720p/1080p
+            let videoUrl = null;
+            // urutan preferensi kualitas
+            const preferQuality = ['1080', '720', '480', '360'];
+            for (let q of preferQuality) {
+                const found = sources.find(s => s.quality && s.quality.includes(q) && s.url);
+                if (found) {
+                    videoUrl = found.url;
+                    break;
+                }
+            }
+            // fallback: ambil pertama yg ada url
+            if (!videoUrl) {
+                const fallback = sources.find(s => s.url);
+                if (fallback) videoUrl = fallback.url;
+            }
+
+            if (!videoUrl) {
+                // coba ambil dari referer? atau backup
+                videoIframe.src = '';
+                alert('Gagal mengambil link video. Coba episode lain.');
+                return;
+            }
+
+            // embed ke iframe
+            // videoUrl biasanya sudah embed link, tapi kita coba bersihkan
+            let embedSrc = videoUrl;
+            // jika url dari gogoanime biasa, kita bisa wrap ke embed
+            if (videoUrl.includes('gogoanime') || videoUrl.includes('mp4')) {
+                // beberapa url langsung mp4, kita masukkan ke iframe
+                embedSrc = videoUrl;
+            }
+
+            videoIframe.src = embedSrc;
+        } catch (err) {
+            console.error(err);
+            alert('Error saat memutar episode.');
+        }
+    }
+
+    // ========================================
+    //  CLOSE PLAYER
+    // ========================================
+    closePlayer.addEventListener('click', function() {
+        playerWrapper.classList.remove('active');
+        videoIframe.src = '';
+        episodeList.innerHTML = '';
     });
 
-    // default render
-    renderByLetter('#');
-
-    // ----- SEARCH -----
-    function performSearch() {
-        const query = searchInput.value.trim().toLowerCase();
+    // ========================================
+    //  SEARCH
+    // ========================================
+    async function doSearch() {
+        const query = searchInput.value.trim();
         if (!query) {
-            // fallback ke huruf aktif
-            renderByLetter(currentActive);
+            resultContainer.innerHTML = `<div class="loading"><i class="fas fa-search"></i><br />Masukkan judul anime!</div>`;
             return;
         }
 
-        const results = allAnime.filter(anime => 
-            anime.title.toLowerCase().includes(query)
-        );
-
-        if (results.length === 0) {
-            container.innerHTML = `<div class="empty-state"><i class="fas fa-search" style="font-size:2rem; opacity:0.3;"></i><p style="margin-top:12px;">Tidak ketemu “${searchInput.value}”</p></div>`;
-            return;
-        }
-
-        // tampilkan hasil
-        let html = `<div class="section-title"><i class="fas fa-search" style="margin-right:10px; color:#facc15;"></i> Hasil untuk “${searchInput.value}” (${results.length})</div>`;
-        html += `<div class="anime-grid">`;
-        results.forEach(anime => {
-            html += `
-                <div class="anime-card">
-                    <div class="anime-title"><i class="fas fa-play-circle"></i> ${anime.title}</div>
-                    <a href="${anime.otakudesuUrl}" target="_blank" class="anime-link">
-                        <i class="fas fa-external-link-alt"></i> tonton
-                    </a>
-                    <span class="badge-id">${anime.animeId}</span>
-                </div>
-            `;
-        });
-        html += `</div>`;
-        container.innerHTML = html;
+        resultContainer.innerHTML = `<div class="loading"><i class="fas fa-spinner fa-spin"></i><br />Mencari...</div>`;
+        const results = await fetchAnime(query);
+        renderResults(results);
     }
 
-    searchBtn.addEventListener('click', performSearch);
+    searchBtn.addEventListener('click', doSearch);
     searchInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') performSearch();
+        if (e.key === 'Enter') doSearch();
     });
 
-    // tambahan: klik di luar search reset ke huruf aktif? biarkan saja.
+    // ========================================
+    //  DEFAULT: tampilkan pesan
+    // ========================================
+    resultContainer.innerHTML = `
+        <div class="loading">
+            <i class="fas fa-tv" style="font-size:2.4rem; opacity:0.3;"></i><br />
+            Cari anime, klik kartu, tonton!
+        </div>
+    `;
+
+    // ========================================
+    //  DEMO: cari otomatis "one piece" biar langsung keliatan
+    // ========================================
+    // (optional) comment kalau mau dibiarin kosong
+    // biar user yang cari sendiri
+    // tapi kita kasih contoh aja
+    window.addEventListener('load', function() {
+        // isi default biar ga kosong
+        // searchInput.value = 'one piece';
+        // doSearch();
+    });
 </script>
+
 </body>
 </html>
