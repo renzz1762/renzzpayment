@@ -1,547 +1,70 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Anime Streaming • API</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-        }
-        body {
-            background: #0a0e14;
-            color: #eef2f6;
-            min-height: 100vh;
-            padding: 16px;
-        }
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        /* HEADER */
-        .header {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 28px;
-            border-bottom: 1px solid #1f2833;
-            padding-bottom: 18px;
-        }
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #facc15, #f97316);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .logo small {
-            font-weight: 400;
-            font-size: 0.8rem;
-            color: #6a7b8e;
-            -webkit-text-fill-color: #6a7b8e;
-            margin-left: 8px;
-        }
-        .search-box {
-            display: flex;
-            background: #161e28;
-            border-radius: 40px;
-            border: 1px solid #2a3340;
-            overflow: hidden;
-            flex: 1 1 280px;
-        }
-        .search-box input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            padding: 12px 20px;
-            color: #f0f5fc;
-            font-size: 0.95rem;
-            outline: none;
-            min-width: 140px;
-        }
-        .search-box input::placeholder {
-            color: #5a6a7c;
-        }
-        .search-box button {
-            background: #facc15;
-            border: none;
-            padding: 0 22px;
-            font-weight: 700;
-            color: #0a0e14;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: 0.2s;
-        }
-        .search-box button:hover {
-            background: #fbbf24;
-        }
-
-        /* HASIL PENCARIAN */
-        .result-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-            gap: 16px;
-            margin-top: 10px;
-        }
-        .anime-card {
-            background: #131b25;
-            border-radius: 16px;
-            padding: 14px 12px;
-            border: 1px solid #212b38;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .anime-card:hover {
-            background: #1c2735;
-            border-color: #facc15;
-            transform: scale(1.02);
-        }
-        .anime-card h4 {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 6px;
-            line-height: 1.3;
-        }
-        .anime-card .meta {
-            font-size: 0.7rem;
-            color: #8b9bb0;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .anime-card .meta span {
-            background: #1f2a38;
-            padding: 2px 10px;
-            border-radius: 20px;
-        }
-
-        /* PLAYER */
-        .player-wrapper {
-            margin: 24px 0 18px 0;
-            background: #0f1620;
-            border-radius: 20px;
-            padding: 16px;
-            border: 1px solid #1f2a38;
-            display: none;
-        }
-        .player-wrapper.active {
-            display: block;
-        }
-        .player-wrapper .anime-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-        .player-wrapper .anime-title .close {
-            background: #2a3443;
-            border: none;
-            color: #f0f5fc;
-            padding: 4px 16px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-        .player-wrapper .anime-title .close:hover {
-            background: #3c4a5e;
-        }
-        .video-container {
-            position: relative;
-            width: 100%;
-            padding-bottom: 56.25%;
-            /* 16:9 */
-            height: 0;
-            border-radius: 14px;
-            overflow: hidden;
-            background: #000;
-        }
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        /* EPISODE LIST */
-        .episode-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin: 14px 0 6px 0;
-        }
-        .episode-btn {
-            background: #1a232f;
-            border: 1px solid #2a3443;
-            color: #d4dce8;
-            padding: 6px 16px;
-            border-radius: 30px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: 0.15s;
-        }
-        .episode-btn:hover {
-            background: #facc15;
-            color: #0a0e14;
-            border-color: #facc15;
-        }
-        .episode-btn.active {
-            background: #facc15;
-            color: #0a0e14;
-            font-weight: 600;
-            border-color: #facc15;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px 10px;
-            color: #6a7b8e;
-        }
-        .loading i {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-
-        .footer {
-            margin-top: 40px;
-            text-align: center;
-            font-size: 0.75rem;
-            color: #3f4d5e;
-            border-top: 1px solid #1a222e;
-            padding-top: 20px;
-        }
-        .footer a {
-            color: #facc15;
-            text-decoration: none;
-        }
-
-        @media (max-width: 600px) {
-            .header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .result-grid {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            }
-            .logo {
-                font-size: 1.4rem;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>MENTAHAN STUDIO — GFX & Anime Edit</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
+<header class="topbar">
+  <div class="logo"><i class="fa-solid fa-clapperboard"></i> MENTAHAN<span>STUDIO</span></div>
+  <div class="topbar-sub">◈ Mentahan Video • Bahan GFX • Background — Siap Edit ◈</div>
+</header>
 
-    <!-- HEADER -->
-    <div class="header">
-        <div class="logo">
-            🎬 AniStream
-            <small>• API • nonton gratis</small>
-        </div>
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Cari anime... (contoh: one piece)" />
-            <button id="searchBtn">Cari</button>
-        </div>
-    </div>
+<nav class="tabs">
+  <button class="tab-btn active" data-tab="video" onclick="switchTab('video',this)"><i class="fa-solid fa-video"></i> Mentahan Video</button>
+  <button class="tab-btn" data-tab="gfx" onclick="switchTab('gfx',this)"><i class="fa-solid fa-layer-group"></i> Bahan GFX</button>
+  <button class="tab-btn" data-tab="bg" onclick="switchTab('bg',this)"><i class="fa-solid fa-mountain-sun"></i> Background GFX</button>
+</nav>
 
-    <!-- PLAYER -->
-    <div class="player-wrapper" id="playerWrapper">
-        <div class="anime-title">
-            <span id="playerTitle">Judul Anime</span>
-            <button class="close" id="closePlayer">✕ tutup</button>
-        </div>
-        <div class="video-container" id="videoContainer">
-            <iframe id="videoIframe" src="" allowfullscreen></iframe>
-        </div>
-        <div class="episode-list" id="episodeList"></div>
+<main>
+  <section id="tab-video" class="tab-panel active">
+    <div class="search-row">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="searchVideo" placeholder="Cari mentahan video..." oninput="renderVideos()">
     </div>
+    <div class="grid" id="videoGrid"></div>
+  </section>
 
-    <!-- HASIL PENCARIAN -->
-    <div id="resultContainer">
-        <div class="loading"><i class="fas fa-spinner fa-spin"></i><br />Cari anime dulu yuk!</div>
+  <section id="tab-gfx" class="tab-panel">
+    <div class="search-row">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="searchGfx" placeholder="Cari bahan GFX..." oninput="renderGfx()">
     </div>
+    <div class="grid" id="gfxGrid"></div>
+  </section>
 
-    <div class="footer">
-        <i class="fas fa-tv"></i> Sumber: consumet API • <a href="#" id="sourceLink">source</a> • no install
+  <section id="tab-bg" class="tab-panel">
+    <div class="search-row">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="searchBg" placeholder="Cari background GFX..." oninput="renderBg()">
     </div>
+    <div class="grid" id="bgGrid"></div>
+  </section>
+</main>
+
+<div class="lightbox" id="imgLightbox" onclick="closeLightbox(event)">
+  <div class="lightbox-box" onclick="event.stopPropagation()">
+    <img id="lightboxImg" src="" alt="">
+    <div class="lightbox-title" id="lightboxTitle"></div>
+    <div class="lightbox-actions">
+      <button class="btn-download" id="lightboxDownloadBtn"><i class="fa-solid fa-download"></i> Download</button>
+      <button class="btn-close" onclick="closeLightbox(event)"><i class="fa-solid fa-xmark"></i> Tutup</button>
+    </div>
+  </div>
 </div>
 
-<!-- Font Awesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+<div id="toast" class="toast"></div>
 
-<script>
-    // ========================================
-    //  CONFIG
-    // ========================================
-    const API_BASE = 'https://api.consumet.org/anime/gogoanime';
+<footer class="site-footer">© <span id="yearNow"></span> MENTAHAN STUDIO — Semua bahan untuk keperluan edit.</footer>
 
-    // DOM refs
-    const searchInput = document.getElementById('searchInput');
-    const searchBtn = document.getElementById('searchBtn');
-    const resultContainer = document.getElementById('resultContainer');
-    const playerWrapper = document.getElementById('playerWrapper');
-    const playerTitle = document.getElementById('playerTitle');
-    const videoIframe = document.getElementById('videoIframe');
-    const episodeList = document.getElementById('episodeList');
-    const closePlayer = document.getElementById('closePlayer');
-
-    // state
-    let currentAnimeId = null;
-    let currentEpisodes = [];
-    let currentTitle = '';
-
-    // ========================================
-    //  FUNGSI FETCH
-    // ========================================
-    async function fetchAnime(query) {
-        try {
-            const url = `${API_BASE}/search?keyw=${encodeURIComponent(query)}`;
-            const res = await fetch(url);
-            if (!res.ok) throw new Error('Gagal fetch');
-            const data = await res.json();
-            return data.results || [];
-        } catch (err) {
-            console.error(err);
-            return [];
-        }
-    }
-
-    async function fetchEpisodes(animeId) {
-        try {
-            const url = `${API_BASE}/info/${animeId}`;
-            const res = await fetch(url);
-            if (!res.ok) throw new Error('Gagal ambil episode');
-            const data = await res.json();
-            return data.episodes || [];
-        } catch (err) {
-            console.error(err);
-            return [];
-        }
-    }
-
-    // ========================================
-    //  RENDER HASIL PENCARIAN
-    // ========================================
-    function renderResults(animeList) {
-        if (!animeList || animeList.length === 0) {
-            resultContainer.innerHTML = `
-                <div class="loading">
-                    <i class="fas fa-frown"></i><br />
-                    Tidak ada hasil. Coba kata kunci lain.
-                </div>
-            `;
-            return;
-        }
-
-        let html = `<div class="result-grid">`;
-        animeList.forEach(anime => {
-            const title = anime.title || 'No title';
-            const id = anime.id || '';
-            const sub = anime.subOrDub || 'sub';
-            const type = anime.type || 'TV';
-            html += `
-                <div class="anime-card" data-id="${id}" data-title="${title.replace(/"/g, '&quot;')}">
-                    <h4>${title}</h4>
-                    <div class="meta">
-                        <span>${type}</span>
-                        <span>${sub}</span>
-                    </div>
-                </div>
-            `;
-        });
-        html += `</div>`;
-        resultContainer.innerHTML = html;
-
-        // attach click listener
-        document.querySelectorAll('.anime-card').forEach(card => {
-            card.addEventListener('click', function() {
-                const id = this.dataset.id;
-                const title = this.dataset.title;
-                if (id) loadAnime(id, title);
-            });
-        });
-    }
-
-    // ========================================
-    //  LOAD ANIME + EPISODE
-    // ========================================
-    async function loadAnime(animeId, title) {
-        currentAnimeId = animeId;
-        currentTitle = title || 'Anime';
-        playerTitle.textContent = currentTitle;
-        playerWrapper.classList.add('active');
-
-        // tampilkan loading di episode
-        episodeList.innerHTML = `<span style="color:#8b9bb0; font-size:0.85rem;"><i class="fas fa-spinner fa-spin"></i> loading episode...</span>`;
-
-        // fetch episodes
-        const eps = await fetchEpisodes(animeId);
-        currentEpisodes = eps || [];
-
-        if (currentEpisodes.length === 0) {
-            episodeList.innerHTML = `<span style="color:#b84a4a;">Tidak ada episode ditemukan.</span>`;
-            // tetap coba mainkan episode pertama? 
-            // tapi ga ada, skip
-            videoIframe.src = '';
-            return;
-        }
-
-        // render tombol episode
-        renderEpisodeButtons(currentEpisodes);
-
-        // mainkan episode pertama otomatis
-        const firstEp = currentEpisodes[0];
-        if (firstEp && firstEp.id) {
-            playEpisode(firstEp.id);
-        } else {
-            videoIframe.src = '';
-        }
-    }
-
-    // ========================================
-    //  EPISODE BUTTONS
-    // ========================================
-    function renderEpisodeButtons(episodes) {
-        let html = '';
-        episodes.forEach((ep, index) => {
-            const epNumber = ep.number || index + 1;
-            const epId = ep.id || '';
-            html += `<button class="episode-btn" data-ep-id="${epId}" data-ep-num="${epNumber}">EP ${epNumber}</button>`;
-        });
-        episodeList.innerHTML = html;
-
-        // click event
-        document.querySelectorAll('.episode-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const epId = this.dataset.epId;
-                if (epId) {
-                    // remove active all
-                    document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    playEpisode(epId);
-                }
-            });
-        });
-
-        // set active pertama
-        const firstBtn = document.querySelector('.episode-btn');
-        if (firstBtn) firstBtn.classList.add('active');
-    }
-
-    // ========================================
-    //  PLAY EPISODE (ambil link streaming)
-    // ========================================
-    async function playEpisode(episodeId) {
-        try {
-            // ambil link streaming dari consumet
-            const url = `${API_BASE}/watch/${episodeId}`;
-            const res = await fetch(url);
-            if (!res.ok) throw new Error('Gagal ambil link video');
-            const data = await res.json();
-
-            // cari sumber video (biasanya di sources)
-            const sources = data.sources || [];
-            // cari yg punya url dan quality, prioritaskan 720p/1080p
-            let videoUrl = null;
-            // urutan preferensi kualitas
-            const preferQuality = ['1080', '720', '480', '360'];
-            for (let q of preferQuality) {
-                const found = sources.find(s => s.quality && s.quality.includes(q) && s.url);
-                if (found) {
-                    videoUrl = found.url;
-                    break;
-                }
-            }
-            // fallback: ambil pertama yg ada url
-            if (!videoUrl) {
-                const fallback = sources.find(s => s.url);
-                if (fallback) videoUrl = fallback.url;
-            }
-
-            if (!videoUrl) {
-                // coba ambil dari referer? atau backup
-                videoIframe.src = '';
-                alert('Gagal mengambil link video. Coba episode lain.');
-                return;
-            }
-
-            // embed ke iframe
-            // videoUrl biasanya sudah embed link, tapi kita coba bersihkan
-            let embedSrc = videoUrl;
-            // jika url dari gogoanime biasa, kita bisa wrap ke embed
-            if (videoUrl.includes('gogoanime') || videoUrl.includes('mp4')) {
-                // beberapa url langsung mp4, kita masukkan ke iframe
-                embedSrc = videoUrl;
-            }
-
-            videoIframe.src = embedSrc;
-        } catch (err) {
-            console.error(err);
-            alert('Error saat memutar episode.');
-        }
-    }
-
-    // ========================================
-    //  CLOSE PLAYER
-    // ========================================
-    closePlayer.addEventListener('click', function() {
-        playerWrapper.classList.remove('active');
-        videoIframe.src = '';
-        episodeList.innerHTML = '';
-    });
-
-    // ========================================
-    //  SEARCH
-    // ========================================
-    async function doSearch() {
-        const query = searchInput.value.trim();
-        if (!query) {
-            resultContainer.innerHTML = `<div class="loading"><i class="fas fa-search"></i><br />Masukkan judul anime!</div>`;
-            return;
-        }
-
-        resultContainer.innerHTML = `<div class="loading"><i class="fas fa-spinner fa-spin"></i><br />Mencari...</div>`;
-        const results = await fetchAnime(query);
-        renderResults(results);
-    }
-
-    searchBtn.addEventListener('click', doSearch);
-    searchInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') doSearch();
-    });
-
-    // ========================================
-    //  DEFAULT: tampilkan pesan
-    // ========================================
-    resultContainer.innerHTML = `
-        <div class="loading">
-            <i class="fas fa-tv" style="font-size:2.4rem; opacity:0.3;"></i><br />
-            Cari anime, klik kartu, tonton!
-        </div>
-    `;
-
-    // ========================================
-    //  DEMO: cari otomatis "one piece" biar langsung keliatan
-    // ========================================
-    // (optional) comment kalau mau dibiarin kosong
-    // biar user yang cari sendiri
-    // tapi kita kasih contoh aja
-    window.addEventListener('load', function() {
-        // isi default biar ga kosong
-        // searchInput.value = 'one piece';
-        // doSearch();
-    });
-</script>
-
+<script src="product.js"></script>
+<script src="bahangfx.js"></script>
+<script src="backgroundgfx.js"></script>
+<script src="main.js"></script>
 </body>
 </html>
